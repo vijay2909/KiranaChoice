@@ -70,7 +70,7 @@
                     android:layout_marginTop="8dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="@drawable/button_background"
+                    android:background="@drawable/curved_button_background"
                     android:paddingStart="32dp"
                     android:paddingTop="8dp"
                     android:paddingEnd="32dp"
