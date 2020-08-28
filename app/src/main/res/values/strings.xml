@@ -2,16 +2,28 @@
     <string name="app_name">Kirana Choice</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-    <string name="home">Home</string>
-    <string name="chat">Chat</string>
-    <string name="offers">Offers</string>
-    <string name="my_account">My Account</string>
+    <string name="menu_chat">Chat</string>
+    <string name="menu_offers">Offers</string>
+    <string name="menu_my_account">My Account</string>
+
+    <!--    my account fragment     -->
+    <string name="sign_in">Sign in</string>
+    <string name="order_history">Order History</string>
+    <string name="order_history_tag">view or manage your orders</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="edit_profile_tag">view or manage your profile</string>
+    <string name="our_store">Our Store</string>
+    <string name="our_store_tag">view location on map</string>
+    <string name="language">Language</string>
+    <string name="language_tag">choose language you like</string>
+    <string name="my_orders">My orders</string>
+    <string name="feedback">Feedback</string>
+    <string name="contact_us">Contact us</string>
+    <string name="share_app">Share app</string>
 </resources>

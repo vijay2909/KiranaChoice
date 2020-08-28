@@ -3,18 +3,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/top_menu"
+        android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
+            android:id="@+id/editProfileFragment"
+            android:icon="@drawable/ic_account_profile"
+            android:title="@string/edit_profile" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:id="@+id/myOrdersFragment"
+            android:icon="@drawable/ic_shopping_basket"
+            android:title="@string/my_orders" />
+    </group>
+    <group
+        android:id="@+id/app_support"
+        android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:id="@+id/feedbackFragment"
+            android:icon="@drawable/ic_feedback"
+            android:title="@string/feedback" />
+        <item
+            android:id="@+id/contactUsFragment"
+            android:icon="@drawable/ic_help_support"
+            android:title="@string/contact_us" />
+    </group>
+    <group
+        android:id="@+id/app_share"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_share"
+            android:title="@string/share_app" />
     </group>
 </menu>

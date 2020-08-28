@@ -41,9 +41,11 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
+                R.id.editProfileFragment,
+                R.id.myOrdersFragment,
+                R.id.feedbackFragment,
+                R.id.contactUsFragment,
                 R.id.nav_home,
-                R.id.nav_gallery,
-                R.id.nav_slideshow,
                 R.id.chatFragment,
                 R.id.myOffersFragment,
                 R.id.myAccountFragment
