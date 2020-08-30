@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="subCategoryModel"
+            type="com.app.kiranachoice.models.SubCategoryModel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/category_image"
+                android:scaleType="fitCenter"
+                app:imageUrl="@{subCategoryModel.sub_category_image_url}"
+                android:src="@drawable/placeholder_image" />
+
+            <TextView
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@{subCategoryModel.sub_category_name}"
+                android:textSize="15sp"
+                app:drawableEndCompat="@drawable/ic_arrow_right"
+                tools:text="Atta" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

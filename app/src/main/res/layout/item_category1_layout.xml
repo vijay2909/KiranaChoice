@@ -6,42 +6,56 @@
     <data>
 
         <variable
-            name="model"
+            name="categoryInterface"
+            type="com.app.kiranachoice.adapters.CategoryAdapter.CategoryClickListener" />
+
+        <variable
+            name="categoryModel"
             type="com.app.kiranachoice.models.CategoryModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:layout_margin="4dp"
+        android:translationZ="4dp"
+        android:onClick="@{() -> categoryInterface.onCategoryItemClick(categoryModel)}"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
 
-        <ImageView
-            android:id="@+id/category_image"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="24dp"
-            android:src="@drawable/placeholder_image"
-            android:scaleType="fitCenter"
-            android:contentDescription="@string/category_image"
-            app:imageUrl="@{model.category_image_url}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            style="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@{model.category_name}"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/category_image"
-            app:layout_constraintStart_toStartOf="@+id/category_image"
-            app:layout_constraintTop_toBottomOf="@+id/category_image"
-            tools:text="Grocery &amp; Staples" />
+            android:padding="4dp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/category_image"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/category_image"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/placeholder_image"
+                app:imageUrl="@{categoryModel.category_image_url}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{categoryModel.category_name}"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/category_image"
+                app:layout_constraintStart_toStartOf="@+id/category_image"
+                app:layout_constraintTop_toBottomOf="@+id/category_image"
+                tools:text="Grocery &amp; Staples" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>
