@@ -6,19 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.app.kiranachoice.adapters.*
 import com.app.kiranachoice.databinding.FragmentHomeBinding
+import com.app.kiranachoice.models.Category1Model
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
 
-    private var _bindingHome : FragmentHomeBinding? = null
+    private var _bindingHome: FragmentHomeBinding? = null
     private val binding get() = _bindingHome!!
     private val homeViewModel by viewModels<HomeViewModel>()
+    private lateinit var navController: NavController
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         _bindingHome = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -27,13 +31,20 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.recyclerViewCategory1.apply {
-            adapter = Category1Adapter(null)
-        }
-
         binding.recyclerViewBestOffers.apply {
             adapter = ProductsAdapter(null)
         }
+        navController = Navigation.findNavController(view)
+
+        homeViewModel.categoryList.observe(viewLifecycleOwner, {
+            if (!it.isNullOrEmpty()) {
+                binding.recyclerViewCategory1.apply {
+                    setHasFixedSize(true)
+                    adapter = Category1Adapter(it, this@HomeFragment)
+                }
+            }
+        })
+
 
         binding.recyclerViewCategory2.apply {
             adapter = SmallBannerCategoryAdapter(null)
@@ -67,5 +78,14 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _bindingHome = null
+    }
+
+    override fun onCategoryItemClick(categoryModel: Category1Model) {
+        navController.navigate(
+            HomeFragmentDirections.actionNavHomeToCategoryFragment(
+                categoryModel,
+                categoryModel.category_name.toString()
+            )
+        )
     }
 }

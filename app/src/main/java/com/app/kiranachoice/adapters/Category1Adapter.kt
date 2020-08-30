@@ -7,20 +7,29 @@ import com.app.kiranachoice.BR
 import com.app.kiranachoice.databinding.ItemCategory1LayoutBinding
 import com.app.kiranachoice.models.Category1Model
 
-class Category1Adapter(private val list: List<Category1Model>?) :
+
+class Category1Adapter(
+    private val list: List<Category1Model>,
+    private val listener: CategoryClickListener
+) :
     RecyclerView.Adapter<Category1Adapter.CategoryViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-        return CategoryViewHolder(
-            ItemCategory1LayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        )
+        val view =
+            ItemCategory1LayoutBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        view.categoryInterface = listener
+        return CategoryViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-//        holder.bind(list[position])
+        holder.bind(list[position])
     }
 
-    override fun getItemCount(): Int = 9
+    override fun getItemCount(): Int = list.size
 
     class CategoryViewHolder(private val binding: ItemCategory1LayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -28,5 +37,9 @@ class Category1Adapter(private val list: List<Category1Model>?) :
             binding.setVariable(BR.model, categoryModel)
             binding.executePendingBindings()
         }
+    }
+
+    interface CategoryClickListener {
+        fun onCategoryItemClick(categoryModel: Category1Model)
     }
 }
