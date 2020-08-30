@@ -10,5 +10,6 @@ data class ProductModel(
     val productTitle: String? = null,
     val productMRP: String? = null,
     val productPrice: String? = null,
-    val productQuantity: String? = null
+    val productTotalQuantity: String? = null,
+    val productSellingQuantity : String? = null
 )

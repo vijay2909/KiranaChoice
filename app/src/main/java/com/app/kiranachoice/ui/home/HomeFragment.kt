@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.app.kiranachoice.R
-import com.app.kiranachoice.adapters.CategoryAdapter
-import com.app.kiranachoice.adapters.ProductsAdapter
+import com.app.kiranachoice.adapters.*
 import com.app.kiranachoice.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -30,10 +28,38 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.recyclerViewCategory1.apply {
-            adapter = CategoryAdapter(null)
+            adapter = Category1Adapter(null)
+        }
+
+        binding.recyclerViewBestOffers.apply {
+            adapter = ProductsAdapter(null)
         }
 
         binding.recyclerViewCategory2.apply {
+            adapter = SmallBannerCategoryAdapter(null)
+        }
+
+        binding.recyclerViewBestSelling.apply {
+            adapter = ProductsAdapter(null)
+        }
+
+        binding.recyclerViewCategory3.apply {
+            adapter = SmallBannerCategoryAdapter(null)
+        }
+
+        binding.recyclerViewCategory4.apply {
+            adapter = BannerCategoryAdapter(null)
+        }
+
+        binding.recyclerViewBestProductForYou.apply {
+            adapter = ProductsAdapter(null)
+        }
+
+        binding.recyclerViewBanner3.apply {
+            adapter = BigBannersAdapter(null)
+        }
+
+        binding.recyclerViewRecommendedProducts.apply {
             adapter = ProductsAdapter(null)
         }
     }

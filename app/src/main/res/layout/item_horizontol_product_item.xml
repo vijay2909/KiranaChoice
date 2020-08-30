@@ -1,100 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardBackgroundColor="@android:color/white"
-    app:cardCornerRadius="10dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="16dp">
+    <data>
+        <variable
+            name="model"
+            type="com.app.kiranachoice.models.ProductModel" />
+    </data>
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:contentDescription="@string/product_image"
-            android:scaleType="fitCenter"
-            android:src="@drawable/placeholder_image"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:translationZ="2dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="10dp">
 
-        <TextView
-            android:id="@+id/textProductName"
-            style="@style/TextAppearance.MaterialComponents.Body2"
-            android:layout_width="143dp"
-            android:layout_height="38dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageView"
-            tools:text="Gustora Elbow Durum Wheat Semolina Pasta" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="16dp">
 
-        <TextView
-            android:id="@+id/textProductPrice"
-            style="@style/TextAppearance.MaterialComponents.Body1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textProductName"
-            tools:text="₹90.00" />
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/product_image"
+                android:scaleType="fitCenter"
+                app:imageUrl="@{model.productImageUrl}"
+                android:src="@drawable/placeholder_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/textProductMRP"
-            style="@style/TextAppearance.MaterialComponents.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@id/textProductPrice"
-            app:layout_constraintTop_toTopOf="@id/textProductPrice"
-            tools:text="₹149.00" />
+            <TextView
+                android:id="@+id/textProductName"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:textSize="12sp"
+                android:text="@{model.productTitle}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imageView"
+                tools:text="Gustora Elbow Durum Wheat Semolina Pasta" />
 
-        <TextView
-            android:id="@+id/textProductQuantity"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/curved_border"
-            android:clickable="true"
-            android:focusable="true"
-            android:paddingStart="32dp"
-            android:paddingTop="4dp"
-            android:paddingEnd="32dp"
-            android:paddingBottom="4dp"
-            tools:text="500 gm"
-            android:textColor="@color/colorPrimary"
-            android:textSize="13sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textProductPrice" />
+            <TextView
+                android:id="@+id/textProductPrice"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:textStyle="bold"
+                android:text="@{@string/rupee_with_text(model.productPrice)}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textProductName"
+                tools:text="₹90.00" />
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/curved_less_button_background"
-            android:text="@string/add_to_cart"
-            android:textAllCaps="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textProductQuantity" />
+            <TextView
+                android:id="@+id/textProductMRP"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:textSize="12sp"
+                android:text="@{@string/rupee_with_text(model.productMRP)}"
+                app:layout_constraintStart_toEndOf="@id/textProductPrice"
+                app:layout_constraintTop_toTopOf="@id/textProductPrice"
+                tools:text="₹149.00" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:id="@+id/textProductQuantity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/curved_border"
+                android:clickable="true"
+                android:text="@{model.productSellingQuantity}"
+                android:focusable="true"
+                android:paddingStart="16dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="4dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textProductPrice"
+                tools:text="500 gm" />
+
+            <Button
+                android:layout_width="140dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/curved_less_button_background"
+                android:text="@string/add_to_cart"
+                android:textAllCaps="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textProductQuantity" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>
