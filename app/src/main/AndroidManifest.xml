@@ -34,7 +34,7 @@
 
         <activity
             android:name=".DevicecureMapActivity"
-            android:label="@string/title_activity_devicecure_map"></activity>
+            android:label="@string/title_activity_devicecure_map"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
