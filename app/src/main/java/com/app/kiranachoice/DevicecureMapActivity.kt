@@ -1,8 +1,7 @@
 package com.app.kiranachoice
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -35,9 +34,8 @@ class DevicecureMapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Add a marker in Sydney and move the camera
-        val latLng = LatLng(26.898257, 75.777249)
-        mMap.addMarker(MarkerOptions().position(latLng).title("Vijay's Home"))
+        val latLng = LatLng(26.910848, 75.769291)
+        mMap.addMarker(MarkerOptions().position(latLng).title("Devicecure Technologies Pvt. Ltd."))
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16F)
         mMap.animateCamera(cameraUpdate)
     }

@@ -1,6 +1,7 @@
 package com.app.kiranachoice.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,9 +32,6 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.recyclerViewBestOffers.apply {
-            adapter = ProductsAdapter(null)
-        }
         navController = Navigation.findNavController(view)
 
         homeViewModel.categoryList.observe(viewLifecycleOwner, {
@@ -45,6 +43,9 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
             }
         })
 
+        binding.recyclerViewBestOffers.apply {
+            adapter = ProductsAdapter(null)
+        }
 
         binding.recyclerViewCategory2.apply {
             adapter = SmallBannerCategoryAdapter(null)
@@ -81,6 +82,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
     }
 
     override fun onCategoryItemClick(categoryModel: Category1Model) {
+        Log.i("HomeViewModel", "onCategoryItemClick: model: $categoryModel ")
         navController.navigate(
             HomeFragmentDirections.actionNavHomeToCategoryFragment(
                 categoryModel,

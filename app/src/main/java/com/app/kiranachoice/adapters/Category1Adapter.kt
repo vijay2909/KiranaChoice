@@ -34,7 +34,7 @@ class Category1Adapter(
     class CategoryViewHolder(private val binding: ItemCategory1LayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(categoryModel: Category1Model) {
-            binding.setVariable(BR.model, categoryModel)
+            binding.setVariable(BR.categoryModel, categoryModel)
             binding.executePendingBindings()
         }
     }

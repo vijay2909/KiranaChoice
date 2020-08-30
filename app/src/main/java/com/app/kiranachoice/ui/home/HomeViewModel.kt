@@ -1,5 +1,6 @@
 package com.app.kiranachoice.ui.home
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,6 +33,7 @@ class HomeViewModel : ViewModel() {
                         val categoryModel = it.getValue(Category1Model::class.java)
                         categoryModel?.let { model -> fakeCategoryList.add(model) }
                     }
+                    Log.i(TAG, "categoryList: $fakeCategoryList")
                     _categoryList.postValue(fakeCategoryList)
 
                 }
@@ -39,6 +41,10 @@ class HomeViewModel : ViewModel() {
                 override fun onCancelled(error: DatabaseError) {}
 
             })
+    }
+
+    companion object {
+        private const val TAG = "HomeViewModel"
     }
 
 }
