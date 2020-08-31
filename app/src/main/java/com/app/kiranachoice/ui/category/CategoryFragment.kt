@@ -38,8 +38,20 @@ class CategoryFragment : Fragment() {
                     adapter = SubCategoryAdapter(it)
                 }
             }
-            binding.progressBar.root.visibility = View.GONE
+            binding.shimmerLayout.rootLayout.stopShimmer()
+            binding.shimmerLayoutRootLayout.visibility = View.GONE
+            binding.actualUiLayout.visibility = View.VISIBLE
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.shimmerLayout.rootLayout.startShimmer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.shimmerLayout.rootLayout.stopShimmer()
     }
 
     override fun onDestroyView() {

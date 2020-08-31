@@ -1,7 +1,6 @@
 package com.app.kiranachoice.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,11 +34,12 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
         navController = Navigation.findNavController(view)
 
         homeViewModel.categoryList.observe(viewLifecycleOwner, {
-            if (!it.isNullOrEmpty()) {
-                binding.recyclerViewCategory1.apply {
-                    setHasFixedSize(true)
-                    adapter = Category1Adapter(it, this@HomeFragment)
-                }
+            binding.shimmerLayout.root.stopShimmer()
+            binding.shimmerLayout.root.visibility = View.GONE
+            binding.actualUiLayout.visibility = View.VISIBLE
+            binding.recyclerViewCategory1.apply {
+                setHasFixedSize(true)
+                adapter = Category1Adapter(it, this@HomeFragment)
             }
         })
 
@@ -76,13 +76,22 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.shimmerLayout.root.startShimmer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.shimmerLayout.root.stopShimmer()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _bindingHome = null
     }
 
     override fun onCategoryItemClick(categoryModel: Category1Model) {
-        Log.i("HomeViewModel", "onCategoryItemClick: model: $categoryModel ")
         navController.navigate(
             HomeFragmentDirections.actionNavHomeToCategoryFragment(
                 categoryModel,

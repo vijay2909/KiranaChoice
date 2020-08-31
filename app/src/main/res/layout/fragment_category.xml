@@ -1,15 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/shimmerLayoutRootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <include
+            android:id="@+id/shimmerLayout"
+            layout="@layout/shimmer_effect_category_layout" />
+
+        <include layout="@layout/shimmer_effect_category_layout" />
+
+        <include layout="@layout/shimmer_effect_category_layout" />
+
+        <include layout="@layout/shimmer_effect_category_layout" />
+
+        <include layout="@layout/shimmer_effect_category_layout" />
+
+        <include layout="@layout/shimmer_effect_category_layout" />
+
+        <include layout="@layout/shimmer_effect_category_layout" />
+
+        <include layout="@layout/shimmer_effect_category_layout" />
+
+        <include layout="@layout/shimmer_effect_category_layout" />
+
+        <include layout="@layout/shimmer_effect_category_layout" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/actualUiLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:visibility="gone"
         tools:context=".ui.category.CategoryFragment">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -19,8 +50,4 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     </LinearLayout>
-
-    <include
-        android:id="@+id/progressBar"
-        layout="@layout/progress_bar_with_text" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>
