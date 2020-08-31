@@ -38,6 +38,7 @@ class CategoryFragment : Fragment() {
                     adapter = SubCategoryAdapter(it)
                 }
             }
+            binding.progressBar.root.visibility = View.GONE
         })
     }
 
