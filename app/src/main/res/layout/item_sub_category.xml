@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="subCategoryInterface"
+            type="com.app.kiranachoice.adapters.SubCategoryAdapter.SubCategoryClickListener" />
+
+        <variable
             name="subCategoryModel"
             type="com.app.kiranachoice.models.SubCategoryModel" />
     </data>
@@ -14,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:onClick="@{() -> subCategoryInterface.onSubCategoryItemClicked(subCategoryModel)}"
         app:cardCornerRadius="10dp"
         app:cardElevation="2dp">
 

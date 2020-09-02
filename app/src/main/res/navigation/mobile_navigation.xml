@@ -96,5 +96,17 @@
         <argument
             android:name="title"
             app:argType="string" />
+        <action
+            android:id="@+id/action_categoryFragment_to_productsFragment"
+            app:destination="@id/productsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/productsFragment"
+        android:name="com.app.kiranachoice.ui.products.ProductsFragment"
+        android:label="Product List"
+        tools:layout="@layout/fragment_products">
+        <argument
+            android:name="subCategoryModel"
+            app:argType="com.app.kiranachoice.models.SubCategoryModel" />
     </fragment>
 </navigation>

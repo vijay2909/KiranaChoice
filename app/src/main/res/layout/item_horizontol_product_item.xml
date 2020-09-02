@@ -88,7 +88,7 @@
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/curved_border"
                 android:clickable="true"
-                android:text="@{model.productSellingQuantity}"
+                android:text="@{String.valueOf(model.productPackagingSize[0])}"
                 android:focusable="true"
                 android:paddingStart="16dp"
                 android:paddingTop="4dp"

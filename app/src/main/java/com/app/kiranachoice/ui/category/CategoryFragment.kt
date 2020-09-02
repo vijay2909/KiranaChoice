@@ -6,16 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.adapters.SubCategoryAdapter
 import com.app.kiranachoice.databinding.FragmentCategoryBinding
+import com.app.kiranachoice.models.SubCategoryModel
 
 
-class CategoryFragment : Fragment() {
+class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener {
 
     private var _bindingCategory: FragmentCategoryBinding? = null
     private val binding get() = _bindingCategory!!
     private val viewModel by viewModels<CategoryViewModel>()
+    private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +32,7 @@ class CategoryFragment : Fragment() {
     private val args: CategoryFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
 
         viewModel.getSubCategories(args.categoryModel)
 
@@ -35,7 +40,7 @@ class CategoryFragment : Fragment() {
             if (!it.isNullOrEmpty()) {
                 binding.recyclerViewSubCategory.apply {
                     setHasFixedSize(true)
-                    adapter = SubCategoryAdapter(it)
+                    adapter = SubCategoryAdapter(it, this@CategoryFragment)
                 }
             }
             binding.shimmerLayout.rootLayout.stopShimmer()
@@ -57,5 +62,13 @@ class CategoryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _bindingCategory = null
+    }
+
+    override fun onSubCategoryItemClicked(subCategoryModel: SubCategoryModel) {
+        navController.navigate(
+            CategoryFragmentDirections.actionCategoryFragmentToProductsFragment(
+                subCategoryModel
+            )
+        )
     }
 }

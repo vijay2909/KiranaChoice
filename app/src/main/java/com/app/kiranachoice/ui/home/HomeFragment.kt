@@ -44,7 +44,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
         })
 
         binding.recyclerViewBestOffers.apply {
-            adapter = ProductsAdapter(null)
+            adapter = HorizontalProductsAdapter(null)
         }
 
         binding.recyclerViewCategory2.apply {
@@ -52,7 +52,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
         }
 
         binding.recyclerViewBestSelling.apply {
-            adapter = ProductsAdapter(null)
+            adapter = HorizontalProductsAdapter(null)
         }
 
         binding.recyclerViewCategory3.apply {
@@ -64,7 +64,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
         }
 
         binding.recyclerViewBestProductForYou.apply {
-            adapter = ProductsAdapter(null)
+            adapter = HorizontalProductsAdapter(null)
         }
 
         binding.recyclerViewBanner3.apply {
@@ -72,7 +72,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
         }
 
         binding.recyclerViewRecommendedProducts.apply {
-            adapter = ProductsAdapter(null)
+            adapter = HorizontalProductsAdapter(null)
         }
     }
 

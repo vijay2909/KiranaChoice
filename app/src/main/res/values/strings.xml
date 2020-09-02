@@ -31,7 +31,11 @@
     <string name="product_image">product image</string>
     <string name="add_to_cart">Add to Cart</string>
     <string name="rupee_with_text">₹%s.00</string>
+    <string name="rupee">₹</string>
+    <string name="dot_zero">.00</string>
     <string name="title_activity_devicecure_map">Map</string>
 
     <string name="please_wait">Please wait…</string>
+    <string name="quantity_increase_button">Quantity increase button</string>
+    <string name="quantity_decrease_button">quantity decrease button</string>
 </resources>

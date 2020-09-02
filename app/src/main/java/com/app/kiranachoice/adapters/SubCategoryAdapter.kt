@@ -7,14 +7,18 @@ import com.app.kiranachoice.BR
 import com.app.kiranachoice.databinding.ItemSubCategoryBinding
 import com.app.kiranachoice.models.SubCategoryModel
 
-class SubCategoryAdapter(private val list: List<SubCategoryModel>) :
+class SubCategoryAdapter(
+    private val list: List<SubCategoryModel>,
+    private val listener: SubCategoryClickListener
+) :
     RecyclerView.Adapter<SubCategoryAdapter.SubCategoryViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubCategoryViewHolder {
-        return SubCategoryViewHolder(
+        val view =
             ItemSubCategoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        )
+        view.subCategoryInterface = listener
+        return SubCategoryViewHolder(view)
     }
 
     override fun getItemCount(): Int = list.size
@@ -30,7 +34,7 @@ class SubCategoryAdapter(private val list: List<SubCategoryModel>) :
         }
     }
 
-    interface OnSubCategoryClickListener {
-        fun onSubCategoryItemClicked(category: String?, subCategoryName: String?)
+    interface SubCategoryClickListener {
+        fun onSubCategoryItemClicked(subCategoryModel: SubCategoryModel)
     }
 }

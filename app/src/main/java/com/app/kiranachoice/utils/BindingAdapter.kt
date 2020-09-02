@@ -1,6 +1,8 @@
 package com.app.kiranachoice.utils
 
+import android.graphics.Paint
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.app.kiranachoice.R
 import com.bumptech.glide.Glide
@@ -13,4 +15,11 @@ fun setImageUrl(view: ImageView, url: String?) {
             .placeholder(R.drawable.placeholder_image)
             .into(view)
     }
+}
+
+@BindingAdapter("productMRP")
+fun setProductMRP(view: TextView, text: Long) {
+    view.paintFlags = view.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+    view.text = view.context.getString(R.string.rupee).plus(text)
+        .plus(view.context.getString(R.string.dot_zero))
 }
