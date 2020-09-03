@@ -86,6 +86,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.2.4'
     implementation 'com.google.firebase:firebase-storage-ktx:19.2.0'
     implementation 'com.google.firebase:firebase-database-ktx:19.4.0'
+    implementation 'com.google.firebase:firebase-config-ktx:19.2.0'
+
 
     // facebook shimmer effect
     implementation 'com.facebook.shimmer:shimmer:0.5.0'

@@ -74,23 +74,35 @@
                 app:productMRP="@{productModel.productMRP}"
                 tools:text="₹90.00" />
 
-            <TextView
-                android:id="@+id/productWeight"
-                style="@style/TextAppearance.MaterialComponents.Body2"
+            <FrameLayout
+                android:id="@+id/layoutWeight"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/curved_border"
-                android:paddingStart="8dp"
-                android:paddingTop="4dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="4dp"
-                android:text="@{productModel.productPackagingSize[0].packagingSize}"
                 app:layout_constraintEnd_toStartOf="@+id/addToCartLayout"
                 app:layout_constraintStart_toStartOf="@+id/productPrice"
-                app:layout_constraintTop_toBottomOf="@+id/productPrice"
-                tools:text="1 kg" />
+                app:layout_constraintTop_toBottomOf="@+id/productPrice">
+
+                <TextView
+                    android:id="@+id/productWeight"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/curved_border"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="4dp"
+                    android:text="@{productModel.productPackagingSize[0].packagingSize}"
+                    android:visibility="gone"
+                    tools:text="1 kg" />
+
+                <Spinner
+                    android:id="@+id/spinnerPackaging"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/addToCartLayout"
@@ -99,7 +111,7 @@
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/productWeight"
+                app:layout_constraintStart_toEndOf="@id/layoutWeight"
                 app:layout_constraintTop_toBottomOf="@+id/productPrice">
 
                 <Button

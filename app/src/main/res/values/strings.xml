@@ -38,4 +38,9 @@
     <string name="please_wait">Please wait…</string>
     <string name="quantity_increase_button">Quantity increase button</string>
     <string name="quantity_decrease_button">quantity decrease button</string>
+
+    <string name="update_app">App update available</string>
+    <string name="dialog_update_available_message">You are on an older app version. You can use the app only if you update it.</string>
+    <string name="update_now">UPDATE NOW</string>
+    <string name="later">SKIP</string>
 </resources>
