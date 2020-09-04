@@ -1,6 +1,8 @@
 package com.app.kiranachoice.ui.home
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,16 +10,29 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.app.kiranachoice.adapters.*
+import androidx.viewpager2.widget.ViewPager2
+import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentHomeBinding
+import com.app.kiranachoice.models.Banner
 import com.app.kiranachoice.models.Category1Model
+import com.app.kiranachoice.recyclerView_adapters.*
+import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
+import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.android.synthetic.main.sliding_image_layout.*
 
 class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
 
     private var _bindingHome: FragmentHomeBinding? = null
     private val binding get() = _bindingHome!!
+
     private val homeViewModel by viewModels<HomeViewModel>()
+
     private lateinit var navController: NavController
+
+    private lateinit var viewPager: ViewPager2
+    private lateinit var handler: Handler
+    private lateinit var callback: ViewPager2.OnPageChangeCallback
+    private val imageList = ArrayList<Banner>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,6 +40,8 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
         savedInstanceState: Bundle?
     ): View? {
         _bindingHome = FragmentHomeBinding.inflate(inflater, container, false)
+        viewPager = binding.homeBanner1
+        handler = Handler(Looper.getMainLooper())
         return binding.root
     }
 
@@ -74,16 +91,41 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
         binding.recyclerViewRecommendedProducts.apply {
             adapter = HorizontalProductsAdapter(null)
         }
+
+        imageList.add(Banner(R.drawable.placeholder_image))
+        imageList.add(Banner(R.drawable.ic_add_box))
+        imageList.add(Banner(R.drawable.ic_minus_box))
+
+        viewPager.adapter = HomeTopBannerAdapter(imageList)
+        TabLayoutMediator(binding.tabLayout, viewPager) { _, _ -> }.attach()
+
+        callback = object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                handler.removeCallbacks(slideRunnable)
+                handler.postDelayed(slideRunnable, 3000)
+            }
+        }
+        viewPager.registerOnPageChangeCallback(callback)
+    }
+
+    private val slideRunnable = Runnable {
+        viewPager.currentItem =
+            if (imageList.size.minus(1) == viewPager.currentItem) 0
+            else viewPager.currentItem.plus(1)
     }
 
     override fun onResume() {
         super.onResume()
         binding.shimmerLayout.root.startShimmer()
+        handler.postDelayed(slideRunnable, 3000)
     }
 
     override fun onPause() {
         super.onPause()
+        imageList.clear()
         binding.shimmerLayout.root.stopShimmer()
+        handler.removeCallbacks(slideRunnable)
+        viewPager.unregisterOnPageChangeCallback(callback)
     }
 
     override fun onDestroyView() {

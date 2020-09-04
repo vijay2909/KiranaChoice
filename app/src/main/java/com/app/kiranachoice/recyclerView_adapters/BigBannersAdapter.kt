@@ -1,4 +1,4 @@
-package com.app.kiranachoice.adapters
+package com.app.kiranachoice.recyclerView_adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

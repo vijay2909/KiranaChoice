@@ -4,16 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import java.lang.NumberFormatException
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,10 +28,6 @@ class SplashActivity : AppCompatActivity() {
 
         val minVersion = remoteConfig.getString("min_version_of_app")
         val currentVersion = remoteConfig.getString("latest_version_of_app")
-
-        Log.i(TAG, "appVersion : $appVersion")
-        Log.i(TAG, "minVersion : $minVersion")
-        Log.i(TAG, "currentVersion : $currentVersion")
 
         if (!TextUtils.isEmpty(minVersion) && !TextUtils.isEmpty(appVersion) && checkMandateVersionApplicable(
                 getAppVersionWithoutAlphaNumeric(minVersion),
@@ -71,7 +65,7 @@ class SplashActivity : AppCompatActivity() {
         try {
             result = context.packageManager.getPackageInfo(context.packageName, 0).versionName
         } catch (e: PackageManager.NameNotFoundException) {
-            Log.e("TAG", e.message.toString())
+            e.printStackTrace()
         }
         return result
     }
@@ -83,7 +77,7 @@ class SplashActivity : AppCompatActivity() {
             .setMessage(if (isMandatoryUpdate) getString(R.string.dialog_update_available_message) else "A new version is found on Play store, please update for better usage.")
             .setPositiveButton(getString(R.string.update_now))
             { _, _ ->
-                openAppOnPlayStore(this, null)
+                openAppOnPlayStore(this)
             }
 
         if (!isMandatoryUpdate) {
@@ -103,32 +97,20 @@ class SplashActivity : AppCompatActivity() {
         }, 2000)
     }
 
-    private fun openAppOnPlayStore(ctx: Context, package_name: String?) {
-        var package_name = package_name
-        if (package_name == null) {
-            package_name = ctx.packageName
-        }
-        Log.i(TAG, "packageName : $package_name")
-        val uri = Uri.parse("market://details?id=$package_name")
-        openURI(ctx, uri, "Play Store not found in your device")
+    private fun openAppOnPlayStore(ctx: Context) {
+        val packageName = ctx.packageName
+        val uri = Uri.parse("market://details?id=$packageName")
+        openURI(ctx, uri )
     }
 
-    private fun openURI(
-        ctx: Context,
-        uri: Uri?,
-        error_msg: String?
-    ) {
+    private fun openURI(ctx: Context, uri: Uri?) {
         val i = Intent(Intent.ACTION_VIEW, uri)
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         if (ctx.packageManager.queryIntentActivities(i, 0).size > 0) {
             ctx.startActivity(i)
-        } else if (error_msg != null) {
-            Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Play Store not found in your device", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    companion object {
-        private const val TAG = "SplashActivity"
     }
 }

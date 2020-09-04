@@ -107,7 +107,7 @@
             <FrameLayout
                 android:id="@+id/addToCartLayout"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="35dp"
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -122,7 +122,7 @@
                     android:text="@string/add_to_cart"
                     android:textAllCaps="false"
                     android:textSize="12sp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/productWeight"
                     app:layout_constraintTop_toBottomOf="@+id/productPrice" />
@@ -132,12 +132,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <ImageButton
-                        style="?attr/selectableItemBackground"
+                        android:id="@+id/btnDecrease"
+                        android:background="?attr/selectableItemBackground"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
                         android:contentDescription="@string/quantity_decrease_button"
                         android:src="@drawable/ic_minus_box" />
 
@@ -148,10 +149,11 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="0" />
+                        android:text="@string/zero" />
 
                     <ImageButton
-                        style="?attr/selectableItemBackground"
+                        android:id="@+id/btnIncrease"
+                        android:background="?attr/selectableItemBackground"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="@string/quantity_increase_button"

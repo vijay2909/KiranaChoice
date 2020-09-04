@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
-import com.app.kiranachoice.adapters.SubCategoryAdapter
+import com.app.kiranachoice.recyclerView_adapters.SubCategoryAdapter
 import com.app.kiranachoice.databinding.FragmentCategoryBinding
 import com.app.kiranachoice.models.SubCategoryModel
 

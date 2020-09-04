@@ -7,7 +7,7 @@
 
         <variable
             name="categoryInterface"
-            type="com.app.kiranachoice.adapters.Category1Adapter.CategoryClickListener" />
+            type="com.app.kiranachoice.recyclerView_adapters.Category1Adapter.CategoryClickListener" />
 
         <variable
             name="categoryModel"
