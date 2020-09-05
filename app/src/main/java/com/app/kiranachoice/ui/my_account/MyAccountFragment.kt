@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.app.kiranachoice.DevicecureMapActivity
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentMyAccountBinding
@@ -44,6 +45,10 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
             textMyOrders.setOnClickListener(this@MyAccountFragment)
             userImage.setOnClickListener(this@MyAccountFragment)
             textOurStore.setOnClickListener(this@MyAccountFragment)
+        }
+
+        binding.buttonLogin.setOnClickListener{
+            it.findNavController().navigate(R.id.action_myAccountFragment_to_authFragment)
         }
     }
 

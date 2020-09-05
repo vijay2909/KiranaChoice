@@ -44,6 +44,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_myAccountFragment_to_authFragment"
+            app:destination="@id/authFragment" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
@@ -109,4 +112,9 @@
             android:name="subCategoryModel"
             app:argType="com.app.kiranachoice.models.SubCategoryModel" />
     </fragment>
+    <fragment
+        android:id="@+id/authFragment"
+        android:name="com.app.kiranachoice.ui.authentication.AuthFragment"
+        android:label="fragment_auth"
+        tools:layout="@layout/fragment_auth" />
 </navigation>

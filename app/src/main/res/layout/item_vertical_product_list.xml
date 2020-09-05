@@ -95,13 +95,17 @@
                     android:paddingEnd="8dp"
                     android:paddingBottom="4dp"
                     android:text="@{productModel.productPackagingSize[0].packagingSize}"
-                    android:visibility="gone"
                     tools:text="1 kg" />
 
                 <Spinner
                     android:id="@+id/spinnerPackaging"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:background="@drawable/curved_border"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="4dp" />
             </FrameLayout>
 
             <FrameLayout
@@ -117,7 +121,7 @@
                 <Button
                     android:id="@+id/btnAddToCart"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="35dp"
                     android:background="@drawable/curved_button_background"
                     android:text="@string/add_to_cart"
                     android:textAllCaps="false"
@@ -136,9 +140,9 @@
 
                     <ImageButton
                         android:id="@+id/btnDecrease"
-                        android:background="?attr/selectableItemBackground"
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackground"
                         android:contentDescription="@string/quantity_decrease_button"
                         android:src="@drawable/ic_minus_box" />
 
@@ -153,9 +157,9 @@
 
                     <ImageButton
                         android:id="@+id/btnIncrease"
-                        android:background="?attr/selectableItemBackground"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
                         android:contentDescription="@string/quantity_increase_button"
                         android:src="@drawable/ic_add_box" />
                 </LinearLayout>
