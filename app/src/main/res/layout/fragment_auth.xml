@@ -5,6 +5,7 @@
 
     <data>
 
+
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -19,25 +20,24 @@
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="270dp"
                 android:contentDescription="@string/background_image"
-                android:scaleType="fitXY"
+                android:scaleType="centerCrop"
                 android:src="@drawable/login_background"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.708" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:layout_marginTop="100dp"
+                android:layout_marginStart="40dp"
                 android:text="@string/login"
                 android:textColor="@android:color/white"
                 android:textSize="45sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView2"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -45,11 +45,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="100dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3">
+                app:layout_constraintTop_toBottomOf="@+id/imageView2">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/phoneCard"
@@ -147,7 +146,7 @@
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"/>
+                        android:layout_alignParentEnd="true" />
                 </RelativeLayout>
 
                 <Button

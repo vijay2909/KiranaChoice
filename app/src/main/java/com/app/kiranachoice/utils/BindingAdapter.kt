@@ -12,6 +12,15 @@ import com.bumptech.glide.Glide
 fun setProfileImage(view: ImageView, url: String?) {
     if (url != null) {
         Glide.with(view.context).load(url).into(view)
+    } else {
+        Glide.with(view.context).load(R.drawable.default_user_image).into(view)
+    }
+}
+
+@BindingAdapter("userName")
+fun setUserName(view: TextView , name: String?){
+    name?.let {
+        view.text = name.substringBefore(" ")
     }
 }
 

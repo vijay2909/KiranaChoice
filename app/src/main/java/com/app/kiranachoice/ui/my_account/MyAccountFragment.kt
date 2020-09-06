@@ -4,7 +4,6 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +11,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import com.app.kiranachoice.DevicecureMapActivity
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentMyAccountBinding
+import com.google.firebase.auth.FirebaseAuth
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 
@@ -27,6 +26,7 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
     private val binding get() = _bindingAccount!!
     private lateinit var viewModel : MainViewModel
     private lateinit var navController: NavController
+    private lateinit var mAuth : FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +35,7 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
         viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         _bindingAccount = FragmentMyAccountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
+        mAuth = FirebaseAuth.getInstance()
         return binding.root
     }
 
@@ -47,10 +48,8 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
             textMyOrders.setOnClickListener(this@MyAccountFragment)
             userImage.setOnClickListener(this@MyAccountFragment)
             textOurStore.setOnClickListener(this@MyAccountFragment)
-        }
-
-        binding.buttonLogin.setOnClickListener{
-            it.findNavController().navigate(R.id.action_myAccountFragment_to_authFragment)
+            buttonLogin.setOnClickListener(this@MyAccountFragment)
+            textSignOut.setOnClickListener(this@MyAccountFragment)
         }
 
         viewModel.user.observe(viewLifecycleOwner, {
@@ -79,6 +78,8 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
                     DevicecureMapActivity::class.java
                 )
             )
+            binding.buttonLogin.id -> navController.navigate(R.id.action_myAccountFragment_to_authFragment)
+            binding.textSignOut.id -> mAuth.signOut()
         }
     }
 
@@ -89,9 +90,6 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
             if (resultCode == RESULT_OK) {
                 val resultUri: Uri = result.uri
                 binding.userImage.setImageURI(resultUri)
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                val error = result.error
-                Log.e(TAG, "onActivityResult: error : ${error.message}")
             }
         }
     }
@@ -99,9 +97,5 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _bindingAccount = null
-    }
-
-    companion object {
-        private const val TAG = "MyAccountFragment"
     }
 }

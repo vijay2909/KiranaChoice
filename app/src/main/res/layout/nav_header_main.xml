@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="user"
             type="com.app.kiranachoice.models.User" />
@@ -34,11 +36,11 @@
 
         <TextView
             android:id="@+id/textView2"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="@{user.name == null ? @string/hi_user : @string/hi_userName(user.name)}"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            app:userName="@{user.name}"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -51,15 +53,16 @@
 
         <TextView
             android:id="@+id/textView"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
-            android:textColor="@android:color/darker_gray"
+            android:text="@{user.phoneNumber}"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:textColor="@color/textPrimary"
             android:visibility="@{user == null ? View.GONE : View.VISIBLE}"
-            android:text="@{user.phoneNumber}"
             app:layout_constraintBottom_toBottomOf="@+id/profile_image"
             app:layout_constraintStart_toEndOf="@+id/profile_image"
             app:layout_constraintTop_toBottomOf="@+id/textView2"
@@ -73,11 +76,11 @@
             android:layout_centerHorizontal="true"
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
+            android:background="@drawable/curved_button_background"
             android:paddingStart="16dp"
             android:paddingTop="8dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
-            android:background="@drawable/curved_button_background"
             android:text="@string/sign_in"
             android:textAllCaps="false"
             android:visibility="@{user == null ? View.VISIBLE : View.GONE}"

@@ -51,7 +51,7 @@
                     android:layout_below="@id/userImage"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="16dp"
-                    android:text="@string/hi_user"
+                    app:userName="@{user.name}"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -72,19 +72,18 @@
                 <Button
                     android:id="@+id/buttonLogin"
                     android:layout_width="wrap_content"
-                    android:layout_height="35dp"
+                    android:layout_height="40dp"
                     android:layout_below="@id/userName"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/curved_button_background"
                     android:elevation="2dp"
                     android:paddingStart="32dp"
-                    android:paddingTop="8dp"
                     android:paddingEnd="32dp"
-                    android:paddingBottom="8dp"
                     android:text="@string/sign_in"
                     android:textColor="@android:color/white"
                     android:textSize="15sp"
+                    android:textAllCaps="false"
                     android:textStyle="bold"
                     android:translationZ="4dp"
                     android:visibility="@{user == null ? View.VISIBLE : View.GONE}" />
@@ -254,6 +253,23 @@
                         android:layout_alignParentBottom="true"
                         android:background="@color/dividerColor" />
                 </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/textSignOut"
+                    style="@style/TextAppearance.MaterialComponents.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:drawablePadding="10dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/sign_out"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:visibility="@{user == null ? View.GONE : View.VISIBLE}"
+                    app:drawableStartCompat="@drawable/ic_exit_to_app" />
 
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

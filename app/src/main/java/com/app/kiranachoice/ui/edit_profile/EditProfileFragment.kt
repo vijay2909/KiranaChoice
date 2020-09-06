@@ -1,31 +1,38 @@
 package com.app.kiranachoice.ui.edit_profile
 
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.databinding.FragmentEditProfileBinding
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.signature.ObjectKey
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 
 private const val PICK_IMAGE_REQUEST = 1
 private const val TAG = "EditProfileFragment"
 
-class EditProfileFragment : Fragment() {
+class EditProfileFragment : Fragment(), View.OnClickListener {
 
-    private var _bindingEdit : FragmentEditProfileBinding? = null
+    private var _bindingEdit: FragmentEditProfileBinding? = null
     private val binding get() = _bindingEdit!!
 
-    private lateinit var viewModel : MainViewModel
+    private lateinit var viewModel: MainViewModel
+    private var imageUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,13 +40,37 @@ class EditProfileFragment : Fragment() {
     ): View? {
         viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         _bindingEdit = FragmentEditProfileBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.mainViewModel = viewModel
         return binding.root
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.apply {
+            editUserImage.setOnClickListener(this@EditProfileFragment)
+            btnUpdateDetails.setOnClickListener(this@EditProfileFragment)
+        }
 
+        viewModel.onDetailsUpdate.observe(viewLifecycleOwner, {
+            if (it) {
+                Toast.makeText(requireContext(), "Update Details Successfully", Toast.LENGTH_SHORT)
+                    .show()
+                viewModel.onDetailsUpdated()
+                view.findNavController().popBackStack()
+            }
+        })
+
+        viewModel.imageUrl.observe(viewLifecycleOwner, {
+            Glide.with(requireContext()).asBitmap()
+                .load(it)
+                .apply(RequestOptions.skipMemoryCacheOf(true))
+                .apply(RequestOptions.signatureOf(ObjectKey(System.currentTimeMillis())))
+                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.DATA))
+                .into(binding.circleImageView)
+            binding.textPleaseWait.visibility = View.GONE
+        })
     }
 
     private fun pickFromGallery() {
@@ -59,17 +90,16 @@ class EditProfileFragment : Fragment() {
                     data?.data?.let {
                         launchImageCrop(it)
                     }
-                } else {
-                    Log.e(TAG, "Image selection error : Couldn't select that image from memory.")
                 }
             }
 
             CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
                 val result = CropImage.getActivityResult(data)
                 if (resultCode == Activity.RESULT_OK) {
-                    setImage(result.uri)
-                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                    Log.e(TAG, "Crop error : ${result.error}")
+                    imageUri = result.uri
+                    viewModel.fileExtension = getFileExtension(imageUri)
+                    binding.textPleaseWait.visibility = View.VISIBLE
+                    viewModel.updateImage(imageUri)
                 }
             }
         }
@@ -82,12 +112,22 @@ class EditProfileFragment : Fragment() {
             .start(requireContext(), this)
     }
 
-    private fun setImage(uri: Uri?) {
-        Glide.with(requireContext())
-            .load(uri)
-            .into(binding.circleImageView)
+    private fun getFileExtension(uri: Uri?): String? {
+        val cR: ContentResolver? = activity?.contentResolver
+        val mime: MimeTypeMap = MimeTypeMap.getSingleton()
+        return mime.getExtensionFromMimeType(uri?.let { cR?.getType(it) })
+    }
 
-        TODO("save pic on database")
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            binding.editUserImage.id -> pickFromGallery()
+            binding.btnUpdateDetails.id -> {
+                binding.textPleaseWait.visibility = View.VISIBLE
+                binding.btnUpdateDetails.visibility = View.GONE
+                viewModel.userName = binding.etUserName.text.toString().trim()
+                viewModel.saveData()
+            }
+        }
     }
 
 }

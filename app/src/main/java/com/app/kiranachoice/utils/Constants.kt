@@ -7,3 +7,5 @@ const val SUB_CATEGORY_REFERENCE = "Sub Categories"
 const val PRODUCT_REFERENCE = "Products"
 
 const val USER_REFERENCE = "Users"
+
+const val USER_IMAGE_REFERENCE = "Users Profile Images"
