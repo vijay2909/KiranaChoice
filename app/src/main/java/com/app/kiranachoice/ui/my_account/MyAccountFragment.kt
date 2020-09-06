@@ -52,10 +52,6 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _bindingAccount = null
-    }
 
     override fun onClick(view: View?) {
         when (view?.id) {
@@ -87,6 +83,11 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
                 Log.e(TAG, "onActivityResult: error : ${error.message}")
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _bindingAccount = null
     }
 
     companion object {
