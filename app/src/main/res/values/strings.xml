@@ -13,6 +13,10 @@
     <string name="menu_offers">Offers</string>
     <string name="menu_my_account">My Account</string>
 
+
+    <string name="hi_userName">Hi, %s</string>
+    <string name="hi_user">Hi, User</string>
+
     <!--    my account fragment     -->
     <string name="sign_in">Sign in</string>
     <string name="order_history">Order History</string>
@@ -45,4 +49,25 @@
     <string name="later">SKIP</string>
     <string name="zero">0</string>
     <string name="background_image">background image</string>
+
+    <!--    fragment auth   -->
+    <string name="too_many_request_attempt">Too many request attempt.</string>
+    <string name="invalid_number">Invalid Phone Number.</string>
+    <string name="login_successful">Login Successful</string>
+    <string name="empty_number">Please Enter Your Number.</string>
+    <string name="empty_otp">Please Enter OTP Code.</string>
+    <string name="continue_text">Continue</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="country_code">+91</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="zero_with_colon">00:</string>
+    <string name="sixty">60</string>
+    <string name="login">Login</string>
+    <string name="phone_number">Phone number</string>
+    <string name="one_time_password">One Time Password (OTP)</string>
+    <string name="invalid_code">Invalid code.</string>
+    <string name="edit_picture">Edit picture</string>
+    <string name="enter_your_name">Enter your name here</string>
+    <string name="save_details">Save Details</string>
+
 </resources>

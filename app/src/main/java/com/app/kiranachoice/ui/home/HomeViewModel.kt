@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.app.kiranachoice.models.Category1Model
-import com.app.kiranachoice.utils.Constants
+import com.app.kiranachoice.utils.CATEGORY_REFERENCE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -25,7 +25,7 @@ class HomeViewModel : ViewModel() {
     val categoryList: LiveData<List<Category1Model>> get() = _categoryList
 
     private fun getCategories() {
-        dbRef?.getReference(Constants.CATEGORY_REFERENCE)
+        dbRef?.getReference(CATEGORY_REFERENCE)
             ?.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     fakeCategoryList.clear()

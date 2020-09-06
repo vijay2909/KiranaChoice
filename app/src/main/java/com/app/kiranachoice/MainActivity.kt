@@ -6,6 +6,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.app.kiranachoice.databinding.ActivityMainBinding
@@ -15,6 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,10 +25,18 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
+
         val navHeader: NavHeaderMainBinding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.nav_header_main, binding.navView, false
+            layoutInflater, R.layout.nav_header_main, binding.navView, false
         )
+        navHeader.lifecycleOwner = this
+
+        viewModel.user.observe(this, {
+            navHeader.user = it
+        })
+
         binding.navView.addHeaderView(navHeader.root)
 
         val navController = findNavController(R.id.nav_host_fragment)
@@ -70,5 +80,10 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.getUserDetails()
     }
 }

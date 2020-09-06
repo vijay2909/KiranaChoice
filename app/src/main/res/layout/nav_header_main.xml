@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="android.view.View"/>
+        <variable
+            name="user"
+            type="com.app.kiranachoice.models.User" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,21 +29,23 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.800" />
+            app:layout_constraintVertical_bias="0.800"
+            app:profileImage="@{user.imageUrl}" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:text="@{user.name == null ? @string/hi_user : @string/hi_userName(user.name)}"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/textView"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/profile_image"
             app:layout_constraintTop_toTopOf="@+id/profile_image"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="Hi, user" />
 
@@ -53,30 +58,29 @@
             android:textColor="@android:color/darker_gray"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:visibility="@{user == null ? View.GONE : View.VISIBLE}"
+            android:text="@{user.phoneNumber}"
             app:layout_constraintBottom_toBottomOf="@+id/profile_image"
             app:layout_constraintStart_toEndOf="@+id/profile_image"
             app:layout_constraintTop_toBottomOf="@+id/textView2"
             tools:text="9874563210" />
 
-        <TextView
+        <Button
             android:id="@+id/buttonLogin"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:layout_below="@id/textView2"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
-            android:clickable="true"
-            android:focusable="true"
             android:paddingStart="16dp"
             android:paddingTop="8dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
-            android:text="Sign in"
+            android:background="@drawable/curved_button_background"
+            android:text="@string/sign_in"
             android:textAllCaps="false"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:visibility="@{user == null ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@+id/profile_image"
             app:layout_constraintStart_toEndOf="@+id/profile_image"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />

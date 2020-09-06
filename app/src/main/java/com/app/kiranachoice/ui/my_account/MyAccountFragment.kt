@@ -1,6 +1,5 @@
 package com.app.kiranachoice.ui.my_account
 
-import android.R.attr
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.net.Uri
@@ -10,11 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.app.kiranachoice.DevicecureMapActivity
+import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentMyAccountBinding
 import com.theartofdev.edmodo.cropper.CropImage
@@ -25,14 +25,16 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
 
     private var _bindingAccount: FragmentMyAccountBinding? = null
     private val binding get() = _bindingAccount!!
-    private val viewModel by viewModels<MyAccountViewModel>()
+    private lateinit var viewModel : MainViewModel
     private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         _bindingAccount = FragmentMyAccountBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
@@ -50,8 +52,17 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
         binding.buttonLogin.setOnClickListener{
             it.findNavController().navigate(R.id.action_myAccountFragment_to_authFragment)
         }
+
+        viewModel.user.observe(viewLifecycleOwner, {
+            binding.user = it
+            binding.invalidateAll()
+        })
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.getUserDetails()
+    }
 
     override fun onClick(view: View?) {
         when (view?.id) {
@@ -60,7 +71,7 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
             binding.userImage.id -> {
                 CropImage.activity()
                     .setGuidelines(CropImageView.Guidelines.ON)
-                    .start(requireContext(), this);
+                    .start(requireContext(), this)
             }
             binding.textOurStore.id -> startActivity(
                 Intent(

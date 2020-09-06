@@ -7,6 +7,14 @@ import androidx.databinding.BindingAdapter
 import com.app.kiranachoice.R
 import com.bumptech.glide.Glide
 
+
+@BindingAdapter("profileImage")
+fun setProfileImage(view: ImageView, url: String?) {
+    if (url != null) {
+        Glide.with(view.context).load(url).into(view)
+    }
+}
+
 @BindingAdapter("imageUrl")
 fun setImageUrl(view: ImageView, url: String?) {
     if (url != null) {

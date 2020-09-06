@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.models.SubCategoryModel
-import com.app.kiranachoice.utils.Constants
+import com.app.kiranachoice.utils.CATEGORY_REFERENCE
+import com.app.kiranachoice.utils.PRODUCT_REFERENCE
+import com.app.kiranachoice.utils.SUB_CATEGORY_REFERENCE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -24,11 +26,11 @@ class ProductsViewModel : ViewModel() {
 
     fun getProductList(subCategoryModel: SubCategoryModel?) {
         subCategoryModel?.let {
-            dbRef?.getReference(Constants.CATEGORY_REFERENCE)
+            dbRef?.getReference(CATEGORY_REFERENCE)
                 ?.child(subCategoryModel.category_key.toString())
-                ?.child(Constants.SUB_CATEGORY_REFERENCE)
+                ?.child(SUB_CATEGORY_REFERENCE)
                 ?.child(subCategoryModel.sub_category_Key.toString())
-                ?.child(Constants.PRODUCT_REFERENCE)
+                ?.child(PRODUCT_REFERENCE)
                 ?.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         fakeProductsList.clear()
