@@ -18,7 +18,6 @@ import com.app.kiranachoice.models.Category1Model
 import com.app.kiranachoice.recyclerView_adapters.*
 import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.sliding_image_layout.*
 
 class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
 

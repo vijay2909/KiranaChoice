@@ -115,6 +115,5 @@
     <fragment
         android:id="@+id/authFragment"
         android:name="com.app.kiranachoice.ui.authentication.AuthFragment"
-        android:label="fragment_auth"
         tools:layout="@layout/fragment_auth" />
 </navigation>
