@@ -12,7 +12,11 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_nav_home_to_categoryFragment"
-            app:destination="@id/categoryFragment" />
+            app:destination="@id/categoryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -45,14 +49,18 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_myAccountFragment_to_authFragment"
-            app:destination="@id/authFragment" />
+            android:id="@+id/action_myAccountFragment_to_authActivity"
+            app:destination="@id/authActivity"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.app.kiranachoice.ui.edit_profile.EditProfileFragment"
         android:label="Edit Profile"
-        tools:layout="@layout/fragment_edit_profile" >
+        tools:layout="@layout/fragment_edit_profile">
         <action
             android:id="@+id/action_editProfileFragment_to_myAccountFragment"
             app:destination="@id/myAccountFragment"
@@ -67,7 +75,7 @@
         android:id="@+id/myOrdersFragment"
         android:name="com.app.kiranachoice.ui.my_orders.MyOrdersFragment"
         android:label="My Orders"
-        tools:layout="@layout/fragment_my_orders" >
+        tools:layout="@layout/fragment_my_orders">
         <action
             android:id="@+id/action_myOrdersFragment_to_myAccountFragment"
             app:destination="@id/myAccountFragment"
@@ -101,7 +109,11 @@
             app:argType="string" />
         <action
             android:id="@+id/action_categoryFragment_to_productsFragment"
-            app:destination="@id/productsFragment" />
+            app:destination="@id/productsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/productsFragment"
@@ -112,8 +124,9 @@
             android:name="subCategoryModel"
             app:argType="com.app.kiranachoice.models.SubCategoryModel" />
     </fragment>
-    <fragment
-        android:id="@+id/authFragment"
-        android:name="com.app.kiranachoice.ui.authentication.AuthFragment"
-        tools:layout="@layout/fragment_auth" />
+    <activity
+        android:id="@+id/authActivity"
+        android:name="com.app.kiranachoice.ui.authentication.AuthActivity"
+        android:label="activity_auth"
+        tools:layout="@layout/activity_auth" />
 </navigation>

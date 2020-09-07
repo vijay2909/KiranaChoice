@@ -4,21 +4,15 @@ import android.app.Activity
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentSender
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import com.app.kiranachoice.R
-import com.app.kiranachoice.databinding.FragmentAuthBinding
+import com.app.kiranachoice.databinding.ActivityAuthBinding
 import com.google.android.gms.auth.api.credentials.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
@@ -33,12 +27,10 @@ import kotlin.concurrent.thread
 
 private const val RC_HINT = 1
 
-class AuthFragment : Fragment(), View.OnClickListener {
+class AuthActivity : AppCompatActivity(), View.OnClickListener {
+    private lateinit var binding : ActivityAuthBinding
 
-    private var _bindingAuth: FragmentAuthBinding? = null
-    private val binding get() = _bindingAuth!!
-
-    private val viewModel by viewModels<AuthViewModel>()
+    private lateinit var viewModel :AuthViewModel
 
     private lateinit var mAuth: FirebaseAuth
     private lateinit var dbFireStore: FirebaseFirestore
@@ -49,25 +41,17 @@ class AuthFragment : Fragment(), View.OnClickListener {
     private var otpCode: String? = null
     private lateinit var phoneNumberWithCountryCode: String
     private lateinit var mCredentialsClient: CredentialsClient
-    private lateinit var navController: NavController
     private var timer : CountDownTimer? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityAuthBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _bindingAuth = FragmentAuthBinding.inflate(inflater, container, false)
-        mCredentialsClient = Credentials.getClient(requireContext())
+        val parentLayout = findViewById<View>(android.R.id.content)
+        mCredentialsClient = Credentials.getClient(this)
         mAuth = FirebaseAuth.getInstance()
         dbFireStore = FirebaseFirestore.getInstance()
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
 
         getHintPhoneNumber()
 
@@ -88,7 +72,7 @@ class AuthFragment : Fragment(), View.OnClickListener {
                 } else if (e is FirebaseTooManyRequestsException) {
                     Log.i("auth", "onVerificationFailed() FirebaseTooManyRequestsException")
                     Snackbar.make(
-                        view,
+                        parentLayout,
                         getString(R.string.too_many_request_attempt),
                         Snackbar.LENGTH_SHORT
                     ).show()
@@ -106,22 +90,21 @@ class AuthFragment : Fragment(), View.OnClickListener {
             }
         }
 
-        viewModel.userAlreadyExist.observe(viewLifecycleOwner, {
+        viewModel.userAlreadyExist.observe(this, {
             if (it) {
                 Toast.makeText(
-                    requireContext(),
+                    this,
                     getString(R.string.login_successful),
                     Toast.LENGTH_SHORT
                 ).show()
                 binding.progressBar.root.visibility = View.GONE
-                navController.popBackStack()
+                finish()
             }
         })
 
         binding.btnLogin.setOnClickListener(this)
         binding.textResend.setOnClickListener(this)
     }
-
 
     private fun startPhoneNumberVerification(phoneNumber: String) {
         Log.i("auth", "startPhoneNumberVerification()")
@@ -141,7 +124,7 @@ class AuthFragment : Fragment(), View.OnClickListener {
             phoneNumber, // Phone number to verify
             60L, // Timeout duration
             TimeUnit.SECONDS, // Unit of timeout
-            requireActivity(), // Activity (for callback binding)
+            this, // Activity (for callback binding)
             callbacks
         )
     }
@@ -175,7 +158,7 @@ class AuthFragment : Fragment(), View.OnClickListener {
             phoneNumber,
             60L,
             TimeUnit.SECONDS,
-            requireActivity(),
+            this,
             callbacks,
             token
         )
@@ -185,7 +168,7 @@ class AuthFragment : Fragment(), View.OnClickListener {
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         Log.i("auth", "signInWithPhoneAuthCredential()")
         mAuth.signInWithCredential(credential)
-            .addOnCompleteListener(requireActivity()) { task ->
+            .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     binding.progressBar.root.visibility = View.VISIBLE
                     viewModel.onAuthSuccess()
@@ -234,22 +217,6 @@ class AuthFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        (activity as AppCompatActivity).supportActionBar?.hide()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        (activity as AppCompatActivity).supportActionBar?.show()
-        timer?.cancel()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _bindingAuth = null
-    }
-
     private fun validatePhoneNumber(): Boolean {
         phoneNumber = binding.etPhoneNumber.text.toString().trim()
         if (TextUtils.isEmpty(phoneNumber)) {
@@ -259,6 +226,11 @@ class AuthFragment : Fragment(), View.OnClickListener {
         // save phone number on viewModel
         viewModel.phoneNumber = phoneNumber
         return true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        timer?.cancel()
     }
 
     private fun validateOTP(): Boolean {

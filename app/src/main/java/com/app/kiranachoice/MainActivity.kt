@@ -1,16 +1,19 @@
 package com.app.kiranachoice
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.app.kiranachoice.databinding.ActivityMainBinding
 import com.app.kiranachoice.databinding.NavHeaderMainBinding
+import com.app.kiranachoice.ui.authentication.AuthActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,6 +43,11 @@ class MainActivity : AppCompatActivity() {
         binding.navView.addHeaderView(navHeader.root)
 
         val navController = findNavController(R.id.nav_host_fragment)
+
+        navHeader.buttonLogin.setOnClickListener {
+            startActivity(Intent(this, AuthActivity::class.java))
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        }
 
         val toggle = ActionBarDrawerToggle(
             this, binding.drawerLayout, binding.appBarMain.toolbar,

@@ -78,7 +78,7 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
                     DevicecureMapActivity::class.java
                 )
             )
-            binding.buttonLogin.id -> navController.navigate(R.id.action_myAccountFragment_to_authFragment)
+            binding.buttonLogin.id -> navController.navigate(R.id.action_myAccountFragment_to_authActivity)
             binding.textSignOut.id -> mAuth.signOut()
         }
     }

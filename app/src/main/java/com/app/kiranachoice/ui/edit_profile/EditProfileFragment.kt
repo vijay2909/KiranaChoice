@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.app.kiranachoice.MainViewModel
+import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentEditProfileBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -55,7 +56,7 @@ class EditProfileFragment : Fragment(), View.OnClickListener {
 
         viewModel.onDetailsUpdate.observe(viewLifecycleOwner, {
             if (it) {
-                Toast.makeText(requireContext(), "Update Details Successfully", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), getString(R.string.update_msg), Toast.LENGTH_SHORT)
                     .show()
                 viewModel.onDetailsUpdated()
                 view.findNavController().popBackStack()

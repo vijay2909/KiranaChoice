@@ -70,5 +70,6 @@
     <string name="enter_your_name">Enter your name here</string>
     <string name="save_details">Save Details</string>
     <string name="sign_out">Sign Out</string>
+    <string name="update_msg">Update Details Successfully</string>
 
 </resources>
