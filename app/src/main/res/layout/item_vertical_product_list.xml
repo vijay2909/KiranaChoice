@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@{@string/rupee_with_text(productModel.productPrice)}"
+                android:text="@{@string/rupee_with_text(productModel.productPackagingSize.get(0).price)}"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -71,7 +71,7 @@
                 android:textColor="@android:color/holo_red_dark"
                 app:layout_constraintStart_toEndOf="@+id/productPrice"
                 app:layout_constraintTop_toTopOf="@+id/productPrice"
-                app:productMRP="@{productModel.productMRP}"
+                app:productMRP="@{productModel.productPackagingSize.get(0).mrp}"
                 tools:text="₹90.00" />
 
             <FrameLayout

@@ -14,7 +14,7 @@
     <string name="menu_my_account">My Account</string>
 
 
-    <string name="hi_userName">Hi, %s</string>
+    <string name="hi_userName">Hi,</string>
     <string name="hi_user">Hi, User</string>
 
     <!--    my account fragment     -->
@@ -71,5 +71,6 @@
     <string name="save_details">Save Details</string>
     <string name="sign_out">Sign Out</string>
     <string name="update_msg">Update Details Successfully</string>
+    <string name="sign_out_msg">Successfully Sign out</string>
 
 </resources>

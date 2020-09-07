@@ -19,8 +19,11 @@ fun setProfileImage(view: ImageView, url: String?) {
 
 @BindingAdapter("userName")
 fun setUserName(view: TextView , name: String?){
-    name?.let {
-        view.text = name.substringBefore(" ")
+    if (name != null) {
+        view.text = view.context.getString(R.string.hi_userName)
+            .plus(" ${name.substringBefore(" ")}")
+    }else {
+        view.text = view.context.getString(R.string.hi_user)
     }
 }
 
@@ -35,7 +38,7 @@ fun setImageUrl(view: ImageView, url: String?) {
 }
 
 @BindingAdapter("productMRP")
-fun setProductMRP(view: TextView, text: Long) {
+fun setProductMRP(view: TextView, text: String?) {
     view.paintFlags = view.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
     view.text = view.context.getString(R.string.rupee).plus(text)
         .plus(view.context.getString(R.string.dot_zero))

@@ -13,7 +13,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.app.kiranachoice.databinding.ActivityMainBinding
 import com.app.kiranachoice.databinding.NavHeaderMainBinding
-import com.app.kiranachoice.ui.authentication.AuthActivity
+import com.app.kiranachoice.views.authentication.AuthActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.myOrdersFragment,
                 R.id.feedbackFragment,
                 R.id.contactUsFragment,
-                R.id.nav_home,
+                R.id.homeFragment,
                 R.id.chatFragment,
                 R.id.myOffersFragment,
                 R.id.myAccountFragment

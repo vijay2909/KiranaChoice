@@ -41,7 +41,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="gone"
-        tools:context=".ui.category.CategoryFragment">
+        tools:context=".views.category.CategoryFragment">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_sub_category"

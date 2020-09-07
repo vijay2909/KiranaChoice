@@ -20,9 +20,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KiranaChoice">
         <activity
-            android:name=".ui.authentication.AuthActivity"
+            android:name=".views.authentication.AuthActivity"
             android:label="@string/login"
-            android:theme="@style/Theme.KiranaChoice.NoActionBar" />
+            android:theme="@style/Theme.KiranaChoice.FullScreen" />
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

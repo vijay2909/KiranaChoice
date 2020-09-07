@@ -51,11 +51,11 @@
                     android:layout_below="@id/userImage"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="16dp"
-                    app:userName="@{user.name}"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:visibility="@{user == null ? View.GONE : View.VISIBLE}" />
+                    android:visibility="@{user == null ? View.GONE : View.VISIBLE}"
+                    app:userName="@{user.name}" />
 
                 <TextView
                     android:id="@+id/userPhoneNumber"
@@ -64,6 +64,7 @@
                     android:layout_below="@id/userName"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
+                    android:text="@{user.phoneNumber}"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:visibility="@{user == null ? View.GONE : View.VISIBLE}"
@@ -77,15 +78,13 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/curved_button_background"
-                    android:elevation="2dp"
                     android:paddingStart="32dp"
                     android:paddingEnd="32dp"
                     android:text="@string/sign_in"
+                    android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textSize="15sp"
-                    android:textAllCaps="false"
                     android:textStyle="bold"
-                    android:translationZ="4dp"
                     android:visibility="@{user == null ? View.VISIBLE : View.GONE}" />
 
             </RelativeLayout>
