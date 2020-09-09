@@ -1,6 +1,7 @@
 package com.app.kiranachoice.views.products
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
 import com.app.kiranachoice.databinding.FragmentProductsBinding
+import com.app.kiranachoice.db.Product
 
-class ProductsFragment : Fragment() {
+class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
 
     private var _bindingProduct: FragmentProductsBinding? = null
     private val binding get() = _bindingProduct!!
@@ -27,11 +29,12 @@ class ProductsFragment : Fragment() {
     private val args: ProductsFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val verticalProductsAdapter = VerticalProductsAdapter(this)
+        binding.recyclerViewProductList.adapter = verticalProductsAdapter
+
         viewModel.productsList.observe(viewLifecycleOwner, {
-            binding.recyclerViewProductList.apply {
-                setHasFixedSize(true)
-                adapter = VerticalProductsAdapter(it)
-            }
+            if (!it.isNullOrEmpty()) verticalProductsAdapter.data = it
         })
     }
 
@@ -43,6 +46,14 @@ class ProductsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _bindingProduct = null
+    }
+
+    override fun addItem(product: Product) {
+        viewModel.insert(product)
+    }
+
+    companion object {
+        private const val TAG = "ProductsFragment"
     }
 
 }

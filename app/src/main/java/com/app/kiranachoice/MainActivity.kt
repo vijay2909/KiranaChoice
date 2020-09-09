@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -59,6 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
+                R.id.cartFragment,
                 R.id.editProfileFragment,
                 R.id.myOrdersFragment,
                 R.id.feedbackFragment,
@@ -74,15 +76,25 @@ class MainActivity : AppCompatActivity() {
         binding.appBarMain.bottomNavView.setupWithNavController(navController)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+
+        val menuItem = menu.findItem(R.id.cartFragment)
+
+        val actionView = menuItem.actionView
+
+        val cartBadgeTextView = actionView.findViewById<TextView>(R.id.cart_badge_text_view)
+
+        cartBadgeTextView.text = "4"
+
+        actionView.setOnClickListener { onOptionsItemSelected(menuItem) }
+
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return item.onNavDestinationSelected(findNavController(R.id.nav_host_fragment))
                 || super.onOptionsItemSelected(item)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
     }
 
     override fun onSupportNavigateUp(): Boolean {

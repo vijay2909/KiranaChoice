@@ -12,4 +12,7 @@
     <color name="surface">#E6E6E6</color>
 
     <color name="shimmer_background">#dddddd</color>
+
+    <color name="white">#fff</color>
+    <color name="black">#000</color>
 </resources>

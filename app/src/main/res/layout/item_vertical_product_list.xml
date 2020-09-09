@@ -6,8 +6,13 @@
     <data>
 
         <variable
+            name="productListener"
+            type="com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter.ProductListener" />
+
+
+        <variable
             name="productModel"
-            type="com.app.kiranachoice.models.ProductModel" />
+            type="com.app.kiranachoice.db.Product" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -123,6 +128,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:background="@drawable/curved_button_background"
+                    android:onClick="@{() -> productListener.addItem(productModel)}"
                     android:text="@string/add_to_cart"
                     android:textAllCaps="false"
                     android:textSize="12sp"

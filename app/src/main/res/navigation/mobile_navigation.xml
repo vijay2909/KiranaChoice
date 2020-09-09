@@ -141,4 +141,9 @@
         android:name="com.app.kiranachoice.views.searchPage.SearchFragment"
         android:label="Search Products"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.app.kiranachoice.views.cart.CartFragment"
+        android:label="My Cart"
+        tools:layout="@layout/fragment_cart" />
 </navigation>
