@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="productModel"
+            type="com.app.kiranachoice.models.ProductModel" />
+    </data>
+
+    <TextView
+        style="@style/TextAppearance.MaterialComponents.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:text="@{productModel.productTitle}"
+        android:paddingEnd="16dp"
+        android:textSize="16sp"
+        tools:text="Sugar"
+        app:drawableEndCompat="@drawable/ic_redo" />
+</layout>

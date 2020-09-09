@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".views.home.HomeFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,15 +13,48 @@
 
         <include
             android:id="@+id/shimmerLayout"
-            layout="@layout/shimmer_effect_home_page_layout" />
+            layout="@layout/shimmer_effect_home_page_layout"/>
 
         <LinearLayout
             android:id="@+id/actualUiLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:context=".views.home.HomeFragment">
+            android:visibility="invisible"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="10dp"
+                android:clickable="true"
+                app:cardElevation="4dp"
+                android:id="@+id/searchCard"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="@string/search_hint" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/search_button"
+                        android:src="@drawable/ic_search" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -31,7 +65,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:background="@color/surface"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -42,13 +75,13 @@
                     android:id="@+id/tabLayout"
                     android:layout_width="0dp"
                     android:layout_height="10dp"
+                    app:layout_constraintEnd_toEndOf="@+id/home_banner1"
+                    app:layout_constraintStart_toStartOf="@+id/home_banner1"
+                    app:layout_constraintTop_toBottomOf="@+id/home_banner1"
                     app:tabBackground="@drawable/tab_selector"
                     app:tabGravity="center"
                     app:tabIndicatorAnimationDuration="1000"
-                    app:tabIndicatorHeight="0dp"
-                    app:layout_constraintTop_toBottomOf="@+id/home_banner1"
-                    app:layout_constraintEnd_toEndOf="@+id/home_banner1"
-                    app:layout_constraintStart_toStartOf="@+id/home_banner1" />
+                    app:tabIndicatorHeight="0dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -58,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="32dp"
-                android:text="Shop by Category"
+                android:text="@string/shop_by_category"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -81,7 +114,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="32dp"
-                android:text="Best Offers"
+                android:text="@string/best_offers"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -110,7 +143,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="32dp"
-                android:text="Best Selling Products"
+                android:text="@string/best_selling_products"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -182,7 +215,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="32dp"
-                android:text="Best products for you"
+                android:text="@string/best_products_for_you"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -216,7 +249,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="32dp"
-                android:text="Recommended Products"
+                android:text="@string/recommended_products"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 

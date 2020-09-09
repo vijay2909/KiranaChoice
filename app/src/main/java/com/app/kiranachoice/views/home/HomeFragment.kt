@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentHomeBinding
@@ -105,6 +106,10 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
             }
         }
         viewPager.registerOnPageChangeCallback(callback)
+
+        binding.searchCard.setOnClickListener {
+            view.findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
+        }
     }
 
     private val slideRunnable = Runnable {

@@ -5,10 +5,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.models.User
+import com.app.kiranachoice.utils.PRODUCT_REFERENCE
 import com.app.kiranachoice.utils.USER_IMAGE_REFERENCE
 import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -19,6 +25,7 @@ class MainViewModel : ViewModel() {
     private var mAuth: FirebaseAuth? = null
     private var dbFire: FirebaseFirestore? = null
     private var storage: FirebaseStorage? = null
+    private var dbRef: FirebaseDatabase? = null
 
     private var _user = MutableLiveData<User>()
     val user: LiveData<User> get() = _user
@@ -27,12 +34,13 @@ class MainViewModel : ViewModel() {
 
     var fileExtension: String? = null
     private var _imageUrl = MutableLiveData<String>()
-    val imageUrl : LiveData<String> get() = _imageUrl
+    val imageUrl: LiveData<String> get() = _imageUrl
 
     init {
         mAuth = FirebaseAuth.getInstance()
         dbFire = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
+        dbRef = FirebaseDatabase.getInstance()
     }
 
     fun getUserDetails() {
@@ -102,4 +110,29 @@ class MainViewModel : ViewModel() {
     fun onDetailsUpdated() {
         _onDetailsUpdate.value = false
     }
+
+
+    private var fakeList = ArrayList<ProductModel>()
+    private var _resultList = MutableLiveData<List<ProductModel>>()
+    val resultList: LiveData<List<ProductModel>> get() = _resultList
+
+    fun getResultFromProducts(userInput: String) {
+        dbRef?.getReference(PRODUCT_REFERENCE)
+            ?.orderByChild("searchableText")?.startAt(userInput)?.endAt(userInput + "\uf8ff")
+            ?.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    fakeList.clear()
+                    snapshot.children.forEach {
+                        it.getValue(ProductModel::class.java)
+                            ?.let { productModel -> fakeList.add(productModel) }
+                    }
+                    _resultList.postValue(fakeList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+
+            })
+    }
+
+
 }
