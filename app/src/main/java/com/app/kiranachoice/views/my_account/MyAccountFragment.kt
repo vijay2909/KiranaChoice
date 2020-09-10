@@ -17,6 +17,7 @@ import com.app.kiranachoice.DevicecureMapActivity
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentMyAccountBinding
+import com.app.kiranachoice.views.MainViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -34,7 +35,8 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
+        viewModel = ViewModelProvider(requireActivity(), mainViewModelFactory).get(MainViewModel::class.java)
         _bindingAccount = FragmentMyAccountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         mAuth = FirebaseAuth.getInstance()

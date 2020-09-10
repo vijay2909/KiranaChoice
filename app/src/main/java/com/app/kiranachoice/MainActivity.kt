@@ -14,6 +14,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.app.kiranachoice.databinding.ActivityMainBinding
 import com.app.kiranachoice.databinding.NavHeaderMainBinding
+import com.app.kiranachoice.views.MainViewModelFactory
 import com.app.kiranachoice.views.authentication.AuthActivity
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +23,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
 
+    private var totalCartItem = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -29,7 +32,8 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        val mainViewModelFactory = MainViewModelFactory(this.application)
+        viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
 
 
         val navHeader: NavHeaderMainBinding = DataBindingUtil.inflate(
@@ -74,6 +78,13 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
         binding.appBarMain.bottomNavView.setupWithNavController(navController)
+
+        viewModel.allCartItems.observe(this, {
+            it?.let {
+                totalCartItem = it.size
+                invalidateOptionsMenu()
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -85,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
         val cartBadgeTextView = actionView.findViewById<TextView>(R.id.cart_badge_text_view)
 
-        cartBadgeTextView.text = "4"
+        cartBadgeTextView.text = totalCartItem.toString()
 
         actionView.setOnClickListener { onOptionsItemSelected(menuItem) }
 

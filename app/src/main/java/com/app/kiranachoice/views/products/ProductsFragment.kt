@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.databinding.FragmentProductsBinding
 import com.app.kiranachoice.models.PackagingSizeModel
@@ -19,12 +19,15 @@ class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
 
     private var _bindingProduct: FragmentProductsBinding? = null
     private val binding get() = _bindingProduct!!
-    private val viewModel by viewModels<ProductsViewModel>()
+    private lateinit var viewModel: ProductsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val productViewModelFactory = ProductViewModelFactory(requireActivity().application)
+        viewModel =
+            ViewModelProvider(this, productViewModelFactory).get(ProductsViewModel::class.java)
         _bindingProduct = FragmentProductsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -44,6 +47,12 @@ class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
             if (it) {
                 startActivity(Intent(requireContext(), AuthActivity::class.java))
                 viewModel.authActivityNavigated()
+            }
+        })
+
+        viewModel.alreadyAddedMsg.observe(viewLifecycleOwner, {
+            it?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
         })
 

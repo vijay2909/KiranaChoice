@@ -1,12 +1,17 @@
 package com.app.kiranachoice
 
+import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.kiranachoice.db.CartDao
+import com.app.kiranachoice.db.CartDatabase
+import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.models.User
+import com.app.kiranachoice.repositories.CartRepo
 import com.app.kiranachoice.utils.PRODUCT_REFERENCE
 import com.app.kiranachoice.utils.USER_IMAGE_REFERENCE
 import com.app.kiranachoice.utils.USER_REFERENCE
@@ -21,11 +26,17 @@ import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : ViewModel() {
     private var mAuth: FirebaseAuth? = null
     private var dbFire: FirebaseFirestore? = null
     private var storage: FirebaseStorage? = null
     private var dbRef: FirebaseDatabase? = null
+
+    private val database: CartDatabase
+    private val cartDao: CartDao
+    private val cartRepo: CartRepo
+
+    val allCartItems : LiveData<List<CartItem>>
 
     private var _user = MutableLiveData<User>()
     val user: LiveData<User> get() = _user
@@ -41,6 +52,12 @@ class MainViewModel : ViewModel() {
         dbFire = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
         dbRef = FirebaseDatabase.getInstance()
+
+        database = CartDatabase.getInstance(application)
+        cartDao = database.cartDao
+        cartRepo = CartRepo(cartDao)
+
+        allCartItems = cartRepo.allCartItems
     }
 
     fun getUserDetails() {

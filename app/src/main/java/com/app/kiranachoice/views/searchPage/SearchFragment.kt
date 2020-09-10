@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.databinding.FragmentSearchBinding
 import com.app.kiranachoice.recyclerView_adapters.SearchResultsAdapter
+import com.app.kiranachoice.views.MainViewModelFactory
 import java.util.*
 
 class SearchFragment : Fragment() {
@@ -34,7 +35,8 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
+        viewModel = ViewModelProvider(requireActivity(), mainViewModelFactory).get(MainViewModel::class.java)
         _bindingSearch = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }

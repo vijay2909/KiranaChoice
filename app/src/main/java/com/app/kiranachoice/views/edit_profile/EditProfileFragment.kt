@@ -17,6 +17,7 @@ import androidx.navigation.findNavController
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentEditProfileBinding
+import com.app.kiranachoice.views.MainViewModelFactory
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -43,7 +44,8 @@ class EditProfileFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
+        viewModel = ViewModelProvider(requireActivity(), mainViewModelFactory).get(MainViewModel::class.java)
         _bindingEdit = FragmentEditProfileBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.mainViewModel = viewModel

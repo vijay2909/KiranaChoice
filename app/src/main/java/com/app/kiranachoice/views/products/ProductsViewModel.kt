@@ -1,16 +1,19 @@
 package com.app.kiranachoice.views.products
 
+import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.kiranachoice.models.CartItem
+import com.app.kiranachoice.db.CartDao
+import com.app.kiranachoice.db.CartDatabase
+import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.PackagingSizeModel
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.models.SubCategoryModel
-import com.app.kiranachoice.utils.CART_PRODUCTS
+import com.app.kiranachoice.repositories.CartRepo
 import com.app.kiranachoice.utils.PRODUCT_REFERENCE
-import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -19,18 +22,28 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
-import kotlin.collections.ArrayList
 
-class ProductsViewModel : ViewModel() {
+class ProductsViewModel(application: Application) : ViewModel() {
     private var dbRef: FirebaseDatabase? = null
     private var mAuth: FirebaseAuth? = null
     private var dbFire: FirebaseFirestore? = null
+
+    private val database: CartDatabase
+    private val cartDao: CartDao
+    private val cartRepo: CartRepo
+
+    private val allCartItems: LiveData<List<CartItem>>
 
     init {
         dbRef = FirebaseDatabase.getInstance()
         mAuth = FirebaseAuth.getInstance()
         dbFire = FirebaseFirestore.getInstance()
+
+        database = CartDatabase.getInstance(application)
+        cartDao = database.cartDao
+        cartRepo = CartRepo(cartDao)
+
+        allCartItems = cartRepo.allCartItems
     }
 
     private val fakeProductsList = ArrayList<ProductModel>()
@@ -65,36 +78,39 @@ class ProductsViewModel : ViewModel() {
     private var _productAdded = MutableLiveData<Boolean>()
     val productAdded: LiveData<Boolean> get() = _productAdded
 
-    fun addItemToCart(productModel: ProductModel, packagingSizeModel: PackagingSizeModel, quantity: String) {
+    private var _alreadyAddedMsg = MutableLiveData<String>()
+    val alreadyAddedMsg: LiveData<String> get() = _alreadyAddedMsg
+
+    fun addItemToCart(
+        productModel: ProductModel,
+        packagingSizeModel: PackagingSizeModel,
+        quantity: String
+    ) {
         if (mAuth?.currentUser == null) {
             _navigateToAuthActivity.value = true
         } else {
             viewModelScope.launch(Dispatchers.IO) {
-                val key = UUID.randomUUID().toString()
-                dbFire?.collection(USER_REFERENCE)?.document(mAuth?.currentUser!!.uid)
-                    ?.collection(CART_PRODUCTS)?.get()?.addOnSuccessListener {
-                        var sequence = it.documents.size
-
-                        val cartItem = CartItem(
-                            ++sequence,
-                            productModel.product_key,
-                            key,
-                            productModel.productTitle,
-                            productModel.productImageUrl,
-                            packagingSizeModel.mrp,
-                            packagingSizeModel.price,
-                            packagingSizeModel.packagingSize,
-                            quantity
-                        )
-
-                        dbFire?.collection(USER_REFERENCE)?.document(mAuth?.currentUser!!.uid)
-                            ?.collection(CART_PRODUCTS)
-                            ?.document(key)?.set(cartItem)
-                            ?.addOnSuccessListener {
-                                _productAdded.postValue(true)
-                            }
-
-                    }
+                Log.i(TAG, "productKey: ${productModel.product_key}")
+                Log.i(TAG, "packagingSize: ${packagingSizeModel.packagingSize}")
+                val isAlreadyAdded = cartRepo.isAlreadyAdded(
+                    productModel.product_key.toString(),
+                    packagingSizeModel.packagingSize.toString()
+                )
+                Log.i(TAG, "isAlreadyAdded : $isAlreadyAdded")
+                if (!isAlreadyAdded) {
+                    val cartItem = CartItem(
+                        productModel.product_key.toString(),
+                        productModel.productTitle.toString(),
+                        productModel.productImageUrl.toString(),
+                        packagingSizeModel.mrp.toString(),
+                        packagingSizeModel.price.toString(),
+                        packagingSizeModel.packagingSize.toString(),
+                        quantity
+                    )
+                    cartRepo.insert(cartItem)
+                } else {
+                    _alreadyAddedMsg.postValue("Already added in cart.")
+                }
             }
         }
     }
