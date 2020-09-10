@@ -6,7 +6,7 @@
     <data>
         <variable
             name="model"
-            type="com.app.kiranachoice.db.Product" />
+            type="com.app.kiranachoice.models.ProductModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

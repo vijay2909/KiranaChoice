@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.BR
 import com.app.kiranachoice.databinding.ItemSearchBinding
-import com.app.kiranachoice.db.Product
+import com.app.kiranachoice.models.ProductModel
 
-class SearchResultsAdapter(private val list: List<Product>) :
+class SearchResultsAdapter(private val list: List<ProductModel>) :
     RecyclerView.Adapter<SearchResultsAdapter.SearchResultViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultViewHolder {
@@ -25,7 +25,7 @@ class SearchResultsAdapter(private val list: List<Product>) :
     class SearchResultViewHolder(private val binding: ItemSearchBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(value: Product) {
+        fun bind(value: ProductModel) {
             binding.setVariable(BR.productModel, value)
             binding.executePendingBindings()
         }

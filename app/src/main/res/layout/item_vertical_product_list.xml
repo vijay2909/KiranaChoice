@@ -12,7 +12,7 @@
 
         <variable
             name="productModel"
-            type="com.app.kiranachoice.db.Product" />
+            type="com.app.kiranachoice.models.ProductModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -128,11 +128,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:background="@drawable/curved_button_background"
-                    android:onClick="@{() -> productListener.addItem(productModel)}"
                     android:text="@string/add_to_cart"
                     android:textAllCaps="false"
+                    android:onClick="@{() -> productListener.addItemToCart(productModel)}"
                     android:textSize="12sp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/productWeight"
                     app:layout_constraintTop_toBottomOf="@+id/productPrice" />
@@ -142,7 +142,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <ImageButton
                         android:id="@+id/btnDecrease"
@@ -153,6 +153,7 @@
                         android:src="@drawable/ic_minus_box" />
 
                     <TextView
+                        android:id="@+id/userQuantity"
                         style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

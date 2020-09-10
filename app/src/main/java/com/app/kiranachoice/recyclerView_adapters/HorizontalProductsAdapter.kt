@@ -4,10 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemHorizontolProductItemBinding
-import com.app.kiranachoice.db.Product
+import com.app.kiranachoice.models.ProductModel
 
 
-class HorizontalProductsAdapter(private val list: List<Product>?) :
+class HorizontalProductsAdapter(private val list: List<ProductModel>?) :
     RecyclerView.Adapter<HorizontalProductsAdapter.HorizontalProductsViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -31,7 +31,7 @@ class HorizontalProductsAdapter(private val list: List<Product>?) :
 
     class HorizontalProductsViewHolder(private val binding: ItemHorizontolProductItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(model: Product) {
+        fun bind(model: ProductModel) {
 
         }
     }

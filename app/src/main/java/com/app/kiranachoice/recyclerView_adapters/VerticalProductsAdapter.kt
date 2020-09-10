@@ -5,12 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemVerticalProductListBinding
-import com.app.kiranachoice.db.Product
+import com.app.kiranachoice.models.ProductModel
+import com.google.android.material.snackbar.Snackbar
 
-class VerticalProductsAdapter(private val listener : ProductListener) :
+class VerticalProductsAdapter(private val listener: ProductListener) :
     RecyclerView.Adapter<VerticalProductsAdapter.VerticalProductViewHolder>() {
 
-    var data = listOf<Product>()
+    var data = listOf<ProductModel>()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -25,19 +26,6 @@ class VerticalProductsAdapter(private val listener : ProductListener) :
     override fun onBindViewHolder(holder: VerticalProductViewHolder, position: Int) {
         holder.bind(data[position], listener)
 
-        holder.binding.btnDecrease.setOnClickListener {
-            holder.binding.quantityLayout.visibility = View.GONE
-            holder.binding.btnAddToCart.visibility = View.VISIBLE
-        }
-
-//        if (list[position].productPackagingSize.size == 1) {
-//            holder.binding.productWeight.visibility = View.VISIBLE
-//            holder.binding.spinnerPackaging.visibility = View.GONE
-//        } else {
-//            holder.binding.productWeight.visibility = View.GONE
-//            holder.binding.spinnerPackaging.visibility = View.VISIBLE
-//        }
-//
 //        val packagingSize = arrayOfNulls<String>(list[position].productPackagingSize.size)
 //        for (i in list[position].productPackagingSize.indices) {
 //            packagingSize[i] = list[position].productPackagingSize[i].packagingSize.toString()
@@ -58,9 +46,9 @@ class VerticalProductsAdapter(private val listener : ProductListener) :
         RecyclerView.ViewHolder(binding.root) {
 
 
-        fun bind(product: Product, listener: ProductListener) {
+        fun bind(productModel: ProductModel, listener: ProductListener) {
             binding.productListener = listener
-            binding.productModel = product
+            binding.productModel = productModel
             binding.executePendingBindings()
         }
 
@@ -71,9 +59,26 @@ class VerticalProductsAdapter(private val listener : ProductListener) :
                 return VerticalProductViewHolder(binding)
             }
         }
+
+        init {
+            binding.btnIncrease.setOnClickListener {
+                var quantity = Integer.parseInt(binding.userQuantity.text.toString())
+                if (quantity < 5) ++quantity else Snackbar.make(
+                    binding.root,
+                    "You can't get maximum 5 quantity.",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+                binding.userQuantity.text = quantity.toString()
+            }
+            binding.btnDecrease.setOnClickListener {
+                var quantity = Integer.parseInt(binding.userQuantity.text.toString())
+                if (quantity > 0) --quantity
+                binding.userQuantity.text = quantity.toString()
+            }
+        }
     }
 
     interface ProductListener {
-        fun addItem(product: Product)
+        fun addItemToCart(productModel: ProductModel)
     }
 }

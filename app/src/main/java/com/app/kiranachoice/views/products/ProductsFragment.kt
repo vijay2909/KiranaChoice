@@ -1,7 +1,7 @@
 package com.app.kiranachoice.views.products
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
 import com.app.kiranachoice.databinding.FragmentProductsBinding
-import com.app.kiranachoice.db.Product
+import com.app.kiranachoice.models.ProductModel
+import com.app.kiranachoice.views.authentication.AuthActivity
 
 class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
 
@@ -36,6 +37,13 @@ class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
         viewModel.productsList.observe(viewLifecycleOwner, {
             if (!it.isNullOrEmpty()) verticalProductsAdapter.data = it
         })
+
+        viewModel.navigateToAuthActivity.observe(viewLifecycleOwner, {
+            if (it) {
+                startActivity(Intent(requireContext(), AuthActivity::class.java))
+                viewModel.authActivityNavigated()
+            }
+        })
     }
 
     override fun onResume() {
@@ -48,8 +56,8 @@ class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
         _bindingProduct = null
     }
 
-    override fun addItem(product: Product) {
-        viewModel.insert(product)
+    override fun addItemToCart(product: ProductModel) {
+        viewModel.addItemToCart(product)
     }
 
     companion object {

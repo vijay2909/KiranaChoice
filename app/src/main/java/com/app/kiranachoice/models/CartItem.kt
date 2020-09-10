@@ -1,8 +1,6 @@
 package com.app.kiranachoice.models
 
-import com.app.kiranachoice.db.Product
-
-data class CartItem (
-    val product: Product,
-    val quantity : Int
+data class CartItem(
+    var productModel: ProductModel? = null,
+    var quantity: Int? = null
 )

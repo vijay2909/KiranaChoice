@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.kiranachoice.db.Product
+import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.models.User
 import com.app.kiranachoice.utils.PRODUCT_REFERENCE
 import com.app.kiranachoice.utils.USER_IMAGE_REFERENCE
@@ -112,9 +112,9 @@ class MainViewModel : ViewModel() {
     }
 
 
-    private var fakeList = ArrayList<Product>()
-    private var _resultList = MutableLiveData<List<Product>>()
-    val resultList: LiveData<List<Product>> get() = _resultList
+    private var fakeList = ArrayList<ProductModel>()
+    private var _resultList = MutableLiveData<List<ProductModel>>()
+    val resultList: LiveData<List<ProductModel>> get() = _resultList
 
     fun getResultFromProducts(userInput: String) {
         dbRef?.getReference(PRODUCT_REFERENCE)
@@ -123,7 +123,7 @@ class MainViewModel : ViewModel() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     fakeList.clear()
                     snapshot.children.forEach {
-                        it.getValue(Product::class.java)
+                        it.getValue(ProductModel::class.java)
                             ?.let { productModel -> fakeList.add(productModel) }
                     }
                     _resultList.postValue(fakeList)
