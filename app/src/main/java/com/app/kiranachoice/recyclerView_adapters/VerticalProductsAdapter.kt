@@ -1,12 +1,13 @@
 package com.app.kiranachoice.recyclerView_adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemVerticalProductListBinding
+import com.app.kiranachoice.models.PackagingSizeModel
 import com.app.kiranachoice.models.ProductModel
 import com.google.android.material.snackbar.Snackbar
+
 
 class VerticalProductsAdapter(private val listener: ProductListener) :
     RecyclerView.Adapter<VerticalProductsAdapter.VerticalProductViewHolder>() {
@@ -26,25 +27,33 @@ class VerticalProductsAdapter(private val listener: ProductListener) :
     override fun onBindViewHolder(holder: VerticalProductViewHolder, position: Int) {
         holder.bind(data[position], listener)
 
-//        val packagingSize = arrayOfNulls<String>(list[position].productPackagingSize.size)
-//        for (i in list[position].productPackagingSize.indices) {
-//            packagingSize[i] = list[position].productPackagingSize[i].packagingSize.toString()
-//        }
+        holder.binding.btnIncrease.setOnClickListener {
+            var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
+            if (quantity < 5) ++quantity else Snackbar.make(
+                holder.binding.root,
+                "You can't get maximum 5 quantity.",
+                Snackbar.LENGTH_SHORT
+            ).show()
+            holder.binding.quantity = quantity
+            holder.binding.userQuantity.text = quantity.toString()
+        }
 
-//        val arrayAdapter = ArrayAdapter(
-//            holder.itemView.context,
-//            R.layout.spinner_item,
-//            packagingSize
-//        )
-//
-//        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//        holder.binding.spinnerPackaging.adapter = arrayAdapter
-
+        holder.binding.btnDecrease.setOnClickListener {
+            var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
+            --quantity
+            holder.binding.quantity = quantity
+            if (quantity > 0) holder.binding.userQuantity.text = quantity.toString()
+        }
+        
+        holder.binding.btnAddToCart.setOnClickListener {
+            val packagingSize = holder.binding.spinnerPackaging.selectedItemPosition
+            val packagingModel = data[position].productPackagingSize[packagingSize]
+            listener.addItemToCart(data[position], packagingModel, holder.binding.userQuantity.text.toString())
+        }
     }
 
     class VerticalProductViewHolder private constructor(val binding: ItemVerticalProductListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
 
         fun bind(productModel: ProductModel, listener: ProductListener) {
             binding.productListener = listener
@@ -59,26 +68,9 @@ class VerticalProductsAdapter(private val listener: ProductListener) :
                 return VerticalProductViewHolder(binding)
             }
         }
-
-        init {
-            binding.btnIncrease.setOnClickListener {
-                var quantity = Integer.parseInt(binding.userQuantity.text.toString())
-                if (quantity < 5) ++quantity else Snackbar.make(
-                    binding.root,
-                    "You can't get maximum 5 quantity.",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-                binding.userQuantity.text = quantity.toString()
-            }
-            binding.btnDecrease.setOnClickListener {
-                var quantity = Integer.parseInt(binding.userQuantity.text.toString())
-                if (quantity > 0) --quantity
-                binding.userQuantity.text = quantity.toString()
-            }
-        }
     }
 
     interface ProductListener {
-        fun addItemToCart(productModel: ProductModel)
+        fun addItemToCart(productModel: ProductModel, packagingSizeModel: PackagingSizeModel,  quantity: String)
     }
 }

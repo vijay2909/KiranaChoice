@@ -47,7 +47,7 @@
     <string name="dialog_update_available_message">You are on an older app version. You can use the app only if you update it.</string>
     <string name="update_now">UPDATE NOW</string>
     <string name="later">SKIP</string>
-    <string name="zero">0</string>
+    <string name="one">1</string>
     <string name="background_image">background image</string>
 
     <!--    fragment auth   -->

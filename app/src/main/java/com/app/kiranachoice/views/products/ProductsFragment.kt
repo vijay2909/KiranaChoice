@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
 import com.app.kiranachoice.databinding.FragmentProductsBinding
+import com.app.kiranachoice.models.PackagingSizeModel
 import com.app.kiranachoice.models.ProductModel
+import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
 import com.app.kiranachoice.views.authentication.AuthActivity
 
 class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
@@ -44,6 +46,13 @@ class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
                 viewModel.authActivityNavigated()
             }
         })
+
+        viewModel.productAdded.observe(viewLifecycleOwner, {
+            if (it) {
+                Toast.makeText(requireContext(), "1 item added", Toast.LENGTH_SHORT).show()
+                viewModel.productAddedSuccessful()
+            }
+        })
     }
 
     override fun onResume() {
@@ -56,8 +65,12 @@ class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
         _bindingProduct = null
     }
 
-    override fun addItemToCart(product: ProductModel) {
-        viewModel.addItemToCart(product)
+    override fun addItemToCart(
+        productModel: ProductModel,
+        packagingSizeModel: PackagingSizeModel,
+        quantity: String
+    ) {
+        viewModel.addItemToCart(productModel, packagingSizeModel, quantity)
     }
 
     companion object {

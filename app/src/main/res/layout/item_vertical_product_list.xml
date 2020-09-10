@@ -5,10 +5,15 @@
 
     <data>
 
+        <import type="android.view.View"/>
+
+        <variable
+            name="quantity"
+            type="Integer" />
+
         <variable
             name="productListener"
             type="com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter.ProductListener" />
-
 
         <variable
             name="productModel"
@@ -99,6 +104,7 @@
                     android:paddingTop="4dp"
                     android:paddingEnd="8dp"
                     android:paddingBottom="4dp"
+                    android:visibility="@{productModel.productPackagingSize.size() > 1 ? View.GONE : View.VISIBLE}"
                     android:text="@{productModel.productPackagingSize[0].packagingSize}"
                     tools:text="1 kg" />
 
@@ -110,6 +116,8 @@
                     android:paddingStart="8dp"
                     android:paddingTop="4dp"
                     android:paddingEnd="8dp"
+                    android:visibility="@{productModel.productPackagingSize.size() > 1 ? View.VISIBLE : View.GONE}"
+                    app:sizes="@{productModel}"
                     android:paddingBottom="4dp" />
             </FrameLayout>
 
@@ -130,9 +138,7 @@
                     android:background="@drawable/curved_button_background"
                     android:text="@string/add_to_cart"
                     android:textAllCaps="false"
-                    android:onClick="@{() -> productListener.addItemToCart(productModel)}"
                     android:textSize="12sp"
-                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/productWeight"
                     app:layout_constraintTop_toBottomOf="@+id/productPrice" />
@@ -141,8 +147,7 @@
                     android:id="@+id/quantityLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:visibility="visible">
+                    android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/btnDecrease"
@@ -160,7 +165,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="@string/zero" />
+                        android:text="@string/one" />
 
                     <ImageButton
                         android:id="@+id/btnIncrease"

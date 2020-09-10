@@ -1,10 +1,13 @@
 package com.app.kiranachoice.utils
 
 import android.graphics.Paint
+import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.app.kiranachoice.R
+import com.app.kiranachoice.models.ProductModel
 import com.bumptech.glide.Glide
 
 
@@ -42,4 +45,22 @@ fun setProductMRP(view: TextView, text: String?) {
     view.paintFlags = view.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
     view.text = view.context.getString(R.string.rupee).plus(text)
         .plus(view.context.getString(R.string.dot_zero))
+}
+
+@BindingAdapter("sizes")
+fun setSizes(spinner : Spinner , productModel: ProductModel){
+    val packagingSize = arrayOfNulls<String>(productModel.productPackagingSize.size)
+
+    for (i in productModel.productPackagingSize.indices) {
+        packagingSize[i] = productModel.productPackagingSize[i].packagingSize.toString()
+    }
+
+    val arrayAdapter = ArrayAdapter(
+        spinner.context,
+        R.layout.spinner_item,
+        packagingSize
+    )
+
+    arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    spinner.adapter = arrayAdapter
 }
