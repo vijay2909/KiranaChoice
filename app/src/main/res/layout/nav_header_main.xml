@@ -25,14 +25,14 @@
             android:id="@+id/profile_image"
             android:layout_width="130dp"
             android:layout_height="130dp"
-            android:src="@drawable/default_user_image"
             app:civ_border_color="@color/colorPrimary"
             app:civ_border_width="2dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.800"
-            app:profileImage="@{user.imageUrl}" />
+            app:profileImage="@{user.imageUrl}"
+            tools:src="@drawable/default_user_image" />
 
         <TextView
             android:id="@+id/textView2"
@@ -40,7 +40,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            app:userName="@{user.name}"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -49,6 +48,7 @@
             app:layout_constraintStart_toEndOf="@+id/profile_image"
             app:layout_constraintTop_toTopOf="@+id/profile_image"
             app:layout_constraintVertical_chainStyle="packed"
+            app:userName="@{user.name}"
             tools:text="Hi, user" />
 
         <TextView
@@ -59,9 +59,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
             android:text="@{user.phoneNumber}"
+            android:textColor="@color/textPrimary"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/textPrimary"
             android:visibility="@{user == null ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@+id/profile_image"
             app:layout_constraintStart_toEndOf="@+id/profile_image"

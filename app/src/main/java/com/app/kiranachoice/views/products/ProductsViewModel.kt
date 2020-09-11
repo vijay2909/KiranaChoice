@@ -90,13 +90,10 @@ class ProductsViewModel(application: Application) : ViewModel() {
             _navigateToAuthActivity.value = true
         } else {
             viewModelScope.launch(Dispatchers.IO) {
-                Log.i(TAG, "productKey: ${productModel.product_key}")
-                Log.i(TAG, "packagingSize: ${packagingSizeModel.packagingSize}")
                 val isAlreadyAdded = cartRepo.isAlreadyAdded(
                     productModel.product_key.toString(),
                     packagingSizeModel.packagingSize.toString()
                 )
-                Log.i(TAG, "isAlreadyAdded : $isAlreadyAdded")
                 if (!isAlreadyAdded) {
                     val cartItem = CartItem(
                         productModel.product_key.toString(),
@@ -114,6 +111,7 @@ class ProductsViewModel(application: Application) : ViewModel() {
             }
         }
     }
+
 
     companion object {
         private const val TAG = "ProductsViewModel"

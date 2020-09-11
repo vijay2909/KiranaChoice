@@ -5,6 +5,9 @@
 
     <data>
         <variable
+            name="listener"
+            type="com.app.kiranachoice.recyclerView_adapters.CartItemAdapter.CartListener" />
+        <variable
             name="cartItem"
             type="com.app.kiranachoice.db.CartItem" />
     </data>
@@ -85,11 +88,12 @@
 
         <ImageButton
             android:id="@+id/btnDeleteCartItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/delete_button"
             android:src="@drawable/ic_delete"
+            android:onClick="@{() -> listener.removeCartItem(cartItem)}"
             app:layout_constraintBottom_toTopOf="@+id/quantityLayout"
             app:layout_constraintEnd_toEndOf="@+id/quantityLayout"
             app:layout_constraintStart_toStartOf="@+id/quantityLayout"
@@ -98,7 +102,7 @@
         <LinearLayout
             android:id="@+id/quantityLayout"
             android:layout_width="100dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/productPrice">
@@ -115,7 +119,7 @@
                 android:id="@+id/userQuantity"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -125,7 +129,7 @@
             <ImageButton
                 android:id="@+id/btnIncrease"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/quantity_increase_button"
                 android:src="@drawable/ic_add_box" />

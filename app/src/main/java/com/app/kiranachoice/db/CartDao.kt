@@ -9,7 +9,7 @@ interface CartDao {
     @Query("SELECT * from cart_item_table ORDER BY id DESC")
     fun getAllCartItem(): LiveData<List<CartItem>>
 
-    @Query("SELECT 1 FROM cart_item_table WHERE productKey = :key and packagingSize = :packagingSize")
+    @Query("SELECT EXISTS(SELECT * FROM cart_item_table WHERE productKey = :key AND packagingSize = :packagingSize)")
     suspend fun isAlreadyAdded(key: String, packagingSize: String) : Boolean
 
     @Insert

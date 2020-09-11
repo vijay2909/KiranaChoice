@@ -7,8 +7,9 @@ class CartRepo(private val cartDao: CartDao) {
 
     val allCartItems = cartDao.getAllCartItem()
 
-    suspend fun insert(cartItem: CartItem)= cartDao.insert(cartItem)
+    suspend fun insert(cartItem: CartItem) = cartDao.insert(cartItem)
 
-    suspend fun isAlreadyAdded(id : String, packagingSize : String) = cartDao.isAlreadyAdded(id, packagingSize)
+    suspend fun isAlreadyAdded(key: String, packagingSize: String) = cartDao.isAlreadyAdded(key, packagingSize)
 
+    suspend fun delete(cartItem: CartItem) = cartDao.delete(cartItem)
 }

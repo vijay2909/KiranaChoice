@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemCartProductBinding
 import com.app.kiranachoice.db.CartItem
 
-class CartItemAdapter :
+class CartItemAdapter(private val listener : CartListener) :
     ListAdapter<CartItem, CartItemAdapter.CartItemViewHolder>(DiffUtilsCallBack()) {
 
     class DiffUtilsCallBack : DiffUtil.ItemCallback<CartItem>() {
@@ -23,21 +23,34 @@ class CartItemAdapter :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartItemViewHolder {
-        return CartItemViewHolder(
-            ItemCartProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        )
+        return CartItemViewHolder.from(parent)
     }
 
+
+
     override fun onBindViewHolder(holder: CartItemViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), listener)
     }
 
     class CartItemViewHolder(private val binding: ItemCartProductBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(cartItem: CartItem) {
+        fun bind(cartItem: CartItem, listener: CartListener) {
+            binding.listener = listener
             binding.cartItem = cartItem
             binding.executePendingBindings()
         }
+
+        companion object {
+            fun from(parent: ViewGroup): CartItemViewHolder {
+                val view =
+                    ItemCartProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                return CartItemViewHolder(view)
+            }
+        }
+    }
+
+    interface CartListener {
+        fun removeCartItem(cartItem: CartItem)
     }
 }

@@ -11,8 +11,9 @@ import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.databinding.FragmentCartBinding
 import com.app.kiranachoice.recyclerView_adapters.CartItemAdapter
 import com.app.kiranachoice.MainViewModelFactory
+import com.app.kiranachoice.db.CartItem
 
-class CartFragment : Fragment() {
+class CartFragment : Fragment(), CartItemAdapter.CartListener {
 
     private var _bindingCart: FragmentCartBinding? = null
     private val binding get() = _bindingCart!!
@@ -35,7 +36,7 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val cartItemAdapter = CartItemAdapter()
+        val cartItemAdapter = CartItemAdapter(this)
 
         binding.recyclerViewCartList.adapter = cartItemAdapter
 
@@ -46,8 +47,8 @@ class CartFragment : Fragment() {
             )
         )
 
-        viewModel.allCartItems.observe(viewLifecycleOwner, {
-            it.let {
+        viewModel.getAllCartItems().observe(viewLifecycleOwner, {
+            it?.let {
                 cartItemAdapter.submitList(it)
             }
         })
@@ -56,5 +57,9 @@ class CartFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _bindingCart = null
+    }
+
+    override fun removeCartItem(cartItem: CartItem) {
+        viewModel.removeCartItem(cartItem)
     }
 }

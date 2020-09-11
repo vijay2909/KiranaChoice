@@ -2,7 +2,6 @@ package com.app.kiranachoice
 
 import android.app.Application
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -38,8 +37,6 @@ class MainViewModel(application: Application) : ViewModel() {
     private val cartDao: CartDao
     private val cartRepo: CartRepo
 
-    val allCartItems : LiveData<List<CartItem>>
-
     private var _user = MutableLiveData<User>()
     val user: LiveData<User> get() = _user
 
@@ -59,12 +56,14 @@ class MainViewModel(application: Application) : ViewModel() {
         cartDao = database.cartDao
         cartRepo = CartRepo(cartDao)
 
-        allCartItems = cartRepo.allCartItems
+        getAllCartItems()
 
         viewModelScope.launch {
             getAllProducts()
         }
     }
+
+    fun getAllCartItems(): LiveData<List<CartItem>> = cartRepo.allCartItems
 
     private var fakeProductList = ArrayList<ProductModel>()
 
@@ -188,9 +187,13 @@ class MainViewModel(application: Application) : ViewModel() {
         _resultList.value = fakeList
     }
 
+    fun removeCartItem(cartItem: CartItem) = viewModelScope.launch(Dispatchers.IO) {
+        cartRepo.delete(cartItem)
+        getAllCartItems()
+    }
+
     companion object {
         private const val TAG = "MainViewModel"
     }
-
 
 }
