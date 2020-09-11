@@ -2,6 +2,7 @@ package com.app.kiranachoice
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,6 +26,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel(application: Application) : ViewModel() {
     private var mAuth: FirebaseAuth? = null
@@ -58,6 +60,30 @@ class MainViewModel(application: Application) : ViewModel() {
         cartRepo = CartRepo(cartDao)
 
         allCartItems = cartRepo.allCartItems
+
+        viewModelScope.launch {
+            getAllProducts()
+        }
+    }
+
+    private var fakeProductList = ArrayList<ProductModel>()
+
+    private suspend fun getAllProducts() {
+        withContext(Dispatchers.IO) {
+            dbRef?.getReference(PRODUCT_REFERENCE)
+                ?.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        fakeProductList.clear()
+                        snapshot.children.forEach { snap ->
+                            snap.getValue(ProductModel::class.java)
+                                ?.let { it -> fakeProductList.add(it) }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {}
+
+                })
+        }
     }
 
     fun getUserDetails() {
@@ -134,21 +160,36 @@ class MainViewModel(application: Application) : ViewModel() {
     val resultList: LiveData<List<ProductModel>> get() = _resultList
 
     fun getResultFromProducts(userInput: String) {
-        dbRef?.getReference(PRODUCT_REFERENCE)
-            ?.orderByChild("searchableText")?.startAt(userInput)?.endAt(userInput + "\uf8ff")
-            ?.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    fakeList.clear()
-                    snapshot.children.forEach {
-                        it.getValue(ProductModel::class.java)
-                            ?.let { productModel -> fakeList.add(productModel) }
-                    }
-                    _resultList.postValue(fakeList)
+//        dbRef?.getReference(PRODUCT_REFERENCE)
+//            ?.orderByChild("searchableText")?.startAt(userInput)?.endAt(userInput + "\uf8ff")
+//            ?.addListenerForSingleValueEvent(object : ValueEventListener {
+//                override fun onDataChange(snapshot: DataSnapshot) {
+//                    fakeList.clear()
+//                    snapshot.children.forEach {
+//                        it.getValue(ProductModel::class.java)
+//                            ?.let { productModel -> fakeList.add(productModel) }
+//                    }
+//                    Log.i(TAG, "resultList: ${resultList.value}")
+//                    _resultList.postValue(fakeList)
+//                }
+//
+//                override fun onCancelled(error: DatabaseError) {}
+//
+//            })
+        viewModelScope.launch(Dispatchers.Default) {
+            fakeList.clear()
+           fakeProductList.forEach {
+                val r = it.searchableText?.contains(userInput)
+                r?.let { b ->
+                    if (b) fakeList.add(it)
                 }
+            }
+        }
+        _resultList.value = fakeList
+    }
 
-                override fun onCancelled(error: DatabaseError) {}
-
-            })
+    companion object {
+        private const val TAG = "MainViewModel"
     }
 
 

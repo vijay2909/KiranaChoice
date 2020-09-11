@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.databinding.FragmentCartBinding
 import com.app.kiranachoice.recyclerView_adapters.CartItemAdapter
-import com.app.kiranachoice.views.MainViewModelFactory
+import com.app.kiranachoice.MainViewModelFactory
 
 class CartFragment : Fragment() {
 

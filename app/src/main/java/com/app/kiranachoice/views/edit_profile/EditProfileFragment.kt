@@ -17,7 +17,7 @@ import androidx.navigation.findNavController
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentEditProfileBinding
-import com.app.kiranachoice.views.MainViewModelFactory
+import com.app.kiranachoice.MainViewModelFactory
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy

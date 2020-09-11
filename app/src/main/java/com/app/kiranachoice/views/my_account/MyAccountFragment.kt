@@ -17,7 +17,7 @@ import com.app.kiranachoice.DevicecureMapActivity
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentMyAccountBinding
-import com.app.kiranachoice.views.MainViewModelFactory
+import com.app.kiranachoice.MainViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView

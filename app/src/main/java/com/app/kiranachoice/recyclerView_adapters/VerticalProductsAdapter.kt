@@ -83,5 +83,6 @@ class VerticalProductsAdapter(private val listener: ProductListener) :
 
     interface ProductListener {
         fun addItemToCart(productModel: ProductModel, packagingSizeModel: PackagingSizeModel,  quantity: String)
+        fun onItemClick(productModel: ProductModel)
     }
 }

@@ -8,7 +8,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
+import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentProductsBinding
 import com.app.kiranachoice.models.PackagingSizeModel
 import com.app.kiranachoice.models.ProductModel
@@ -20,6 +23,9 @@ class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
     private var _bindingProduct: FragmentProductsBinding? = null
     private val binding get() = _bindingProduct!!
     private lateinit var viewModel: ProductsViewModel
+
+    private var navController : NavController? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +41,7 @@ class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
     private val args: ProductsFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
 
         val verticalProductsAdapter = VerticalProductsAdapter(this)
         binding.recyclerViewProductList.adapter = verticalProductsAdapter
@@ -80,6 +87,12 @@ class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
         quantity: String
     ) {
         viewModel.addItemToCart(productModel, packagingSizeModel, quantity)
+    }
+
+    override fun onItemClick(productModel: ProductModel) {
+        navController?.navigate(ProductsFragmentDirections.actionProductsFragmentToProductDetailsFragment(
+            productModel.productTitle.toString(), productModel
+        ))
     }
 
     companion object {

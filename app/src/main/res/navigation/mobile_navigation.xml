@@ -130,6 +130,9 @@
         <argument
             android:name="subCategoryModel"
             app:argType="com.app.kiranachoice.models.SubCategoryModel" />
+        <action
+            android:id="@+id/action_productsFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
     </fragment>
     <activity
         android:id="@+id/authActivity"
@@ -146,4 +149,16 @@
         android:name="com.app.kiranachoice.views.cart.CartFragment"
         android:label="My Cart"
         tools:layout="@layout/fragment_cart" />
+    <fragment
+        android:id="@+id/productDetailsFragment"
+        android:name="com.app.kiranachoice.views.products.ProductDetailsFragment"
+        android:label="{title}"
+        tools:layout="@layout/fragment_product_details">
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="productModel"
+            app:argType="com.app.kiranachoice.models.ProductModel" />
+    </fragment>
 </navigation>

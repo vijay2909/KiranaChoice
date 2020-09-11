@@ -14,7 +14,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.app.kiranachoice.databinding.ActivityMainBinding
 import com.app.kiranachoice.databinding.NavHeaderMainBinding
-import com.app.kiranachoice.views.MainViewModelFactory
 import com.app.kiranachoice.views.authentication.AuthActivity
 
 class MainActivity : AppCompatActivity() {

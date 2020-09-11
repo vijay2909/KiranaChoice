@@ -8,6 +8,7 @@ import android.os.Looper
 import android.speech.RecognizerIntent
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,9 +17,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.app.kiranachoice.MainViewModel
+import com.app.kiranachoice.MainViewModelFactory
 import com.app.kiranachoice.databinding.FragmentSearchBinding
 import com.app.kiranachoice.recyclerView_adapters.SearchResultsAdapter
-import com.app.kiranachoice.views.MainViewModelFactory
 import java.util.*
 
 class SearchFragment : Fragment() {
@@ -27,7 +28,6 @@ class SearchFragment : Fragment() {
     private val binding get() = _bindingSearch!!
 
     private lateinit var viewModel: MainViewModel
-    private var searchResultsAdapter: SearchResultsAdapter? = null
 
     private var userInput: String? = null
 
@@ -36,7 +36,10 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
-        viewModel = ViewModelProvider(requireActivity(), mainViewModelFactory).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(
+            requireActivity(),
+            mainViewModelFactory
+        ).get(MainViewModel::class.java)
         _bindingSearch = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -64,25 +67,25 @@ class SearchFragment : Fragment() {
 
         })
 
+        val searchResultsAdapter = SearchResultsAdapter()
+        binding.recyclerViewSearchItem.adapter = searchResultsAdapter
+
+        binding.recyclerViewSearchItem.addItemDecoration(
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        )
+
         viewModel.resultList.observe(viewLifecycleOwner, {
+            Log.i("MainViewModel", "resultList Observer : $it")
             binding.searchProgress.visibility = View.INVISIBLE
             binding.searchButton.visibility = View.VISIBLE
             if (!it.isNullOrEmpty()) {
-                binding.recyclerViewSearchItem.apply {
-                    addItemDecoration(
-                        DividerItemDecoration(
-                            requireContext(),
-                            DividerItemDecoration.VERTICAL
-                        )
-                    )
-                    searchResultsAdapter = SearchResultsAdapter(it)
-                    adapter = searchResultsAdapter
-                }
+                binding.recyclerViewSearchItem.visibility = View.VISIBLE
+                binding.textNoResult.visibility = View.GONE
+                searchResultsAdapter.submitList(it)
             } else {
                 binding.recyclerViewSearchItem.visibility = View.GONE
                 binding.textNoResult.visibility = View.VISIBLE
             }
-            searchResultsAdapter?.notifyDataSetChanged()
         })
 
         binding.micButton.setOnClickListener { getSpeechInput() }
@@ -114,7 +117,9 @@ class SearchFragment : Fragment() {
             10 -> {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                    binding.searchBox.setText(result?.get(0))
+                    binding.searchBox.setText(
+                        result?.get(0).toString().toLowerCase(Locale.getDefault())
+                    )
                 }
             }
         }
