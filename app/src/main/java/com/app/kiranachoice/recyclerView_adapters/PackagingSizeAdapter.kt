@@ -30,7 +30,7 @@ class PackagingSizeAdapter : RecyclerView.Adapter<PackagingSizeAdapter.Packaging
 
     override fun getItemCount(): Int = list.size
 
-    class PackagingSizeViewHolder(val binding: ItemPackagingSizeCardBinding) :
+    inner class PackagingSizeViewHolder(val binding: ItemPackagingSizeCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: PackagingSizeModel) {
             binding.packaging = model
@@ -41,8 +41,9 @@ class PackagingSizeAdapter : RecyclerView.Adapter<PackagingSizeAdapter.Packaging
             binding.sizeCard.setOnClickListener {
                 val copyOfLastCheckedPosition = lastCheckedPosition
                 lastCheckedPosition = adapterPosition
+                notifyItemChanged(copyOfLastCheckedPosition)
+                notifyItemChanged(lastCheckedPosition)
             }
-
         }
     }
 }

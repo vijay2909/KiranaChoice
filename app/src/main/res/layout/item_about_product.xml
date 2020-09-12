@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="aboutProductModel"
+            type="com.app.kiranachoice.models.AboutProductModel" />
+    </data>
+
+    <TextView
+        style="@style/TextAppearance.MaterialComponents.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:drawablePadding="10dp"
+        android:text="@{aboutProductModel.keyPoint}"
+        app:drawableStartCompat="@drawable/ic_bullet_point"
+        tools:text="Outer package may vary" />
+</layout>

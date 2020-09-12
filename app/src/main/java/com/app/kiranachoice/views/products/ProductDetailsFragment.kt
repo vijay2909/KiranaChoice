@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.databinding.FragmentProductDetailsBinding
+import com.app.kiranachoice.recyclerView_adapters.AboutProductAdapter
 import com.app.kiranachoice.recyclerView_adapters.PackagingSizeAdapter
 
 class ProductDetailsFragment : Fragment() {
@@ -28,9 +29,21 @@ class ProductDetailsFragment : Fragment() {
         binding.productModel = args.productModel
 
         val packagingSizeAdapter = PackagingSizeAdapter()
-        binding.recyclerPackaginSize.adapter = packagingSizeAdapter
+        binding.recyclerPackagingSize.adapter = packagingSizeAdapter
 
         packagingSizeAdapter.list = args.productModel.productPackagingSize
+
+        if (!args.productModel.aboutTheProduct.isNullOrEmpty()) {
+            binding.isListEmpty = false
+            val aboutProductAdapter = AboutProductAdapter()
+            binding.recyclerViewAboutProduct.apply {
+                aboutProductAdapter.list = args.productModel.aboutTheProduct
+                setHasFixedSize(true)
+                adapter = aboutProductAdapter
+            }
+        } else {
+            binding.isListEmpty = true
+        }
 
     }
 

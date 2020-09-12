@@ -91,5 +91,6 @@
     <string name="delete_button">delete button</string>
     <string name="select_size">Select Size</string>
     <string name="about_the_product">About the product</string>
+    <string name="similar_products">Similar Products</string>
 
 </resources>

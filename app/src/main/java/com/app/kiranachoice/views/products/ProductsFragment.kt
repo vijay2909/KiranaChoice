@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
-import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentProductsBinding
 import com.app.kiranachoice.models.PackagingSizeModel
 import com.app.kiranachoice.models.ProductModel
@@ -89,11 +88,13 @@ class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
         viewModel.addItemToCart(productModel, packagingSizeModel, quantity)
     }
 
+
     override fun onItemClick(productModel: ProductModel) {
         navController?.navigate(ProductsFragmentDirections.actionProductsFragmentToProductDetailsFragment(
             productModel.productTitle.toString(), productModel
         ))
     }
+
 
     companion object {
         private const val TAG = "ProductsFragment"

@@ -11,6 +11,7 @@ data class ProductModel constructor(
     var productTitle: String? = null,
     var searchableText: String? = null,
     var productPackagingSize: List<PackagingSizeModel> = emptyList(),
+    var aboutTheProduct: List<AboutProductModel> = emptyList(),
     var totalQuantity: Long = 0,
     var minimumOrderQuantity: Long = 5,
     var isAvailable: Boolean = true
