@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.BR
 import com.app.kiranachoice.databinding.ItemSearchBinding
-import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.ProductModel
 
 class SearchResultsAdapter :

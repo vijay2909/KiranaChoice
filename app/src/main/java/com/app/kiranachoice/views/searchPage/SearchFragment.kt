@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.speech.RecognizerIntent
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
@@ -58,10 +59,20 @@ class SearchFragment : Fragment() {
             }
 
             override fun afterTextChanged(p0: Editable?) {
+                Log.i(TAG, "afterTextChanged: called")
                 Handler(Looper.getMainLooper()).postDelayed({
                     binding.searchButton.visibility = View.INVISIBLE
                     binding.searchProgress.visibility = View.VISIBLE
-                    userInput?.let { viewModel.getResultFromProducts(it) }
+                    if (TextUtils.isEmpty(userInput)) {
+                        binding.textNoResult.visibility = View.VISIBLE
+                        binding.recyclerViewSearchItem.visibility = View.INVISIBLE
+                        binding.searchButton.visibility = View.VISIBLE
+                        binding.searchProgress.visibility = View.INVISIBLE
+                    } else {
+                        userInput?.let { viewModel.getResultFromProducts(it) }
+                        binding.recyclerViewSearchItem.visibility = View.VISIBLE
+                        binding.textNoResult.visibility = View.GONE
+                    }
                 }, 500)
             }
 
@@ -128,6 +139,10 @@ class SearchFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _bindingSearch = null
+    }
+
+    companion object {
+        private const val TAG = "SearchFragment"
     }
 
 }

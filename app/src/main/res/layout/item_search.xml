@@ -9,15 +9,24 @@
             type="com.app.kiranachoice.models.ProductModel" />
     </data>
 
-    <TextView
-        style="@style/TextAppearance.MaterialComponents.Body1"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:text="@{productModel.productTitle}"
-        android:paddingEnd="16dp"
-        android:textSize="16sp"
-        tools:text="Sugar"
-        app:drawableEndCompat="@drawable/ic_redo" />
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@{productModel.productTitle}"
+            android:textSize="16sp"
+            android:drawablePadding="8dp"
+            app:drawableEndCompat="@drawable/ic_redo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="This is a long test" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
