@@ -16,7 +16,7 @@ class KiranaChoiceApplication : Application() {
         FirebaseApp.initializeApp(this)
         FirebaseRemoteConfig.getInstance().apply {
             val configSettings = FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(0)
+                .setMinimumFetchIntervalInSeconds(10)
                 .build()
 
             setConfigSettingsAsync(configSettings)
