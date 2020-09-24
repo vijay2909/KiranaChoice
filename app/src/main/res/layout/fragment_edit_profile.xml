@@ -77,7 +77,8 @@
                     android:background="@null"
                     android:hint="@string/enter_your_name"
                     android:inputType="textPersonName"
-                    android:text="@{mainViewModel.user.name}" />
+                    android:text="@{mainViewModel.user.name}"
+                    android:importantForAutofill="no" />
             </com.google.android.material.card.MaterialCardView>
 
 
@@ -106,7 +107,9 @@
                     android:enabled="false"
                     android:focusable="false"
                     android:inputType="none"
-                    android:text="@{mainViewModel.user.phoneNumber}" />
+                    android:text="@{mainViewModel.user.phoneNumber}"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor" />
             </com.google.android.material.card.MaterialCardView>
 
             <Button

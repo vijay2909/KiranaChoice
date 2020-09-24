@@ -28,7 +28,6 @@ import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 
 private const val PICK_IMAGE_REQUEST = 1
-private const val TAG = "EditProfileFragment"
 
 class EditProfileFragment : Fragment(), View.OnClickListener {
 
