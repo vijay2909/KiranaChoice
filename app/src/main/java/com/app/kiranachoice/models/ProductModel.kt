@@ -15,5 +15,8 @@ data class ProductModel constructor(
     var aboutTheProduct: List<AboutProductModel> = emptyList(),
     var totalQuantity: Long = 0,
     var minimumOrderQuantity: Long = 5,
+    var makeBestOffer: Boolean = false,
+    var makeBestSelling: Boolean = false,
+    var makeRecommendedProduct: Boolean = false,
     var isAvailable: Boolean = true
 ) : Serializable

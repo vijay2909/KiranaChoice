@@ -7,14 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentHomeBinding
-import com.app.kiranachoice.models.Banner
+import com.app.kiranachoice.models.BannerImageModel
 import com.app.kiranachoice.models.Category1Model
 import com.app.kiranachoice.recyclerView_adapters.*
 import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
@@ -25,32 +25,44 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
     private var _bindingHome: FragmentHomeBinding? = null
     private val binding get() = _bindingHome!!
 
-    private val homeViewModel by viewModels<HomeViewModel>()
+    private lateinit var viewModel : HomeViewModel
 
     private lateinit var navController: NavController
 
     private lateinit var viewPager: ViewPager2
     private lateinit var handler: Handler
     private lateinit var callback: ViewPager2.OnPageChangeCallback
-    private val imageList = ArrayList<Banner>()
+    private lateinit var homeBannerImageList : List<BannerImageModel>
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         _bindingHome = FragmentHomeBinding.inflate(inflater, container, false)
+        homeBannerImageList = ArrayList()
         viewPager = binding.homeBanner1
         handler = Handler(Looper.getMainLooper())
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         navController = Navigation.findNavController(view)
 
-        homeViewModel.categoryList.observe(viewLifecycleOwner, {
+        val banner1Adapter = HomeTopBannerAdapter()
+        binding.homeBanner1.adapter = banner1Adapter
+        TabLayoutMediator(binding.tabLayout, binding.homeBanner1) { _, _ -> }.attach()
+
+        viewModel.bannersList.observe(viewLifecycleOwner, {
+            homeBannerImageList = it
+            banner1Adapter.list = it
+        })
+
+        viewModel.categoryList.observe(viewLifecycleOwner, {
             binding.shimmerLayout.root.stopShimmer()
             binding.shimmerLayout.root.visibility = View.GONE
             binding.actualUiLayout.visibility = View.VISIBLE
@@ -92,12 +104,6 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
             adapter = HorizontalProductsAdapter(null)
         }
 
-        imageList.add(Banner(R.drawable.placeholder_image))
-        imageList.add(Banner(R.drawable.ic_add_box))
-        imageList.add(Banner(R.drawable.ic_minus_box))
-
-        viewPager.adapter = HomeTopBannerAdapter(imageList)
-        TabLayoutMediator(binding.tabLayout, viewPager) { _, _ -> }.attach()
 
         callback = object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -105,7 +111,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
                 handler.postDelayed(slideRunnable, 3000)
             }
         }
-        viewPager.registerOnPageChangeCallback(callback)
+        binding.homeBanner1.registerOnPageChangeCallback(callback)
 
         binding.searchCard.setOnClickListener {
             view.findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
@@ -114,7 +120,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
 
     private val slideRunnable = Runnable {
         viewPager.currentItem =
-            if (imageList.size.minus(1) == viewPager.currentItem) 0
+            if (homeBannerImageList.size.minus(1) == viewPager.currentItem) 0
             else viewPager.currentItem.plus(1)
     }
 
@@ -126,7 +132,6 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
 
     override fun onPause() {
         super.onPause()
-        imageList.clear()
         binding.shimmerLayout.root.stopShimmer()
         handler.removeCallbacks(slideRunnable)
         viewPager.unregisterOnPageChangeCallback(callback)
