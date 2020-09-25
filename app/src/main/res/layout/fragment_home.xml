@@ -24,15 +24,14 @@
 
             <include
                 android:id="@+id/shimmerLayout"
-                layout="@layout/shimmer_effect_home_page_layout"
-                android:visibility="gone" />
+                layout="@layout/shimmer_effect_home_page_layout" />
 
             <LinearLayout
                 android:id="@+id/actualUiLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="invisible">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/searchCard"
@@ -63,7 +62,7 @@
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/home_banner1"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
+                        android:layout_height="170dp"
                         android:background="@color/surface"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

@@ -18,6 +18,6 @@ interface CartDao {
     @Update
     suspend fun update(cartItem: CartItem)
 
-    @Delete
-    suspend fun delete(cartItem: CartItem)
+    @Query("DELETE FROM cart_item_table WHERE productKey = :key")
+    suspend fun delete(key: String)
 }

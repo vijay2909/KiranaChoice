@@ -8,12 +8,12 @@
         <import type="android.view.View"/>
 
         <variable
-            name="quantity"
-            type="Integer" />
+            name="clickListener"
+            type="com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter.ProductListener" />
 
-        <variable
+        <!--<variable
             name="productListener"
-            type="com.app.kiranachoice.listeners.ProductClickListener" />
+            type="com.app.kiranachoice.listeners.ProductClickListener" />-->
 
         <variable
             name="productModel"
@@ -24,10 +24,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:onClick="@{() -> productListener.onItemClick(productModel)}"
         android:background="?attr/selectableItemBackground"
         app:cardCornerRadius="10dp"
         app:cardElevation="4dp">
+
+        <!--android:onClick="@{() -> productListener.onItemClick(productModel)}"-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -162,6 +163,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/productWeight"
                     app:layout_constraintTop_toBottomOf="@+id/productPrice" />
+
+                <!--android:onClick="@{() -> clickListener.onAddToCartClick(productModel)}"-->
 
                 <LinearLayout
                     android:id="@+id/quantityLayout"

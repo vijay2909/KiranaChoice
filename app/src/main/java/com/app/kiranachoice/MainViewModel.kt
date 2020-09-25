@@ -176,7 +176,7 @@ class MainViewModel(application: Application) : ViewModel() {
     }
 
     fun removeCartItem(cartItem: CartItem) = viewModelScope.launch(Dispatchers.IO) {
-        cartRepo.delete(cartItem)
+        cartRepo.delete(cartItem.productKey)
         getAllCartItems()
     }
 

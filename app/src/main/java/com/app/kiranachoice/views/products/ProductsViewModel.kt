@@ -1,7 +1,6 @@
 package com.app.kiranachoice.views.products
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,6 +13,7 @@ import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.models.SubCategoryModel
 import com.app.kiranachoice.repositories.CartRepo
 import com.app.kiranachoice.utils.PRODUCT_REFERENCE
+import com.app.kiranachoice.utils.addToCart
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -21,7 +21,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ProductsViewModel(application: Application) : ViewModel() {
     private var dbRef: FirebaseDatabase? = null
@@ -85,30 +87,23 @@ class ProductsViewModel(application: Application) : ViewModel() {
         productModel: ProductModel,
         packagingSizeModel: PackagingSizeModel,
         quantity: String
-    ) {
+    ) : Boolean {
         if (mAuth?.currentUser == null) {
             _navigateToAuthActivity.value = true
+            return false
         } else {
-            viewModelScope.launch(Dispatchers.IO) {
-                val isAlreadyAdded = cartRepo.isAlreadyAdded(
-                    productModel.product_key.toString(),
-                    packagingSizeModel.packagingSize.toString()
-                )
-                if (!isAlreadyAdded) {
-                    val cartItem = CartItem(
-                        productModel.product_key.toString(),
-                        productModel.productTitle.toString(),
-                        productModel.productImageUrl.toString(),
-                        packagingSizeModel.mrp.toString(),
-                        packagingSizeModel.price.toString(),
-                        packagingSizeModel.packagingSize.toString(),
-                        quantity
-                    )
-                    cartRepo.insert(cartItem)
-                } else {
+            var added = false
+            runBlocking {
+                val result = async { addToCart(cartRepo, productModel, packagingSizeModel, quantity) }
+                if (result.await()){
+                    _productAdded.postValue(true)
+                    added = true
+                } else{
                     _alreadyAddedMsg.postValue("Already added in cart.")
                 }
             }
+
+            return added
         }
     }
 
@@ -123,5 +118,10 @@ class ProductsViewModel(application: Application) : ViewModel() {
 
     fun productAddedSuccessful() {
         _productAdded.value = false
+    }
+
+    fun deleteCartItem(productModel: ProductModel) = viewModelScope.launch(Dispatchers.IO) {
+        cartRepo.delete(productModel.product_key.toString())
+        cartRepo.allCartItems
     }
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
+import com.app.kiranachoice.MainActivity
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.databinding.FragmentCartBinding
 import com.app.kiranachoice.recyclerView_adapters.CartItemAdapter

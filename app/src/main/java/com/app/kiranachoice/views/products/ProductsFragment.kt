@@ -2,6 +2,7 @@ package com.app.kiranachoice.views.products
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,15 +18,20 @@ import com.app.kiranachoice.models.PackagingSizeModel
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
 import com.app.kiranachoice.views.authentication.AuthActivity
+import com.google.firebase.auth.FirebaseAuth
 
-class ProductsFragment : Fragment(), ProductClickListener {
+class ProductsFragment : Fragment(),
+//    , ProductClickListener,
+    VerticalProductsAdapter.ProductListener {
 
     private var _bindingProduct: FragmentProductsBinding? = null
     private val binding get() = _bindingProduct!!
     private lateinit var viewModel: ProductsViewModel
 
-    private var navController : NavController? = null
+    private var navController: NavController? = null
+    private var verticalProductsAdapter: VerticalProductsAdapter? = null
 
+    private lateinit var mAuth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +41,7 @@ class ProductsFragment : Fragment(), ProductClickListener {
         viewModel =
             ViewModelProvider(this, productViewModelFactory).get(ProductsViewModel::class.java)
         _bindingProduct = FragmentProductsBinding.inflate(inflater, container, false)
+        mAuth = FirebaseAuth.getInstance()
         return binding.root
     }
 
@@ -43,11 +50,11 @@ class ProductsFragment : Fragment(), ProductClickListener {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
 
-        val verticalProductsAdapter = VerticalProductsAdapter(this)
+        verticalProductsAdapter = VerticalProductsAdapter(this)
         binding.recyclerViewProductList.adapter = verticalProductsAdapter
 
         viewModel.productsList.observe(viewLifecycleOwner, {
-            if (!it.isNullOrEmpty()) verticalProductsAdapter.data = it
+            if (!it.isNullOrEmpty()) verticalProductsAdapter?.list = it
         })
 
         viewModel.navigateToAuthActivity.observe(viewLifecycleOwner, {
@@ -81,24 +88,52 @@ class ProductsFragment : Fragment(), ProductClickListener {
         _bindingProduct = null
     }
 
-    override fun addItemToCart(
-        productModel: ProductModel,
-        packagingSizeModel: PackagingSizeModel,
-        quantity: String
-    ) {
-        viewModel.addItemToCart(productModel, packagingSizeModel, quantity)
-    }
-
-
-    override fun onItemClick(productModel: ProductModel) {
-        navController?.navigate(ProductsFragmentDirections.actionProductsFragmentToProductDetailsFragment(
-            productModel.productTitle.toString(), productModel
-        ))
-    }
+//    override fun addItemToCart(
+//        productModel: ProductModel,
+//        packagingSizeModel: PackagingSizeModel,
+//        quantity: String
+//    ) {
+//        viewModel.addItemToCart(productModel, packagingSizeModel, quantity)
+//    }
+//
+//
+//    override fun onItemClick(productModel: ProductModel) {
+//        navController?.navigate(
+//            ProductsFragmentDirections.actionProductsFragmentToProductDetailsFragment(
+//                productModel.productTitle.toString(), productModel
+//            )
+//        )
+//    }
 
 
     companion object {
         private const val TAG = "ProductsFragment"
+    }
+
+    override fun onAddToCartButtonClick(
+        productModel: ProductModel,
+        packagingSize: Int,
+        quantity: String,
+        position: Int
+    ) {
+        if (mAuth.currentUser != null) {
+            val packagingSizeModel = if (productModel.productPackagingSize.size > 1) {
+                productModel.productPackagingSize[packagingSize]
+            } else {
+                productModel.productPackagingSize[0]
+            }
+            val result = viewModel.addItemToCart(productModel, packagingSizeModel, quantity)
+            if (result) {
+                verticalProductsAdapter?.addToCartClickedItemPosition = position
+                verticalProductsAdapter?.notifyItemChanged(position)
+            }
+        } else {
+            startActivity(Intent(requireContext(), AuthActivity::class.java))
+        }
+    }
+
+    override fun onItemRemoved(productModel: ProductModel) {
+        viewModel.deleteCartItem(productModel)
     }
 
 }
