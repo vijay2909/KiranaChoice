@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
     </fragment>
 
     <fragment
@@ -148,7 +151,11 @@
         android:id="@+id/cartFragment"
         android:name="com.app.kiranachoice.views.cart.CartFragment"
         android:label="My Cart"
-        tools:layout="@layout/fragment_cart" />
+        tools:layout="@layout/fragment_cart" >
+        <action
+            android:id="@+id/action_cartFragment_self"
+            app:destination="@id/cartFragment" />
+    </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
         android:name="com.app.kiranachoice.views.products.ProductDetailsFragment"

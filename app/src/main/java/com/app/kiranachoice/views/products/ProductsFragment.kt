@@ -12,12 +12,13 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.databinding.FragmentProductsBinding
+import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.models.PackagingSizeModel
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
 import com.app.kiranachoice.views.authentication.AuthActivity
 
-class ProductsFragment : Fragment(), VerticalProductsAdapter.ProductListener {
+class ProductsFragment : Fragment(), ProductClickListener {
 
     private var _bindingProduct: FragmentProductsBinding? = null
     private val binding get() = _bindingProduct!!

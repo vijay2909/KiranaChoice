@@ -13,7 +13,7 @@
 
         <variable
             name="productListener"
-            type="com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter.ProductListener" />
+            type="com.app.kiranachoice.listeners.ProductClickListener" />
 
         <variable
             name="productModel"

@@ -6,8 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.app.kiranachoice.models.BannerImageModel
 import com.app.kiranachoice.models.Category1Model
+import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.utils.CATEGORY_REFERENCE
 import com.app.kiranachoice.utils.HOME_TOP_BANNER
+import com.app.kiranachoice.utils.PRODUCT_REFERENCE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -21,6 +23,7 @@ class HomeViewModel : ViewModel() {
         dbRef = FirebaseDatabase.getInstance()
         getBanners()
         getCategories()
+        getBestOfferProduct()
     }
 
     private var fakeBannersList = ArrayList<BannerImageModel>()
@@ -65,6 +68,28 @@ class HomeViewModel : ViewModel() {
                     }
 
                     _categoryList.postValue(fakeCategoryList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+
+            })
+    }
+
+    private var fakeBestOfferProductList = ArrayList<ProductModel>()
+    private var _bestOfferProductList = MutableLiveData<List<ProductModel>>()
+    val bestOfferProductList: LiveData<List<ProductModel>> get() = _bestOfferProductList
+
+    private fun getBestOfferProduct() {
+        dbRef?.getReference(PRODUCT_REFERENCE)
+            ?.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    fakeBestOfferProductList.clear()
+                    snapshot.children.forEach {
+                        it.getValue(ProductModel::class.java)
+                            ?.let { model -> fakeBestOfferProductList.add(model) }
+                    }
+                    _bestOfferProductList.postValue(fakeBestOfferProductList)
+
                 }
 
                 override fun onCancelled(error: DatabaseError) {}

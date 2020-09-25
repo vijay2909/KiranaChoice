@@ -8,11 +8,14 @@ import com.app.kiranachoice.databinding.ItemCategory1LayoutBinding
 import com.app.kiranachoice.models.Category1Model
 
 
-class Category1Adapter(
-    private val list: List<Category1Model>,
-    private val listener: CategoryClickListener
-) :
+class Category1Adapter(private val listener: CategoryClickListener) :
     RecyclerView.Adapter<Category1Adapter.CategoryViewHolder>() {
+
+    var list = listOf<Category1Model>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val view =

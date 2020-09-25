@@ -4,8 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
-            name="model"
+            name="clickListener"
+            type="com.app.kiranachoice.listeners.ProductClickListener" />
+
+        <variable
+            name="productModel"
             type="com.app.kiranachoice.models.ProductModel" />
     </data>
 
@@ -13,9 +18,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:onClick="@{() -> clickListener.onItemClick(productModel)}"
         android:translationZ="2dp"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="10dp">
+        app:cardCornerRadius="10dp"
+        app:cardElevation="4dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -30,8 +36,8 @@
                 android:layout_marginEnd="8dp"
                 android:contentDescription="@string/product_image"
                 android:scaleType="fitCenter"
-                app:imageUrl="@{model.productImageUrl}"
                 android:src="@drawable/placeholder_image"
+                app:imageUrl="@{productModel.productImageUrl}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
@@ -43,10 +49,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@{productModel.productTitle}"
                 android:textSize="12sp"
-                android:text="@{model.productTitle}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/imageView"
@@ -58,10 +64,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textSize="12sp"
                 android:layout_marginTop="4dp"
+                android:text="@{@string/rupee_with_text(productModel.productPackagingSize.get(0).price)}"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                android:text="@{@string/rupee_with_text(model.productPackagingSize.get(0).price)}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textProductName"
                 tools:text="₹90.00" />
@@ -72,10 +78,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
+                android:textColor="@color/red"
                 android:textSize="12sp"
-                app:productMRP="@{model.productPackagingSize.get(0).mrp}"
                 app:layout_constraintStart_toEndOf="@id/textProductPrice"
                 app:layout_constraintTop_toTopOf="@id/textProductPrice"
+                app:productMRP="@{productModel.productPackagingSize.get(0).mrp}"
                 tools:text="₹149.00" />
 
             <TextView
@@ -88,12 +95,12 @@
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/curved_border"
                 android:clickable="true"
-                android:text="@{String.valueOf(model.productPackagingSize[0])}"
                 android:focusable="true"
                 android:paddingStart="16dp"
                 android:paddingTop="4dp"
                 android:paddingEnd="16dp"
                 android:paddingBottom="4dp"
+                android:text="@{String.valueOf(productModel.productPackagingSize.get(0).packagingSize)}"
                 android:textColor="@color/colorPrimary"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toEndOf="parent"

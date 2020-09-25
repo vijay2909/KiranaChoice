@@ -14,25 +14,28 @@ import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentHomeBinding
+import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.models.BannerImageModel
 import com.app.kiranachoice.models.Category1Model
+import com.app.kiranachoice.models.PackagingSizeModel
+import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.recyclerView_adapters.*
 import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 
-class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
+class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, ProductClickListener {
 
     private var _bindingHome: FragmentHomeBinding? = null
     private val binding get() = _bindingHome!!
 
-    private lateinit var viewModel : HomeViewModel
+    private lateinit var viewModel: HomeViewModel
 
     private lateinit var navController: NavController
 
     private lateinit var viewPager: ViewPager2
     private lateinit var handler: Handler
     private lateinit var callback: ViewPager2.OnPageChangeCallback
-    private lateinit var homeBannerImageList : List<BannerImageModel>
+    private lateinit var homeBannerImageList: List<BannerImageModel>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,28 +56,44 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
 
         navController = Navigation.findNavController(view)
 
+        // Home Top Banner [[START]] >>>>>>>>>>>>>
         val banner1Adapter = HomeTopBannerAdapter()
         binding.homeBanner1.adapter = banner1Adapter
         TabLayoutMediator(binding.tabLayout, binding.homeBanner1) { _, _ -> }.attach()
-
         viewModel.bannersList.observe(viewLifecycleOwner, {
             homeBannerImageList = it
             banner1Adapter.list = it
         })
+        // Home Top Banner [[END]]>>>>>>>>>>>>>
 
+
+        // Category [[ START ]] >>>>>>>>>>>>>>>
+        val category1Adapter = Category1Adapter(this)
+        binding.recyclerViewCategory1.apply {
+            setHasFixedSize(true)
+            adapter = category1Adapter
+        }
         viewModel.categoryList.observe(viewLifecycleOwner, {
-            binding.shimmerLayout.root.stopShimmer()
+            binding.shimmerLayout.rootLayout.stopShimmer()
             binding.shimmerLayout.root.visibility = View.GONE
             binding.actualUiLayout.visibility = View.VISIBLE
-            binding.recyclerViewCategory1.apply {
-                setHasFixedSize(true)
-                adapter = Category1Adapter(it, this@HomeFragment)
-            }
+            category1Adapter.list = it
         })
+        // Category [[ END ]] >>>>>>>>>>>>>>>
 
+
+        // Best Offer Products [[ START ]] >>>>>>>>>>>>>>
+        val bestOfferProductsAdapter = HorizontalProductsAdapter(this)
         binding.recyclerViewBestOffers.apply {
-            adapter = HorizontalProductsAdapter(null)
+            setHasFixedSize(true)
+            adapter = bestOfferProductsAdapter
         }
+        viewModel.bestOfferProductList.observe(viewLifecycleOwner, {
+            binding.bestOfferAvailable = it.isNotEmpty()
+            bestOfferProductsAdapter.list = it
+        })
+        // Best Offer Products [[ END ]] >>>>>>>>>>>>>>
+
 
         binding.recyclerViewCategory2.apply {
             adapter = SmallBannerCategoryAdapter(null)
@@ -111,6 +130,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
                 handler.postDelayed(slideRunnable, 3000)
             }
         }
+
         binding.homeBanner1.registerOnPageChangeCallback(callback)
 
         binding.searchCard.setOnClickListener {
@@ -126,13 +146,13 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
 
     override fun onResume() {
         super.onResume()
-        binding.shimmerLayout.root.startShimmer()
+        binding.shimmerLayout.rootLayout.startShimmer()
         handler.postDelayed(slideRunnable, 3000)
     }
 
     override fun onPause() {
         super.onPause()
-        binding.shimmerLayout.root.stopShimmer()
+        binding.shimmerLayout.rootLayout.stopShimmer()
         handler.removeCallbacks(slideRunnable)
         viewPager.unregisterOnPageChangeCallback(callback)
     }
@@ -147,6 +167,23 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener {
             HomeFragmentDirections.actionNavHomeToCategoryFragment(
                 categoryModel,
                 categoryModel.category_name.toString()
+            )
+        )
+    }
+
+    override fun addItemToCart(
+        productModel: ProductModel,
+        packagingSizeModel: PackagingSizeModel,
+        quantity: String
+    ) {
+
+    }
+
+    override fun onItemClick(productModel: ProductModel) {
+        navController.navigate(
+            HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
+                productModel.productTitle.toString(),
+                productModel
             )
         )
     }
