@@ -84,7 +84,7 @@
     <string name="mic_button">mic button</string>
     <string name="no_result_found">No result found</string>
     <string name="cart_icon">Cart icon</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="in_stock">in Stock</string>
     <string name="out_of_stock">Out of Stock</string>
@@ -92,5 +92,11 @@
     <string name="select_size">Select Size</string>
     <string name="about_the_product">About the product</string>
     <string name="similar_products">Similar Products</string>
+    <string name="price_details">Price Details</string>
+    <string name="price_1_item">Price ( 1 item )</string>
+    <string name="delivery_charges">Delivery Charges</string>
+    <string name="wallet_money_applied">Wallet money applied</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="placed_order">Place Order</string>
 
 </resources>

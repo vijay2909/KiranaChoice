@@ -85,6 +85,17 @@ class MainActivity : AppCompatActivity() {
                 invalidateOptionsMenu()
             }
         })
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.cartFragment -> {
+                    binding.appBarMain.bottomNavView.visibility = View.GONE
+                }
+                else -> {
+                    binding.appBarMain.bottomNavView.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

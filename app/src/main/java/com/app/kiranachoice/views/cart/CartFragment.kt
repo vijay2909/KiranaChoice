@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.app.kiranachoice.MainActivity
 import com.app.kiranachoice.MainViewModel
-import com.app.kiranachoice.databinding.FragmentCartBinding
-import com.app.kiranachoice.recyclerView_adapters.CartItemAdapter
 import com.app.kiranachoice.MainViewModelFactory
+import com.app.kiranachoice.databinding.FragmentCartBinding
 import com.app.kiranachoice.db.CartItem
+import com.app.kiranachoice.recyclerView_adapters.CartItemAdapter
 
 class CartFragment : Fragment(), CartItemAdapter.CartListener {
 
@@ -26,11 +25,11 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
         savedInstanceState: Bundle?
     ): View? {
         val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            mainViewModelFactory
-        ).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity(), mainViewModelFactory)
+            .get(MainViewModel::class.java)
         _bindingCart = FragmentCartBinding.inflate(inflater, container, false)
+        binding.mainViewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
@@ -50,7 +49,10 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
 
         viewModel.getAllCartItems().observe(viewLifecycleOwner, {
             it?.let {
+                binding.isListEmpty = it.isEmpty()
+                viewModel.cartItems = it // this list use to know total amount
                 cartItemAdapter.submitList(it)
+                viewModel.getTotalPayableAmount() // calculate total amount
             }
         })
     }
@@ -62,5 +64,10 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
 
     override fun removeCartItem(cartItem: CartItem) {
         viewModel.removeCartItem(cartItem)
+    }
+
+    override fun onQuantityChange(cartItem: CartItem, amountPlus: Int?, amountMinus: Int?) {
+        if (amountPlus != null) viewModel.setTotalAmount(amountPlus)
+        else viewModel.setTotalAmount(null, amountMinus)
     }
 }

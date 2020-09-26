@@ -13,9 +13,7 @@ import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.models.User
 import com.app.kiranachoice.repositories.CartRepo
-import com.app.kiranachoice.utils.PRODUCT_REFERENCE
-import com.app.kiranachoice.utils.USER_IMAGE_REFERENCE
-import com.app.kiranachoice.utils.USER_REFERENCE
+import com.app.kiranachoice.utils.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -46,6 +44,19 @@ class MainViewModel(application: Application) : ViewModel() {
     var fileExtension: String? = null
     private var _imageUrl = MutableLiveData<String>()
     val imageUrl: LiveData<String> get() = _imageUrl
+
+    private var amount = 0L
+
+    private var _productTotalAmount = MutableLiveData<String>()
+    val productTotalAmount: LiveData<String> get() = _productTotalAmount
+
+    private var _deliveryFee = MutableLiveData<String>()
+    val deliveryFee: LiveData<String> get() = _deliveryFee
+
+    private var _totalAmount = MutableLiveData<String>()
+    val totalAmount: LiveData<String> get() = _totalAmount
+
+    var cartItems: List<CartItem> = ArrayList()
 
     init {
         mAuth = FirebaseAuth.getInstance()
@@ -163,8 +174,8 @@ class MainViewModel(application: Application) : ViewModel() {
         viewModelScope.launch(Dispatchers.Default) {
             fakeList.clear()
             fakeProductList.forEach { productModel ->
-                for (item in productModel.searchableText){
-                    if (item.word?.contains(userInput)!!){
+                for (item in productModel.searchableText) {
+                    if (item.word?.contains(userInput)!!) {
                         fakeList.add(productModel)
                         break
                     }
@@ -178,6 +189,50 @@ class MainViewModel(application: Application) : ViewModel() {
     fun removeCartItem(cartItem: CartItem) = viewModelScope.launch(Dispatchers.IO) {
         cartRepo.delete(cartItem.productKey)
         getAllCartItems()
+    }
+
+    fun getTotalPayableAmount() {
+        if (amount == 0L) {
+            cartItems.forEach { cartItem ->
+                amount = if (cartItem.quantity.isNotEmpty()) {
+                    if (cartItem.quantity.toInt() > 1) {
+                        amount.plus(
+                            cartItem.quantity.toInt().times(cartItem.productPrice.toInt())
+                        )
+                    } else {
+                        amount.plus(cartItem.productPrice.toInt())
+                    }
+                } else {
+                    amount.plus(cartItem.productPrice.toInt())
+                }
+            }
+
+            _productTotalAmount.value = amount.toString()
+
+            addDeliveryFeeIfRequire(amount)
+        }
+    }
+
+    private fun addDeliveryFeeIfRequire(amount: Long) {
+        if (amount < 399) {
+            _deliveryFee.value = DELIVERY_CHARGE.toString()
+            _totalAmount.value = amount.plus(DELIVERY_CHARGE).toString()
+        } else {
+            _deliveryFee.value = DELIVERY_FREE
+            _totalAmount.value = amount.toString()
+        }
+    }
+
+    fun setTotalAmount(amountPlus: Int? = null, amountMinus: Int? = null) {
+        if (amountPlus != null) {
+            _productTotalAmount.value =
+                productTotalAmount.value?.toInt()?.plus(amountPlus).toString()
+        } else {
+            _productTotalAmount.value =
+                productTotalAmount.value?.toInt()?.minus(amountMinus!!).toString()
+            _totalAmount.value = _productTotalAmount.value
+        }
+        addDeliveryFeeIfRequire(_productTotalAmount.value?.toLong()!!)
     }
 
     companion object {

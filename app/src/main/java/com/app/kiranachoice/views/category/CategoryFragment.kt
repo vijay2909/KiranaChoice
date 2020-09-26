@@ -29,6 +29,7 @@ class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener
         return binding.root
     }
 
+
     private val args: CategoryFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

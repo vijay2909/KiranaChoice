@@ -11,3 +11,6 @@ const val USER_REFERENCE = "Users"
 const val CART_PRODUCTS = "Cart Products"
 
 const val USER_IMAGE_REFERENCE = "Users Profile Images"
+
+const val DELIVERY_CHARGE = 40
+const val DELIVERY_FREE = "Free"

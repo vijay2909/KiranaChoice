@@ -9,6 +9,7 @@ import androidx.databinding.BindingAdapter
 import com.app.kiranachoice.R
 import com.app.kiranachoice.models.ProductModel
 import com.bumptech.glide.Glide
+import java.text.DecimalFormat
 
 
 @BindingAdapter("profileImage")
@@ -21,11 +22,11 @@ fun setProfileImage(view: ImageView, url: String?) {
 }
 
 @BindingAdapter("userName")
-fun setUserName(view: TextView , name: String?){
+fun setUserName(view: TextView, name: String?) {
     if (name != null) {
         view.text = view.context.getString(R.string.hi_userName)
             .plus(" ${name.substringBefore(" ")}")
-    }else {
+    } else {
         view.text = view.context.getString(R.string.hi_user)
     }
 }
@@ -48,7 +49,7 @@ fun setProductMRP(view: TextView, text: String?) {
 }
 
 @BindingAdapter("sizes")
-fun setSizes(spinner : Spinner , productModel: ProductModel){
+fun setSizes(spinner: Spinner, productModel: ProductModel) {
     val packagingSize = arrayOfNulls<String>(productModel.productPackagingSize.size)
 
     for (i in productModel.productPackagingSize.indices) {
@@ -63,4 +64,16 @@ fun setSizes(spinner : Spinner , productModel: ProductModel){
 
     arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
     spinner.adapter = arrayAdapter
+}
+
+
+@BindingAdapter("priceFormatted")
+fun setPriceFormatted(view: TextView, value: String?) {
+    if (value != DELIVERY_FREE && value != null) {
+        val dec = DecimalFormat("##,##,###.00")
+        val formattedPrice = dec.format(value.toDouble())
+        view.text = view.context.getString(R.string.rupee).plus(formattedPrice)
+    } else {
+        view.text = value
+    }
 }
