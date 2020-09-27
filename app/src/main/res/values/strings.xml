@@ -98,5 +98,31 @@
     <string name="wallet_money_applied">Wallet money applied</string>
     <string name="total_amount">Total Amount</string>
     <string name="placed_order">Place Order</string>
+    <string name="delivery">Delivery</string>
+    <string name="payment">Payment</string>
+    <string name="delivery_address">Delivery Address</string>
+    <string name="add_address_button">Add Address Button</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+
+    <!--    Dialog add address  -->
+    <string name="add_new_address">Add New Address</string>
+    <string name="use_my_current_location">Use My Current Location</string>
+    <string name="flat_no_building_name">Flat No., Building Name*</string>
+    <string name="locality_area_or_street">Locality, Area Or Street*</string>
+    <string name="city">City*</string>
+    <string name="pincode">Pincode*</string>
+    <string name="state">State*</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+
+    <string name="no_address_added">No address added</string>
+    <string name="add_address">Add Address</string>
+    <string name="empty_field_error_msg">Field must not be empty.</string>
+    <string name="delete_address">Delete Address</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="confirm">Confirm</string>
+    <string name="address_updated">Address Updated.</string>
+    <string name="delete_successful">Delete successful.</string>
 
 </resources>

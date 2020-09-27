@@ -20,6 +20,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KiranaChoice">
         <activity
+            android:name=".views.checkout_product.CheckoutActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.KiranaChoice.NoActionBar.CheckOutActivity"/>
+        <activity
             android:name=".views.authentication.AuthActivity"
             android:label="@string/login"
             android:screenOrientation="portrait"

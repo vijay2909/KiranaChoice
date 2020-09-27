@@ -7,8 +7,10 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.app.kiranachoice.R
+import com.app.kiranachoice.models.AddressModel
 import com.app.kiranachoice.models.ProductModel
 import com.bumptech.glide.Glide
+import com.google.android.material.textview.MaterialTextView
 import java.text.DecimalFormat
 
 
@@ -76,4 +78,11 @@ fun setPriceFormatted(view: TextView, value: String?) {
     } else {
         view.text = value
     }
+}
+
+@BindingAdapter("address")
+fun setAddress(view: MaterialTextView, addressModel: AddressModel) {
+    val address =
+        "${addressModel.flat_num_or_building_name}, ${addressModel.area}, ${addressModel.city}, ${addressModel.state}, ${addressModel.pincode}"
+    view.text = address
 }

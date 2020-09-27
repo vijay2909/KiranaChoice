@@ -235,6 +235,12 @@ class MainViewModel(application: Application) : ViewModel() {
         addDeliveryFeeIfRequire(_productTotalAmount.value?.toLong()!!)
     }
 
+    fun updateProduct(productName: String, quantity: String) {
+        viewModelScope.launch {
+            cartRepo.update(productName, quantity)
+        }
+    }
+
     companion object {
         private const val TAG = "MainViewModel"
     }

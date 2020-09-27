@@ -15,8 +15,8 @@ interface CartDao {
     @Insert
     suspend fun insert(cartItem: CartItem)
 
-    @Update
-    suspend fun update(cartItem: CartItem)
+    @Query("UPDATE cart_item_table SET quantity=:quantity WHERE productTitle = :productName")
+    suspend fun update(productName: String, quantity: String)
 
     @Query("DELETE FROM cart_item_table WHERE productKey = :key")
     suspend fun delete(key: String)
