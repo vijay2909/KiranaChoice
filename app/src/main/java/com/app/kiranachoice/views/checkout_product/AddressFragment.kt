@@ -68,6 +68,7 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
         })
     }
 
+
     private fun showDialogToAddAddress(addressModel: AddressModel?) {
         val view =
             DialogAddAddressBinding.inflate(LayoutInflater.from(requireContext()), null, false)
@@ -143,18 +144,22 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
         return result
     }
 
+
     override fun onDestroyView() {
         super.onDestroyView()
         _bindingAddress = null
     }
 
+
     override fun onEditButtonClicked(addressModel: AddressModel) {
         showDialogToAddAddress(addressModel)
     }
 
+
     override fun onDeleteButtonClicked(addressModel: AddressModel) {
         showDialogBeforeDelete(addressModel)
     }
+
 
     private fun showDialogBeforeDelete(addressModel: AddressModel) {
         AlertDialog.Builder(requireContext())

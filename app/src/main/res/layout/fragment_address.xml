@@ -93,35 +93,42 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnAddAddress" />
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="0dp"
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_address_list"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:clipToPadding="false"
+            android:visibility="@{isAddressListEmpty ? View.GONE : View.VISIBLE}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@id/btnContinue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnAddAddress">
+            app:layout_constraintTop_toBottomOf="@+id/btnAddAddress"
+            tools:itemCount="4"
+            tools:listitem="@layout/item_address_layout" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_address_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="@{isAddressListEmpty ? View.GONE : View.VISIBLE}"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/materialCardView"
-                app:layout_constraintStart_toStartOf="@+id/materialCardView"
-                app:layout_constraintTop_toBottomOf="@+id/materialCardView"
-                tools:itemCount="4"
-                tools:listitem="@layout/item_address_layout" />
-        </androidx.core.widget.NestedScrollView>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnContinue"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/gradient_color"
+            android:text="@string/continue_text"
+            app:backgroundTint="@null"
+            android:paddingStart="48dp"
+            android:paddingEnd="48dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <include
             android:id="@+id/progressBar"
             layout="@layout/progress_bar_with_text"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
