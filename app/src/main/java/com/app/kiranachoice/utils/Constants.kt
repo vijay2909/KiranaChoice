@@ -15,3 +15,7 @@ const val USER_IMAGE_REFERENCE = "Users Profile Images"
 
 const val DELIVERY_CHARGE = 40
 const val DELIVERY_FREE = "Free"
+
+const val BEST_OFFER_PRODUCT = "makeBestOffer"
+const val BEST_SELLING_PRODUCT = "makeBestSelling"
+const val BEST_RECOMMENDED_PRODUCT = "makeRecommendedProduct"

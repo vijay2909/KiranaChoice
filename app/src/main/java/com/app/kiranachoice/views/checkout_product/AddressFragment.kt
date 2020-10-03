@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.DialogAddAddressBinding
 import com.app.kiranachoice.databinding.FragmentAddressBinding
@@ -30,7 +31,8 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = ViewModelProvider(requireActivity()).get(CheckoutViewModel::class.java)
+        val factory = CheckoutViewModelFactory(requireActivity().application)
+        viewModel = ViewModelProvider(requireActivity(), factory).get(CheckoutViewModel::class.java)
         _bindingAddress = FragmentAddressBinding.inflate(inflater, container, false)
         binding.isAddressListEmpty = true
         (activity as CheckoutActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -54,18 +56,24 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
         }
 
         viewModel.updatedDetails.observe(viewLifecycleOwner, {
-            if (it){
-                Snackbar.make(view, getString(R.string.address_updated), Snackbar.LENGTH_SHORT).show()
+            if (it) {
+                Snackbar.make(view, getString(R.string.address_updated), Snackbar.LENGTH_SHORT)
+                    .show()
                 viewModel.updateFinished()
             }
         })
 
         viewModel.deletedAddress.observe(viewLifecycleOwner, {
-            if (it){
-                Snackbar.make(view, getString(R.string.delete_successful), Snackbar.LENGTH_SHORT).show()
+            if (it) {
+                Snackbar.make(view, getString(R.string.delete_successful), Snackbar.LENGTH_SHORT)
+                    .show()
                 viewModel.deleteFinished()
             }
         })
+
+        binding.btnConfirmOrder.setOnClickListener {
+            view.findNavController().navigate(R.id.action_addressFragment_to_paymentFragment)
+        }
     }
 
     private fun showDialogToAddAddress(addressModel: AddressModel?) {

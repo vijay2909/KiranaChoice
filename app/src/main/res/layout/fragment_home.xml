@@ -8,7 +8,11 @@
         <import type="android.view.View" />
 
         <variable
-            name="bestOfferAvailable"
+            name="bestOfferProductsAvailable"
+            type="Boolean" />
+
+        <variable
+            name="bestSellingProductAvailable"
             type="Boolean" />
     </data>
 
@@ -112,7 +116,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="32dp"
-                    android:visibility="@{bestOfferAvailable ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{bestOfferProductsAvailable ? View.VISIBLE : View.GONE}"
                     android:text="@string/best_offers"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -122,7 +126,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:visibility="@{bestOfferAvailable ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{bestOfferProductsAvailable ? View.VISIBLE : View.GONE}"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_horizontol_product_item" />
@@ -145,6 +149,7 @@
                     android:layout_marginTop="32dp"
                     android:text="@string/best_selling_products"
                     android:textSize="15sp"
+                    android:visibility="@{bestSellingProductAvailable ? View.VISIBLE : View.GONE}"
                     android:textStyle="bold" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -155,6 +160,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:orientation="horizontal"
+                    android:visibility="@{bestSellingProductAvailable ? View.VISIBLE : View.GONE}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_horizontol_product_item" />
 

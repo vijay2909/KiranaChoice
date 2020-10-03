@@ -88,7 +88,9 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.cartFragment -> {
+                R.id.cartFragment, R.id.contactUsFragment,
+                R.id.feedbackFragment, R.id.myOrdersFragment,
+                R.id.editProfileFragment -> {
                     binding.appBarMain.bottomNavView.visibility = View.GONE
                 }
                 else -> {
@@ -97,6 +99,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
@@ -109,7 +112,7 @@ class MainActivity : AppCompatActivity() {
 
         if (totalCartItem == 0) {
             cartBadgeTextView.visibility = View.GONE
-        }else {
+        } else {
             cartBadgeTextView.text = totalCartItem.toString()
             cartBadgeTextView.visibility = View.VISIBLE
         }
@@ -119,15 +122,18 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return item.onNavDestinationSelected(findNavController(R.id.nav_host_fragment))
                 || super.onOptionsItemSelected(item)
     }
 
+
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
 
     override fun onStart() {
         super.onStart()

@@ -1,8 +1,10 @@
 package com.app.kiranachoice.views.checkout_product
 
+import android.app.Application
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -26,7 +28,8 @@ class CheckoutActivity : AppCompatActivity() {
             finish()
         }
 
-        viewModel = ViewModelProvider(this).get(CheckoutViewModel::class.java)
+        val factory = CheckoutViewModelFactory(this.application)
+        viewModel = ViewModelProvider(this, factory).get(CheckoutViewModel::class.java)
 
         navController = findNavController(R.id.checkout_host_fragment)
         NavigationUI.setupActionBarWithNavController(this, navController)
@@ -35,4 +38,12 @@ class CheckoutActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
+}
+
+@Suppress("UNCHECKED_CAST")
+class CheckoutViewModelFactory(val application: Application) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return CheckoutViewModel(application) as T
+    }
+
 }
