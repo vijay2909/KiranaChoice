@@ -1,4 +1,4 @@
-package com.app.kiranachoice.views.checkout_product
+package com.app.kiranachoice.views.address
 
 
 import android.graphics.Color
@@ -17,6 +17,7 @@ import com.app.kiranachoice.databinding.DialogAddAddressBinding
 import com.app.kiranachoice.databinding.FragmentAddressBinding
 import com.app.kiranachoice.models.AddressModel
 import com.app.kiranachoice.recyclerView_adapters.AddressAdapter
+import com.app.kiranachoice.views.checkout_product.CheckoutActivity
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -25,14 +26,13 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
     private var _bindingAddress: FragmentAddressBinding? = null
     private val binding get() = _bindingAddress!!
 
-    private lateinit var viewModel: CheckoutViewModel
+    private lateinit var viewModel: AddressViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val factory = CheckoutViewModelFactory(requireActivity().application)
-        viewModel = ViewModelProvider(requireActivity(), factory).get(CheckoutViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(AddressViewModel::class.java)
         _bindingAddress = FragmentAddressBinding.inflate(inflater, container, false)
         binding.isAddressListEmpty = true
         (activity as CheckoutActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)

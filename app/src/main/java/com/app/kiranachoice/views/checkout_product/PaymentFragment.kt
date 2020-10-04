@@ -27,6 +27,8 @@ class PaymentFragment : Fragment() {
         val factory = CheckoutViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(requireActivity(), factory).get(CheckoutViewModel::class.java)
         _bindingPayment = FragmentPaymentBinding.inflate(inflater, container, false)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
@@ -49,6 +51,7 @@ class PaymentFragment : Fragment() {
         viewModel.allProducts.observe(viewLifecycleOwner, {
             if (!it.isNullOrEmpty()) viewModel.cartItemList = it
             setProductListTextWithPrice()
+            viewModel.setDeliveryChargeAndTotalAmount()
         })
 
     }
@@ -82,24 +85,28 @@ class PaymentFragment : Fragment() {
             textProductPrice.id = View.generateViewId()
             textProductPrice.setTextColor(Color.BLACK)
             textProductPrice.textSize = 15f
-            textProductPrice.text = getString(R.string.rupee).plus(" ${totalPrice.toString().toPriceAmount()}")
+            textProductPrice.text =
+                getString(R.string.rupee).plus(" ${totalPrice.toString().toPriceAmount()}")
 
-            val param0 = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
-            param0.setMargins(16,0,0,24)
+            val param0 = RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+            )
+            param0.setMargins(16, 0, 0, 24)
 
             val param1 = RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT
             )
-            param1.setMargins(0,0,16,0)
+            param1.setMargins(0, 0, 16, 0)
             param1.addRule(RelativeLayout.ALIGN_PARENT_START)
-            param1.addRule(RelativeLayout.START_OF, textProductPrice.id )
+            param1.addRule(RelativeLayout.START_OF, textProductPrice.id)
 
             val param2 = RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT
             )
-            param2.setMargins(16,0,0,0)
+            param2.setMargins(16, 0, 0, 0)
             param2.addRule(RelativeLayout.BELOW, textProductName.id)
 
             val param3 = RelativeLayout.LayoutParams(
@@ -122,7 +129,6 @@ class PaymentFragment : Fragment() {
             binding.productListDetailsLayout.addView(relativeLayout)
         }
     }
-
 
 
     override fun onDestroyView() {

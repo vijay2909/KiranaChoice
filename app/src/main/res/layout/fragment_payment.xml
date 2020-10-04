@@ -8,6 +8,10 @@
         <variable
             name="isPaymentMethodSelect"
             type="Boolean" />
+
+        <variable
+            name="viewModel"
+            type="com.app.kiranachoice.views.checkout_product.CheckoutViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -190,6 +194,7 @@
                             android:layout_marginEnd="16dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@id/textViewDeliveryCharges"
+                            app:priceFormatted="@{viewModel.deliveryCharge}"
                             tools:text="Free" />
 
                         <View
@@ -219,6 +224,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="16dp"
+                            android:text="@{@string/rupee_with_text(viewModel.totalAmount)}"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@id/textViewTotalAmount"
@@ -230,8 +236,8 @@
                 <Space
                     android:layout_width="match_parent"
                     android:layout_height="80dp"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/priceDetailsCard" />
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -258,6 +264,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_toStartOf="@id/btnPlaceOrder"
+                android:text="@{@string/rupee_with_text(viewModel.totalAmount)}"
                 android:textSize="20sp"
                 tools:text="₹ 469" />
 

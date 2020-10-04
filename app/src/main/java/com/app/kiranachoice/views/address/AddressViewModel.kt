@@ -1,36 +1,28 @@
-package com.app.kiranachoice.views.checkout_product
+package com.app.kiranachoice.views.address
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.app.kiranachoice.db.CartDatabase
-import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.AddressModel
-import com.app.kiranachoice.repositories.CartRepo
-import com.app.kiranachoice.utils.*
+import com.app.kiranachoice.utils.USER_ADDRESSES_REFERENCE
+import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
-import kotlin.collections.ArrayList
 
-class CheckoutViewModel(application: Application) : ViewModel() {
+
+class AddressViewModel : ViewModel() {
 
     private var dbFire: FirebaseFirestore? = null
     private var mAuth: FirebaseAuth? = null
-    private val cartRepo: CartRepo
-    val allProducts: LiveData<List<CartItem>>
 
     init {
         dbFire = FirebaseFirestore.getInstance()
         mAuth = FirebaseAuth.getInstance()
-        val database = CartDatabase.getInstance(application)
-        cartRepo = CartRepo(database.cartDao)
-        allProducts = cartRepo.allCartItems
+
         getAddresses()
     }
 
-    var cartItemList: List<CartItem> = ArrayList()
 
     var flatNumberOrBuildingName: String? = null
     var area: String? = null
@@ -117,32 +109,4 @@ class CheckoutViewModel(application: Application) : ViewModel() {
         _deletedAddress.value = false
     }
 
-
-    private var _totalAmount = MutableLiveData<String>()
-    val totalAmount: LiveData<String> get() = _totalAmount
-
-    private var _deliveryCharge = MutableLiveData<String>()
-    val deliveryCharge: LiveData<String> get() = _deliveryCharge
-
-
-    fun setDeliveryChargeAndTotalAmount() {
-        var totalAmount = 0
-
-        cartItemList.forEach { cartItem ->
-            totalAmount += if (cartItem.quantity.toInt() > 1) {
-                cartItem.quantity.toInt().times(cartItem.productPrice.toInt())
-            } else {
-                cartItem.productPrice.toInt()
-            }
-        }
-
-        _totalAmount.value = totalAmount.toString().toPriceAmount()
-
-        // set Delivery charge
-        _deliveryCharge.value = if (totalAmount > MAXIMUM_AMOUNT_TO_AVOID_DELIVERY_CHARGE) {
-            DELIVERY_FREE
-        } else {
-            DELIVERY_CHARGE.toString()
-        }
-    }
 }
