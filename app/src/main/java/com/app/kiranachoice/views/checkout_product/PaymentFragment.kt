@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentPaymentBinding
+import com.app.kiranachoice.utils.toPriceAmount
 
 class PaymentFragment : Fragment() {
 
@@ -81,7 +82,7 @@ class PaymentFragment : Fragment() {
             textProductPrice.id = View.generateViewId()
             textProductPrice.setTextColor(Color.BLACK)
             textProductPrice.textSize = 15f
-            textProductPrice.text = getString(R.string.rupee).plus(" $totalPrice")
+            textProductPrice.text = getString(R.string.rupee).plus(" ${totalPrice.toString().toPriceAmount()}")
 
             val param0 = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
             param0.setMargins(16,0,0,24)

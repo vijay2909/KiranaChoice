@@ -67,7 +67,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.cartFragment,
                 R.id.editProfileFragment,
                 R.id.myOrdersFragment,
-                R.id.feedbackFragment,
                 R.id.contactUsFragment,
                 R.id.homeFragment,
                 R.id.chatFragment,
@@ -79,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         binding.navView.setupWithNavController(navController)
         binding.appBarMain.bottomNavView.setupWithNavController(navController)
 
-        viewModel.getAllCartItems().observe(this, {
+        viewModel.allCartItems.observe(this, {
             it?.let {
                 totalCartItem = it.size
                 invalidateOptionsMenu()
@@ -89,8 +88,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.cartFragment, R.id.contactUsFragment,
-                R.id.feedbackFragment, R.id.myOrdersFragment,
-                R.id.editProfileFragment -> {
+                R.id.myOrdersFragment, R.id.editProfileFragment -> {
                     binding.appBarMain.bottomNavView.visibility = View.GONE
                 }
                 else -> {

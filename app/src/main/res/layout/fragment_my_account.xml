@@ -41,6 +41,7 @@
                     android:layout_height="120dp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="32dp"
+                    app:profileImage="@{user.imageUrl}"
                     android:src="@drawable/default_user_image"
                     android:visibility="@{user == null ? View.GONE : View.VISIBLE}" />
 

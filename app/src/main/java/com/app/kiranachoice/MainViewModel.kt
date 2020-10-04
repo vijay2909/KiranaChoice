@@ -56,6 +56,8 @@ class MainViewModel(application: Application) : ViewModel() {
     private var _totalAmount = MutableLiveData<String>()
     val totalAmount: LiveData<String> get() = _totalAmount
 
+    var allCartItems: LiveData<List<CartItem>>
+
     var cartItems: List<CartItem> = ArrayList()
 
     init {
@@ -68,14 +70,16 @@ class MainViewModel(application: Application) : ViewModel() {
         cartDao = database.cartDao
         cartRepo = CartRepo(cartDao)
 
-        getAllCartItems()
+        allCartItems = cartRepo.allCartItems
 
         viewModelScope.launch {
             getAllProducts()
         }
     }
 
-    fun getAllCartItems(): LiveData<List<CartItem>> = cartRepo.allCartItems
+    fun getAllCartItems() {
+        allCartItems = cartRepo.allCartItems
+    }
 
     private var fakeProductList = ArrayList<ProductModel>()
 
@@ -191,30 +195,26 @@ class MainViewModel(application: Application) : ViewModel() {
         getAllCartItems()
     }
 
-    fun getTotalPayableAmount() {
-        if (amount == 0L) {
-            cartItems.forEach { cartItem ->
-                amount = if (cartItem.quantity.isNotEmpty()) {
-                    if (cartItem.quantity.toInt() > 1) {
-                        amount.plus(
-                            cartItem.quantity.toInt().times(cartItem.productPrice.toInt())
-                        )
-                    } else {
-                        amount.plus(cartItem.productPrice.toInt())
-                    }
-                } else {
-                    amount.plus(cartItem.productPrice.toInt())
-                }
+    fun getTotalPayableAmount(cartItems: List<CartItem>) {
+        amount = 0L
+        cartItems.forEach { cartItem ->
+            Log.i(TAG, "cartItem Product Price : ${cartItem.productPrice}")
+            amount = if (cartItem.quantity.toInt() > 1) {
+                amount.plus(
+                    cartItem.quantity.toInt().times(cartItem.productPrice.toInt())
+                )
+            } else {
+                amount.plus(cartItem.productPrice.toInt())
             }
-
-            _productTotalAmount.value = amount.toString()
-
-            addDeliveryFeeIfRequire(amount)
         }
+
+        _productTotalAmount.value = amount.toString()
+
+        addDeliveryFeeIfRequire(amount)
     }
 
     private fun addDeliveryFeeIfRequire(amount: Long) {
-        if (amount < 399) {
+        if (amount < MAXIMUM_AMOUNT_TO_AVOID_DELIVERY_CHARGE) {
             _deliveryFee.value = DELIVERY_CHARGE.toString()
             _totalAmount.value = amount.plus(DELIVERY_CHARGE).toString()
         } else {
@@ -246,3 +246,4 @@ class MainViewModel(application: Application) : ViewModel() {
     }
 
 }
+

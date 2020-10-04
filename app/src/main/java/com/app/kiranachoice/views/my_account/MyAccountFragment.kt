@@ -15,12 +15,11 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.app.kiranachoice.DevicecureMapActivity
 import com.app.kiranachoice.MainViewModel
+import com.app.kiranachoice.MainViewModelFactory
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentMyAccountBinding
-import com.app.kiranachoice.MainViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.theartofdev.edmodo.cropper.CropImage
-import com.theartofdev.edmodo.cropper.CropImageView
 
 
 class MyAccountFragment : Fragment(), View.OnClickListener {
@@ -50,7 +49,6 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
         binding.apply {
             textEditProfile.setOnClickListener(this@MyAccountFragment)
             textMyOrders.setOnClickListener(this@MyAccountFragment)
-            userImage.setOnClickListener(this@MyAccountFragment)
             textOurStore.setOnClickListener(this@MyAccountFragment)
             buttonLogin.setOnClickListener(this@MyAccountFragment)
             textSignOut.setOnClickListener(this@MyAccountFragment)
@@ -71,11 +69,6 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
         when (view?.id) {
             binding.textEditProfile.id -> navController.navigate(R.id.action_myAccountFragment_to_editProfileFragment)
             binding.textMyOrders.id -> navController.navigate(R.id.action_myAccountFragment_to_myOrdersFragment)
-            binding.userImage.id -> {
-                CropImage.activity()
-                    .setGuidelines(CropImageView.Guidelines.ON)
-                    .start(requireContext(), this)
-            }
             binding.textOurStore.id -> startActivity(
                 Intent(
                     requireContext(),

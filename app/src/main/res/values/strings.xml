@@ -141,4 +141,8 @@
     <string name="empty_string_error_msg">Enter your email address.</string>
     <string name="empty_msg_error_msg">Enter your message here.</string>
 
+    <plurals name="price_n_items">
+        <item quantity="one">Price ( %d item )</item>
+        <item quantity="other">Price ( %d items )</item>
+    </plurals>
 </resources>
