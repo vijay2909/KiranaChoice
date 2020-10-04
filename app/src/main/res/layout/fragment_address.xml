@@ -44,12 +44,12 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewPayment"
-                style="@style/TextAppearance.MaterialComponents.Caption"
+                style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:text="@string/payment"
-                android:textSize="14sp"
+                android:alpha="0.5"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -101,10 +101,9 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
-            android:clipToPadding="false"
             android:visibility="@{isAddressListEmpty ? View.GONE : View.VISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/btnContinue"
+            app:layout_constraintBottom_toTopOf="@id/btnConfirmOrder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnAddAddress"
@@ -112,18 +111,18 @@
             tools:listitem="@layout/item_address_layout" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnContinue"
+            android:id="@+id/btnConfirmOrder"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:background="@drawable/gradient_color"
-            android:text="@string/continue_text"
-            app:backgroundTint="@null"
-            android:paddingStart="48dp"
-            android:paddingEnd="48dp"
+            android:background="@drawable/curved_button_background"
+            android:text="@string/deliver_here"
+            android:textAllCaps="false"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <include
             android:id="@+id/progressBar"

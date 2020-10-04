@@ -89,7 +89,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             adapter = bestOfferProductsAdapter
         }
         viewModel.bestOfferProductList.observe(viewLifecycleOwner, {
-            binding.bestOfferAvailable = it.isNotEmpty()
+            binding.bestOfferProductsAvailable = it.isNotEmpty()
             bestOfferProductsAdapter.list = it
         })
         // Best Offer Products [[ END ]] >>>>>>>>>>>>>>
@@ -99,9 +99,18 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             adapter = SmallBannerCategoryAdapter(null)
         }
 
+
+        // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
+        val bestSellingProductsAdapter = HorizontalProductsAdapter(this)
         binding.recyclerViewBestSelling.apply {
-            adapter = HorizontalProductsAdapter(null)
+            setHasFixedSize(true)
+            adapter = bestSellingProductsAdapter
         }
+        viewModel.bestSellingProductList.observe(viewLifecycleOwner, {
+            binding.bestSellingProductAvailable = it.isNotEmpty()
+            bestSellingProductsAdapter.list = it
+        })
+        // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
 
         binding.recyclerViewCategory3.apply {
             adapter = SmallBannerCategoryAdapter(null)

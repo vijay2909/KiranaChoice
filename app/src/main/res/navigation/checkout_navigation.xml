@@ -9,5 +9,14 @@
         android:id="@+id/addressFragment"
         android:name="com.app.kiranachoice.views.checkout_product.AddressFragment"
         android:label="Checkout"
-        tools:layout="@layout/fragment_address" />
+        tools:layout="@layout/fragment_address" >
+        <action
+            android:id="@+id/action_addressFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.app.kiranachoice.views.checkout_product.PaymentFragment"
+        android:label="Payment"
+        tools:layout="@layout/fragment_payment" />
 </navigation>

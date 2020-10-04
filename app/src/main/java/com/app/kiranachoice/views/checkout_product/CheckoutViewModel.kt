@@ -1,25 +1,37 @@
 package com.app.kiranachoice.views.checkout_product
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.app.kiranachoice.db.CartDatabase
+import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.AddressModel
+import com.app.kiranachoice.repositories.CartRepo
 import com.app.kiranachoice.utils.USER_ADDRESSES_REFERENCE
 import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
+import kotlin.collections.ArrayList
 
-class CheckoutViewModel : ViewModel() {
+class CheckoutViewModel(application: Application) : ViewModel() {
 
     private var dbFire: FirebaseFirestore? = null
     private var mAuth: FirebaseAuth? = null
+    private val cartRepo : CartRepo
+    val allProducts : LiveData<List<CartItem>>
 
     init {
         dbFire = FirebaseFirestore.getInstance()
         mAuth = FirebaseAuth.getInstance()
+        val database = CartDatabase.getInstance(application)
+        cartRepo = CartRepo(database.cartDao)
+        allProducts = cartRepo.allCartItems
         getAddresses()
     }
+
+    var cartItemList : List<CartItem> = ArrayList()
 
     var flatNumberOrBuildingName: String? = null
     var area: String? = null

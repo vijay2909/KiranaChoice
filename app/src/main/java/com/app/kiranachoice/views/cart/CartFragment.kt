@@ -42,7 +42,6 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
         super.onViewCreated(view, savedInstanceState)
 
         val cartItemAdapter = CartItemAdapter(this)
-
         binding.recyclerViewCartList.adapter = cartItemAdapter
 
         binding.recyclerViewCartList.addItemDecoration(
@@ -52,12 +51,12 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
             )
         )
 
-        viewModel.getAllCartItems().observe(viewLifecycleOwner, {
+        viewModel.allCartItems.observe(viewLifecycleOwner, {
             it?.let {
                 binding.isListEmpty = it.isEmpty()
-                viewModel.cartItems = it // this list use to know total amount
+                setupText(it.count())
                 cartItemAdapter.submitList(it)
-                viewModel.getTotalPayableAmount() // calculate total amount
+                viewModel.getTotalPayableAmount(it) // calculate total amount
             }
         })
 
@@ -66,6 +65,10 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.getAllCartItems()
+    }
 
     override fun onPause() {
         super.onPause()
@@ -84,6 +87,11 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
         }
     }
 
+    private fun setupText(totalProducts: Int) {
+        val itemFound =
+            resources.getQuantityString(R.plurals.price_n_items, totalProducts, totalProducts)
+        binding.textProductItem.text = itemFound
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

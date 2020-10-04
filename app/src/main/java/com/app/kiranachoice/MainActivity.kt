@@ -67,7 +67,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.cartFragment,
                 R.id.editProfileFragment,
                 R.id.myOrdersFragment,
-                R.id.feedbackFragment,
                 R.id.contactUsFragment,
                 R.id.homeFragment,
                 R.id.chatFragment,
@@ -79,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         binding.navView.setupWithNavController(navController)
         binding.appBarMain.bottomNavView.setupWithNavController(navController)
 
-        viewModel.getAllCartItems().observe(this, {
+        viewModel.allCartItems.observe(this, {
             it?.let {
                 totalCartItem = it.size
                 invalidateOptionsMenu()
@@ -88,7 +87,8 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.cartFragment -> {
+                R.id.cartFragment, R.id.contactUsFragment,
+                R.id.myOrdersFragment, R.id.editProfileFragment -> {
                     binding.appBarMain.bottomNavView.visibility = View.GONE
                 }
                 else -> {
@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
@@ -109,7 +110,7 @@ class MainActivity : AppCompatActivity() {
 
         if (totalCartItem == 0) {
             cartBadgeTextView.visibility = View.GONE
-        }else {
+        } else {
             cartBadgeTextView.text = totalCartItem.toString()
             cartBadgeTextView.visibility = View.VISIBLE
         }
@@ -119,15 +120,18 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return item.onNavDestinationSelected(findNavController(R.id.nav_host_fragment))
                 || super.onOptionsItemSelected(item)
     }
 
+
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
 
     override fun onStart() {
         super.onStart()

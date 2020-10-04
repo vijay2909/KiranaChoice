@@ -1,15 +1,12 @@
 package com.app.kiranachoice.views.home
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.app.kiranachoice.models.BannerImageModel
 import com.app.kiranachoice.models.Category1Model
 import com.app.kiranachoice.models.ProductModel
-import com.app.kiranachoice.utils.CATEGORY_REFERENCE
-import com.app.kiranachoice.utils.HOME_TOP_BANNER
-import com.app.kiranachoice.utils.PRODUCT_REFERENCE
+import com.app.kiranachoice.utils.*
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -24,6 +21,7 @@ class HomeViewModel : ViewModel() {
         getBanners()
         getCategories()
         getBestOfferProduct()
+        getBestSellingProduct()
     }
 
     private var fakeBannersList = ArrayList<BannerImageModel>()
@@ -37,10 +35,11 @@ class HomeViewModel : ViewModel() {
 
                     fakeBannersList.clear()
 
-                    snapshot.children.forEach{ dataSnapshot ->
-                        dataSnapshot.getValue(BannerImageModel::class.java)?.let {bannerImageModel ->
-                            fakeBannersList.add(bannerImageModel)
-                        }
+                    snapshot.children.forEach { dataSnapshot ->
+                        dataSnapshot.getValue(BannerImageModel::class.java)
+                            ?.let { bannerImageModel ->
+                                fakeBannersList.add(bannerImageModel)
+                            }
                     }
 
                     _bannersList.postValue(fakeBannersList)
@@ -81,6 +80,7 @@ class HomeViewModel : ViewModel() {
 
     private fun getBestOfferProduct() {
         dbRef?.getReference(PRODUCT_REFERENCE)
+            ?.orderByChild(BEST_OFFER_PRODUCT)?.equalTo(true)
             ?.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     fakeBestOfferProductList.clear()
@@ -89,6 +89,29 @@ class HomeViewModel : ViewModel() {
                             ?.let { model -> fakeBestOfferProductList.add(model) }
                     }
                     _bestOfferProductList.postValue(fakeBestOfferProductList)
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+
+            })
+    }
+
+    private var fakeBestSellingProductList = ArrayList<ProductModel>()
+    private var _bestSellingProductList = MutableLiveData<List<ProductModel>>()
+    val bestSellingProductList: LiveData<List<ProductModel>> get() = _bestSellingProductList
+
+    private fun getBestSellingProduct() {
+        dbRef?.getReference(PRODUCT_REFERENCE)
+            ?.orderByChild(BEST_SELLING_PRODUCT)?.equalTo(true)
+            ?.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    fakeBestSellingProductList.clear()
+                    snapshot.children.forEach {
+                        it.getValue(ProductModel::class.java)
+                            ?.let { model -> fakeBestSellingProductList.add(model) }
+                    }
+                    _bestSellingProductList.postValue(fakeBestSellingProductList)
 
                 }
 
