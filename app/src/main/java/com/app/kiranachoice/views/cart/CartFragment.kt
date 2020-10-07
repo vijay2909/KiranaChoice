@@ -1,6 +1,5 @@
 package com.app.kiranachoice.views.cart
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.MainViewModelFactory
@@ -15,7 +15,6 @@ import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentCartBinding
 import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.recyclerView_adapters.CartItemAdapter
-import com.app.kiranachoice.views.checkout_product.CheckoutActivity
 
 class CartFragment : Fragment(), CartItemAdapter.CartListener {
 
@@ -61,7 +60,7 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
         })
 
         binding.btnPlaceOrder.setOnClickListener {
-            startActivity(Intent(requireContext(), CheckoutActivity::class.java))
+            view.findNavController().navigate(R.id.action_cartFragment_to_addressFragment)
         }
     }
 

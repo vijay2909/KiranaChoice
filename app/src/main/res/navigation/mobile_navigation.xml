@@ -149,7 +149,18 @@
         tools:layout="@layout/fragment_cart" >
         <action
             android:id="@+id/action_cartFragment_self"
-            app:destination="@id/cartFragment" />
+            app:destination="@id/cartFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_cartFragment_to_addressFragment"
+            app:destination="@id/addressFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
@@ -163,4 +174,9 @@
             android:name="productModel"
             app:argType="com.app.kiranachoice.models.ProductModel" />
     </fragment>
+    <fragment
+        android:id="@+id/addressFragment"
+        android:name="com.app.kiranachoice.views.address.AddressFragment"
+        android:label="Select Address"
+        tools:layout="@layout/fragment_address" />
 </navigation>

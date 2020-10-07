@@ -6,12 +6,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import com.app.kiranachoice.databinding.ActivityMainBinding
 import com.app.kiranachoice.databinding.NavHeaderMainBinding
@@ -22,6 +23,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
+
+    private lateinit var navController: NavController
 
     private var totalCartItem = 0
 
@@ -47,24 +50,18 @@ class MainActivity : AppCompatActivity() {
 
         binding.navView.addHeaderView(navHeader.root)
 
-        val navController = findNavController(R.id.nav_host_fragment)
+        val host: NavHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment? ?: return
+
+        navController = host.navController
 
         navHeader.buttonLogin.setOnClickListener {
             startActivity(Intent(this, AuthActivity::class.java))
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
-        val toggle = ActionBarDrawerToggle(
-            this, binding.drawerLayout, binding.appBarMain.toolbar,
-            R.string.navigation_drawer_open, R.string.navigation_drawer_close
-        )
-
-        binding.drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.cartFragment,
                 R.id.editProfileFragment,
                 R.id.myOrdersFragment,
                 R.id.contactUsFragment,
@@ -74,9 +71,12 @@ class MainActivity : AppCompatActivity() {
                 R.id.myAccountFragment
             ), binding.drawerLayout
         )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        binding.navView.setupWithNavController(navController)
-        binding.appBarMain.bottomNavView.setupWithNavController(navController)
+
+        setupActionBar()
+
+        setupNavigationMenu()
+
+        setupBottomNavMenu()
 
         viewModel.allCartItems.observe(this, {
             it?.let {
@@ -88,7 +88,8 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.cartFragment, R.id.contactUsFragment,
-                R.id.myOrdersFragment, R.id.editProfileFragment -> {
+                R.id.myOrdersFragment, R.id.editProfileFragment,
+                R.id.addressFragment -> {
                     binding.appBarMain.bottomNavView.visibility = View.GONE
                 }
                 else -> {
@@ -96,6 +97,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun setupActionBar() {
+        setupActionBarWithNavController(navController, appBarConfiguration)
+    }
+
+    private fun setupNavigationMenu() {
+        binding.navView.setupWithNavController(navController)
+    }
+
+    private fun setupBottomNavMenu() {
+        binding.appBarMain.bottomNavView.setupWithNavController(navController)
     }
 
 
@@ -122,14 +135,12 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return item.onNavDestinationSelected(findNavController(R.id.nav_host_fragment))
-                || super.onOptionsItemSelected(item)
+        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
     }
 
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+        return findNavController(R.id.nav_host_fragment).navigateUp(appBarConfiguration)
     }
 
 

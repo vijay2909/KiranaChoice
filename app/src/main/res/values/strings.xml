@@ -145,4 +145,8 @@
         <item quantity="one">Price ( %d item )</item>
         <item quantity="other">Price ( %d items )</item>
     </plurals>
+
+    <string name="permission_denied">Permission Denied</string>
+    <string name="permission_denied_msg">Permission is denied, Please allow permissions from App Settings.</string>
+    <string name="app_setting">App Settings</string>
 </resources>

@@ -35,7 +35,7 @@
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCurrentLocation"
+            android:id="@+id/btnGetCurrentLocation"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,9 +62,10 @@
             app:hintEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnCurrentLocation">
+            app:layout_constraintTop_toBottomOf="@id/btnGetCurrentLocation">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/flatNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
@@ -84,6 +85,7 @@
             app:layout_constraintTop_toBottomOf="@id/etFlatNo">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/area"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
@@ -104,6 +106,7 @@
             app:layout_constraintTop_toBottomOf="@id/etArea">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/city"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
@@ -125,6 +128,7 @@
             app:layout_constraintTop_toBottomOf="@id/etCity">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/pinCode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
@@ -146,6 +150,7 @@
             app:layout_constraintTop_toBottomOf="@id/etCity">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
