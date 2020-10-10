@@ -35,6 +35,7 @@
     <string name="product_image">product image</string>
     <string name="add_to_cart">Add to Cart</string>
     <string name="rupee_with_text">₹%s.00</string>
+    <string name="rupees_string_format">₹%s</string>
     <string name="rupee">₹</string>
     <string name="dot_zero">.00</string>
     <string name="title_activity_devicecure_map">Map</string>
@@ -149,4 +150,11 @@
     <string name="permission_denied">Permission Denied</string>
     <string name="permission_denied_msg">Permission is denied, Please allow permissions from App Settings.</string>
     <string name="app_setting">App Settings</string>
+    <string name="confirm_order">Confirm Order</string>
+    <string name="payment_success">Payment Success</string>
+    <string name="ok">Ok</string>
+    <string name="your_booking_has_been_confirmed_ncheck_your_email_for_details">Your booking has been confirmed.\nCheck your email for details.</string>
+    <string name="order_booked">Order Booked!</string>
+    <string name="notification_description">Be notified when your order booked successfully.</string>
+    <string name="notification_name">Order Confirmation</string>
 </resources>

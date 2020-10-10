@@ -1,5 +1,6 @@
 package com.app.kiranachoice.recyclerView_adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +33,10 @@ class AddressAdapter(private val listener : AddressCardClickListener): RecyclerV
 
         holder.binding.addressCard.isChecked = position == lastCheckedPosition
 
+        if (lastCheckedPosition == position){
+            listener.onAddressCardSelect(list[position])
+        }
+
     }
 
     override fun getItemCount(): Int = list.size
@@ -61,5 +66,6 @@ class AddressAdapter(private val listener : AddressCardClickListener): RecyclerV
     interface AddressCardClickListener{
         fun onEditButtonClicked(addressModel: AddressModel)
         fun onDeleteButtonClicked(addressModel: AddressModel)
+        fun onAddressCardSelect(addressModel: AddressModel)
     }
 }

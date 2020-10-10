@@ -7,19 +7,21 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
-import android.location.*
-import android.location.LocationListener
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.DialogAddAddressBinding
 import com.app.kiranachoice.databinding.FragmentAddressBinding
@@ -32,24 +34,27 @@ import java.util.*
 
 private const val REQUEST_PERMISSION_CODE = 1
 
-class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
+class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
 
     private var _bindingAddress: FragmentAddressBinding? = null
     private val binding get() = _bindingAddress!!
 
     private lateinit var viewModel: AddressViewModel
-    private lateinit var locationManager: LocationManager
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
 
+    private lateinit var addAddressView: DialogAddAddressBinding
+
+    private lateinit var deliveryAddress: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         viewModel = ViewModelProvider(this).get(AddressViewModel::class.java)
+        (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         _bindingAddress = FragmentAddressBinding.inflate(inflater, container, false)
         binding.isAddressListEmpty = true
 
@@ -62,26 +67,7 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
             override fun onLocationResult(locationResult: LocationResult?) {
                 locationResult?.let {
                     for (location in it.locations) {
-                        val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                        var addresses: List<Address>
-
-                        addresses = geocoder.getFromLocation(
-                            location.latitude,
-                            location.longitude,
-                            1
-                        ) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-
-
-                        val address: String =
-                            addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-
-                        val city: String = addresses[0].locality
-                        val state: String = addresses[0].adminArea
-                        val country: String = addresses[0].countryName
-                        val postalCode: String = addresses[0].postalCode
-                        val knownName: String = addresses[0].featureName // On
-                        Log.d(TAG, "address: $address")
-                        Log.i(TAG, "city: $city\n state: $state\n country: $country, postalCode: $postalCode, knownName: $knownName")
+                        setLocation(location)
                     }
                 }
             }
@@ -90,6 +76,25 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
         mFusedLocationClient.removeLocationUpdates(locationCallback)
 
         return binding.root
+    }
+
+    private fun setLocation(location: Location) {
+        val geoCoder = Geocoder(requireContext(), Locale.getDefault())
+        val addresses: List<Address>
+
+        addresses = geoCoder.getFromLocation(
+            location.latitude,
+            location.longitude,
+            1
+        ) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+
+        addAddressView.apply {
+            flatNo.setText(addresses[0].featureName)
+            area.setText(addresses[0].subLocality)
+            city.setText(addresses[0].locality)
+            pinCode.setText(addresses[0].postalCode)
+            state.setText(addresses[0].adminArea)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -104,9 +109,10 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
         }
 
         viewModel.addressList.observe(viewLifecycleOwner, {
-            binding.progressBar.root.visibility = View.GONE
             binding.isAddressListEmpty = it.isEmpty()
             addressAdapter.list = it
+            binding.progressBar.root.visibility = View.GONE
+            binding.btnConfirmOrder.isEnabled = true
         })
 
         viewModel.updatedDetails.observe(viewLifecycleOwner, {
@@ -124,23 +130,27 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
                 viewModel.deleteFinished()
             }
         })
+
+        binding.btnConfirmOrder.setOnClickListener {
+            view.findNavController().navigate(AddressFragmentDirections.actionAddressFragmentToPaymentFragment(deliveryAddress))
+        }
     }
 
 
     private fun showDialogToAddAddress(addressModel: AddressModel?) {
-        val view =
+        addAddressView =
             DialogAddAddressBinding.inflate(LayoutInflater.from(requireContext()), null, false)
 
         addressModel?.let {
-            view.etFlatNo.editText?.setText(it.flat_num_or_building_name)
-            view.etArea.editText?.setText(it.area)
-            view.etCity.editText?.setText(it.city)
-            view.etPincode.editText?.setText(it.pincode)
-            view.etState.editText?.setText(it.state)
+            addAddressView.etFlatNo.editText?.setText(it.flat_num_or_building_name)
+            addAddressView.etArea.editText?.setText(it.area)
+            addAddressView.etCity.editText?.setText(it.city)
+            addAddressView.etPincode.editText?.setText(it.pincode)
+            addAddressView.etState.editText?.setText(it.state)
         }
 
         val dialog = AlertDialog.Builder(requireContext())
-            .setView(view.root)
+            .setView(addAddressView.root)
             .setCancelable(false)
             .show()
 
@@ -150,12 +160,12 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
         val inset = InsetDrawable(back, 20)
         dialog.window?.setBackgroundDrawable(inset)
 
-        view.btnCancel.setOnClickListener { dialog.dismiss() }
-        view.btnCancelDialog.setOnClickListener { dialog.dismiss() }
+        addAddressView.btnCancel.setOnClickListener { dialog.dismiss() }
+        addAddressView.btnCancelDialog.setOnClickListener { dialog.dismiss() }
 
-        view.btnSave.setOnClickListener {
+        addAddressView.btnSave.setOnClickListener {
             binding.progressBar.root.visibility = View.VISIBLE
-            if (validateAddressFields(view)) {
+            if (validateAddressFields(addAddressView)) {
                 dialog.dismiss()
                 if (addressModel == null) viewModel.saveAddress()
                 else viewModel.updateAddress(addressModel)
@@ -164,7 +174,7 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
             }
         }
 
-        view.btnGetCurrentLocation.setOnClickListener {
+        addAddressView.btnGetCurrentLocation.setOnClickListener {
             getLocation()
         }
     }
@@ -210,7 +220,11 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
     ) {
         when (requestCode) {
             REQUEST_PERMISSION_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    showPermissionDeniedDialog()
+                } else if (grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+                ) {
                     getLocation()
                 } else {
                     // permission is denied, you can ask for permission again, if you want
@@ -222,75 +236,25 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
                         REQUEST_PERMISSION_CODE
                     )
                 }
-                return
             }
         }
     }
 
-
-//    private fun getCurrentLocation() {
-//        // get the location manager
-//        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//            onGPS()
-//        } else {
-//            getLocation()
-//        }
-//
-//    }
-
-    private fun onGPS() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setMessage("Enable GPS").setCancelable(false)
-            .setPositiveButton("Yes") { _, _ ->
-                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            }.setNegativeButton("No") { dialog, _ ->
-                dialog.cancel()
-            }
-        val alertDialog = builder.create()
-        alertDialog.show()
-    }
-
     private fun getLocation() {
         when {
-            ContextCompat.checkSelfPermission(
+            ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(
+                    ActivityCompat.checkSelfPermission(
                         requireContext(),
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) == PackageManager.PERMISSION_GRANTED -> {
                 mFusedLocationClient.lastLocation.addOnSuccessListener {
-                    it.let { location ->
-                        val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                        val addresses: List<Address>
-
-                        addresses = geocoder.getFromLocation(
-                            location.latitude,
-                            location.longitude,
-                            1
-                        ) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-
-
-                        val address: String =
-                            addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-
-                        val city: String = addresses[0].locality
-                        val state: String = addresses[0].adminArea
-                        val country: String = addresses[0].countryName
-                        val postalCode: String = addresses[0].postalCode
-                        val knownName: String = addresses[0].featureName // On
-                        Log.d(TAG, "address: $address")
-                        Log.i(TAG, "\ncity: $city\n state: $state\n country: $country,\n postalCode: $postalCode,\n knownName: $knownName")
-                    }
+                    setLocation(it)
                 }
             }
 
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) && shouldShowRequestPermissionRationale(
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) -> {
-                showPermissionDeniedDialog()
-            }
             else -> {
                 requestPermissions(
                     arrayOf(
@@ -302,10 +266,6 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
             }
         }
 
-    }
-
-    companion object {
-        private const val TAG = "AddressFragment"
     }
 
     override fun onDestroyView() {
@@ -323,6 +283,13 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener{
         showDialogBeforeDelete(addressModel)
     }
 
+    override fun onAddressCardSelect(addressModel: AddressModel) {
+        deliveryAddress = "${addressModel.flat_num_or_building_name}," +
+                " ${addressModel.area}," +
+                " ${addressModel.city}," +
+                " ${addressModel.state}," +
+                " ${addressModel.pincode}"
+    }
 
     private fun showDialogBeforeDelete(addressModel: AddressModel) {
         AlertDialog.Builder(requireContext())

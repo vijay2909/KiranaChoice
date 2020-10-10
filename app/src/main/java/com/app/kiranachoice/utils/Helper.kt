@@ -30,6 +30,7 @@ suspend fun addToCart(
     if (!isAlreadyAdded) {
         val cartItem = CartItem(
             productModel.product_key.toString(),
+            productModel.product_sku.toString(),
             productModel.productTitle.toString(),
             productModel.productImageUrl.toString(),
             packagingSizeModel.mrp.toString(),

@@ -83,6 +83,7 @@ fun setPriceFormatted(view: TextView, value: String?) {
 @BindingAdapter("address")
 fun setAddress(view: MaterialTextView, addressModel: AddressModel) {
     val address =
-        "${addressModel.flat_num_or_building_name}, ${addressModel.area}, ${addressModel.city}, ${addressModel.state}, ${addressModel.pincode}"
+        addressModel.flat_num_or_building_name + " " + addressModel.area + " " + addressModel.city +
+                " " + addressModel.state + " " + addressModel.pincode
     view.text = address
 }

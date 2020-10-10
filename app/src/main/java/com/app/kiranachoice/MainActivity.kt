@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             when (destination.id) {
                 R.id.cartFragment, R.id.contactUsFragment,
                 R.id.myOrdersFragment, R.id.editProfileFragment,
-                R.id.addressFragment -> {
+                R.id.addressFragment, R.id.paymentFragment -> {
                     binding.appBarMain.bottomNavView.visibility = View.GONE
                 }
                 else -> {

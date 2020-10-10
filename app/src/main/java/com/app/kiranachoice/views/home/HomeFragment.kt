@@ -6,6 +6,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -43,6 +44,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         savedInstanceState: Bundle?
     ): View? {
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        (activity as AppCompatActivity).supportActionBar?.show()
         _bindingHome = FragmentHomeBinding.inflate(inflater, container, false)
         homeBannerImageList = ArrayList()
         viewPager = binding.homeBanner1

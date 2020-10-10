@@ -19,10 +19,18 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
+            app:destination="@id/searchFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_homeFragment_to_productDetailsFragment"
-            app:destination="@id/productDetailsFragment" />
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -48,13 +56,6 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_myAccountFragment_to_myOrdersFragment"
-            app:destination="@id/myOrdersFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
             android:id="@+id/action_myAccountFragment_to_authActivity"
             app:destination="@id/authActivity"
             app:enterAnim="@anim/slide_in_right"
@@ -64,7 +65,14 @@
         <action
             android:id="@+id/action_myAccountFragment_to_homeFragment"
             app:destination="@id/homeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_myAccountFragment_to_myOrdersFragment"
+            app:destination="@id/myOrdersFragment" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
@@ -89,10 +97,6 @@
         <action
             android:id="@+id/action_myOrdersFragment_to_myAccountFragment"
             app:destination="@id/myAccountFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/myAccountFragment"
             app:popUpToInclusive="true" />
     </fragment>
@@ -123,14 +127,21 @@
     <fragment
         android:id="@+id/productsFragment"
         android:name="com.app.kiranachoice.views.products.ProductsFragment"
-        android:label="Product List"
+        android:label="{title}"
         tools:layout="@layout/fragment_products">
         <argument
             android:name="subCategoryModel"
             app:argType="com.app.kiranachoice.models.SubCategoryModel" />
         <action
             android:id="@+id/action_productsFragment_to_productDetailsFragment"
-            app:destination="@id/productDetailsFragment" />
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="title"
+            app:argType="string" />
     </fragment>
     <activity
         android:id="@+id/authActivity"
@@ -146,21 +157,21 @@
         android:id="@+id/cartFragment"
         android:name="com.app.kiranachoice.views.cart.CartFragment"
         android:label="My Cart"
-        tools:layout="@layout/fragment_cart" >
+        tools:layout="@layout/fragment_cart">
         <action
             android:id="@+id/action_cartFragment_self"
             app:destination="@id/cartFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_cartFragment_to_addressFragment"
             app:destination="@id/addressFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
@@ -178,5 +189,30 @@
         android:id="@+id/addressFragment"
         android:name="com.app.kiranachoice.views.address.AddressFragment"
         android:label="Select Address"
-        tools:layout="@layout/fragment_address" />
+        tools:layout="@layout/fragment_address">
+        <action
+            android:id="@+id/action_addressFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.app.kiranachoice.views.payment.PaymentFragment"
+        tools:layout="@layout/fragment_payment">
+        <action
+            android:id="@+id/action_paymentFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="deliveryAddress"
+            app:argType="string" />
+    </fragment>
 </navigation>

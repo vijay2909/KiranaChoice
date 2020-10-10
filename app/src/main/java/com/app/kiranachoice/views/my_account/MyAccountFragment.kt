@@ -68,7 +68,7 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.textEditProfile.id -> navController.navigate(R.id.action_myAccountFragment_to_editProfileFragment)
-            binding.textMyOrders.id -> navController.navigate(R.id.action_myAccountFragment_to_myOrdersFragment)
+            binding.textMyOrders.id -> { navController.navigate(R.id.action_myAccountFragment_to_myOrdersFragment) }
             binding.textOurStore.id -> startActivity(
                 Intent(
                     requireContext(),
