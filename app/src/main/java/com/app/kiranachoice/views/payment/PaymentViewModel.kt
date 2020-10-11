@@ -242,10 +242,10 @@ class PaymentViewModel(val application: Application) : ViewModel() {
             val weekDay = DateFormat.format("EEE", unix).toString()
             val month = DateFormat.format("MMM", unix).toString()
             val date = DateFormat.format("d", unix).toString().toInt()
-            val year = DateFormat.format("yy", unix).toString().toInt()
+            val year = DateFormat.format("yyyy", unix).toString().toInt()
 
             orderPlacedDate = weekDay.plus(", $month").plus(" $date").plus(getMark(date.toString()))
-                .plus(" '$year")
+                .plus(" $year")
         }
     }
 

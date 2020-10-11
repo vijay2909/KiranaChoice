@@ -157,4 +157,6 @@
     <string name="order_booked">Order Booked!</string>
     <string name="notification_description">Be notified when your order booked successfully.</string>
     <string name="notification_name">Order Confirmation</string>
+    <string name="apply_now">Apply Now</string>
+    <string name="avail_coupon_discount">Avail coupon discount</string>
 </resources>

@@ -48,6 +48,7 @@ class AddressViewModel : ViewModel() {
         }
     }
 
+    
     private var _addressList = MutableLiveData<List<AddressModel>>()
     val addressList: LiveData<List<AddressModel>> get() = _addressList
 
