@@ -2,14 +2,11 @@ package com.app.kiranachoice
 
 import android.app.Application
 import android.net.Uri
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.app.kiranachoice.db.CartDao
 import com.app.kiranachoice.db.CartDatabase
 import com.app.kiranachoice.db.CartItem
+import com.app.kiranachoice.models.CouponModel
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.models.User
 import com.app.kiranachoice.repositories.CartRepo
@@ -46,12 +43,13 @@ class MainViewModel(application: Application) : ViewModel() {
     val imageUrl: LiveData<String> get() = _imageUrl
 
     private var amount = 0L
+    private var savedAmt = 0L
 
     private var _productTotalAmount = MutableLiveData<String>()
     val productTotalAmount: LiveData<String> get() = _productTotalAmount
 
-    private var _deliveryFee = MutableLiveData<String>()
-    val deliveryFee: LiveData<String> get() = _deliveryFee
+//    private var _deliveryFee = MutableLiveData<String>()
+//    val deliveryFee: LiveData<String> get() = _deliveryFee
 
     private var _totalAmount = MutableLiveData<String>()
     val totalAmount: LiveData<String> get() = _totalAmount
@@ -75,6 +73,8 @@ class MainViewModel(application: Application) : ViewModel() {
         viewModelScope.launch {
             getAllProducts()
         }
+
+        getCoupons()
     }
 
     fun getAllCartItems() {
@@ -186,7 +186,6 @@ class MainViewModel(application: Application) : ViewModel() {
                 }
             }
         }
-        Log.i(TAG, "fakeList: $fakeList")
         _resultList.value = fakeList
     }
 
@@ -195,10 +194,14 @@ class MainViewModel(application: Application) : ViewModel() {
         getAllCartItems()
     }
 
+    private var _savedAmount = MutableLiveData<String>()
+    val savedAmount: LiveData<String> get() = _savedAmount
+
     fun getTotalPayableAmount(cartItems: List<CartItem>) {
         amount = 0L
+        savedAmt = 0L
+
         cartItems.forEach { cartItem ->
-            Log.i(TAG, "cartItem Product Price : ${cartItem.productPrice}")
             amount = if (cartItem.quantity.toInt() > 1) {
                 amount.plus(
                     cartItem.quantity.toInt().times(cartItem.productPrice.toInt())
@@ -206,22 +209,39 @@ class MainViewModel(application: Application) : ViewModel() {
             } else {
                 amount.plus(cartItem.productPrice.toInt())
             }
+
+            savedAmt = if (cartItem.productMRP.toInt() > cartItem.productPrice.toInt()) {
+                cartItem.productMRP.toInt().minus(cartItem.productPrice.toInt()).toLong()
+            } else {
+                0
+            }
         }
 
         _productTotalAmount.value = amount.toString()
+        _savedAmount.value = savedAmt.toString()
 
-        addDeliveryFeeIfRequire(amount)
+//        addDeliveryFeeIfRequire(amount)
     }
 
-    private fun addDeliveryFeeIfRequire(amount: Long) {
-        if (amount < MAXIMUM_AMOUNT_TO_AVOID_DELIVERY_CHARGE) {
-            _deliveryFee.value = DELIVERY_CHARGE.toString()
-            _totalAmount.value = amount.plus(DELIVERY_CHARGE).toString()
+    val deliveryFee: LiveData<String> = Transformations.map(productTotalAmount) {
+        if (it.toInt() < MAXIMUM_AMOUNT_TO_AVOID_DELIVERY_CHARGE) {
+            _totalAmount.value = it.toInt().plus(DELIVERY_CHARGE).toString()
+            DELIVERY_CHARGE.toString()
         } else {
-            _deliveryFee.value = DELIVERY_FREE
-            _totalAmount.value = amount.toString()
+            _totalAmount.value = it
+            DELIVERY_FREE
         }
     }
+
+//    private fun addDeliveryFeeIfRequire(amount: Long) {
+//        if (amount < MAXIMUM_AMOUNT_TO_AVOID_DELIVERY_CHARGE) {
+//            _deliveryFee.value = DELIVERY_CHARGE.toString()
+//            _totalAmount.value = amount.plus(DELIVERY_CHARGE).toString()
+//        } else {
+//            _deliveryFee.value = DELIVERY_FREE
+//            _totalAmount.value = amount.toString()
+//        }
+//    }
 
     fun setTotalAmount(amountPlus: Int? = null, amountMinus: Int? = null) {
         if (amountPlus != null) {
@@ -232,7 +252,7 @@ class MainViewModel(application: Application) : ViewModel() {
                 productTotalAmount.value?.toInt()?.minus(amountMinus!!).toString()
             _totalAmount.value = _productTotalAmount.value
         }
-        addDeliveryFeeIfRequire(_productTotalAmount.value?.toLong()!!)
+//        addDeliveryFeeIfRequire(_productTotalAmount.value?.toLong()!!)
     }
 
     fun updateProduct(productName: String, quantity: String) {
@@ -241,8 +261,27 @@ class MainViewModel(application: Application) : ViewModel() {
         }
     }
 
-    companion object {
-        private const val TAG = "MainViewModel"
+
+    private var fakeCouponList = ArrayList<CouponModel>()
+    private var _couponsList = MutableLiveData<List<CouponModel>>()
+    val couponList: LiveData<List<CouponModel>> get() = _couponsList
+
+    private fun getCoupons() {
+        dbRef?.getReference(COUPON_REFERENCE)
+            ?.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    fakeCouponList.clear()
+                    snapshot.children.forEach {
+                        it.getValue(CouponModel::class.java)?.let { couponModel ->
+                            fakeCouponList.add(couponModel)
+                        }
+                    }
+                    _couponsList.postValue(fakeCouponList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+
+            })
     }
 
 }

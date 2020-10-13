@@ -37,3 +37,5 @@ const val SEQUENCE = "Sequence Order Id"
 const val ORDER_ID_FORMAT = "KC1000"
 
 const val ADMIN_REFERENCE = "Admin"
+
+const val COUPON_REFERENCE = "Coupons"

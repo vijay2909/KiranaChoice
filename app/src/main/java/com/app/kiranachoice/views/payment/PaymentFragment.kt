@@ -2,9 +2,7 @@ package com.app.kiranachoice.views.payment
 
 import android.app.Application
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context.NOTIFICATION_SERVICE
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -28,6 +27,7 @@ import com.app.kiranachoice.databinding.FragmentPaymentBinding
 import com.app.kiranachoice.utils.DELIVERY_FREE
 import com.app.kiranachoice.utils.Mailer
 import com.app.kiranachoice.utils.toPriceAmount
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -37,6 +37,7 @@ class PaymentFragment : Fragment() {
     private val binding get() = bindingPayment!!
     private lateinit var viewModel: PaymentViewModel
 
+
     private lateinit var manager: NotificationManager
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,10 +45,14 @@ class PaymentFragment : Fragment() {
     ): View? {
         val factory = PaymentViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(this, factory).get(PaymentViewModel::class.java)
+
         bindingPayment = FragmentPaymentBinding.inflate(inflater, container, false)
+
         binding.lifecycleOwner = viewLifecycleOwner
         binding.paymentViewModel = viewModel
+
         manager = requireActivity().getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
         return binding.root
     }
 

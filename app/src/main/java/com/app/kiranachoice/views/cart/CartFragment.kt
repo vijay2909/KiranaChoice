@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -15,12 +16,18 @@ import com.app.kiranachoice.MainViewModelFactory
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentCartBinding
 import com.app.kiranachoice.db.CartItem
+import com.app.kiranachoice.models.CouponModel
 import com.app.kiranachoice.recyclerView_adapters.CartItemAdapter
+import com.app.kiranachoice.recyclerView_adapters.CouponsAdapter
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 
-class CartFragment : Fragment(), CartItemAdapter.CartListener {
+class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.CouponApplyListener {
+
 
     private var _bindingCart: FragmentCartBinding? = null
     private val binding get() = _bindingCart!!
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     private lateinit var viewModel: MainViewModel
 
@@ -31,15 +38,37 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
         val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(requireActivity(), mainViewModelFactory)
             .get(MainViewModel::class.java)
+
         _bindingCart = FragmentCartBinding.inflate(inflater, container, false)
+
         binding.mainViewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
+
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet.couponBottomSheet)
+
+        binding.btnCouponApply.setOnClickListener {
+            val state =
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
+                    BottomSheetBehavior.STATE_COLLAPSED
+                else
+                    BottomSheetBehavior.STATE_EXPANDED
+            bottomSheetBehavior.state = state
+        }
+
         return binding.root
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.bottomSheet.btnApply.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        binding.bottomSheet.btnClose.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
 
         val cartItemAdapter = CartItemAdapter(this)
         binding.recyclerViewCartList.adapter = cartItemAdapter
@@ -63,6 +92,13 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
         binding.btnPlaceOrder.setOnClickListener {
             view.findNavController().navigate(R.id.action_cartFragment_to_addressFragment)
         }
+
+        val couponsAdapter = CouponsAdapter(this)
+        binding.bottomSheet.recyclerViewCouponList.adapter = couponsAdapter
+
+        viewModel.couponList.observe(viewLifecycleOwner, {
+            couponsAdapter.list = it
+        })
     }
 
     override fun onStart() {
@@ -108,5 +144,19 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener {
     override fun onQuantityChange(cartItem: CartItem, amountPlus: Int?, amountMinus: Int?) {
         if (amountPlus != null) viewModel.setTotalAmount(amountPlus)
         else viewModel.setTotalAmount(null, amountMinus)
+    }
+
+    override fun onCouponApplied(couponModel: CouponModel, position: Int) {
+        if (couponModel.isActive){
+            if (couponModel.upToPrice.toString().toInt() <= viewModel.totalAmount.value.toString().toInt()){
+
+
+            } else {
+                Snackbar.make(requireView(), "Coupon Valid on order value greater than Rs. ${couponModel.upToPrice}.", Snackbar.LENGTH_SHORT).show()
+            }
+            TODO("Check user applicable for this coupon or not")
+        } else {
+            Snackbar.make(requireView(), "Coupon Expired.", Snackbar.LENGTH_SHORT).show()
+        }
     }
 }
