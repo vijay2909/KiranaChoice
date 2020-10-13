@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -27,7 +26,6 @@ import com.app.kiranachoice.databinding.FragmentPaymentBinding
 import com.app.kiranachoice.utils.DELIVERY_FREE
 import com.app.kiranachoice.utils.Mailer
 import com.app.kiranachoice.utils.toPriceAmount
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -55,6 +53,7 @@ class PaymentFragment : Fragment() {
 
         return binding.root
     }
+
 
     private val args: PaymentFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

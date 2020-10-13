@@ -141,20 +141,18 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
     }
 
 
-    override fun onQuantityChange(cartItem: CartItem, amountPlus: Int?, amountMinus: Int?) {
-        if (amountPlus != null) viewModel.setTotalAmount(amountPlus)
-        else viewModel.setTotalAmount(null, amountMinus)
+    override fun onQuantityChange(cartItem: CartItem, amountPlus: Int?, amountMinus: Int?, mrpAndPriceDifference : Int) {
+        if (amountPlus != null) viewModel.setTotalAmount(amountPlus,null,  mrpAndPriceDifference)
+        else viewModel.setTotalAmount(null, amountMinus, mrpAndPriceDifference)
     }
 
     override fun onCouponApplied(couponModel: CouponModel, position: Int) {
         if (couponModel.isActive){
             if (couponModel.upToPrice.toString().toInt() <= viewModel.totalAmount.value.toString().toInt()){
 
-
             } else {
                 Snackbar.make(requireView(), "Coupon Valid on order value greater than Rs. ${couponModel.upToPrice}.", Snackbar.LENGTH_SHORT).show()
             }
-            TODO("Check user applicable for this coupon or not")
         } else {
             Snackbar.make(requireView(), "Coupon Expired.", Snackbar.LENGTH_SHORT).show()
         }

@@ -194,7 +194,7 @@ class MainViewModel(application: Application) : ViewModel() {
         getAllCartItems()
     }
 
-    private var _savedAmount = MutableLiveData<String>()
+    private var _savedAmount = MutableLiveData("0")
     val savedAmount: LiveData<String> get() = _savedAmount
 
     fun getTotalPayableAmount(cartItems: List<CartItem>) {
@@ -243,17 +243,24 @@ class MainViewModel(application: Application) : ViewModel() {
 //        }
 //    }
 
-    fun setTotalAmount(amountPlus: Int? = null, amountMinus: Int? = null) {
+    fun setTotalAmount(amountPlus: Int? = null, amountMinus: Int? = null, mrpAndPriceDifference: Int) {
         if (amountPlus != null) {
             _productTotalAmount.value =
                 productTotalAmount.value?.toInt()?.plus(amountPlus).toString()
+            _savedAmount.value = _savedAmount.value?.toInt()?.plus(mrpAndPriceDifference).toString()
         } else {
             _productTotalAmount.value =
                 productTotalAmount.value?.toInt()?.minus(amountMinus!!).toString()
             _totalAmount.value = _productTotalAmount.value
+
+            if (_savedAmount.value?.toInt()!! >= 0) {
+                _savedAmount.value =
+                    _savedAmount.value?.toInt()?.minus(mrpAndPriceDifference).toString()
+            }
         }
 //        addDeliveryFeeIfRequire(_productTotalAmount.value?.toLong()!!)
     }
+
 
     fun updateProduct(productName: String, quantity: String) {
         viewModelScope.launch {
