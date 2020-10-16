@@ -5,19 +5,25 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.app.kiranachoice.models.BannerImageModel
 import com.app.kiranachoice.models.Category1Model
+import com.app.kiranachoice.models.PackagingSizeModel
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.utils.*
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
 class HomeViewModel : ViewModel() {
 
     private var dbRef: FirebaseDatabase? = null
+    private var mAuth: FirebaseAuth? = null
 
     init {
         dbRef = FirebaseDatabase.getInstance()
+        mAuth = FirebaseAuth.getInstance()
         getBanners()
         getCategories()
         getBestOfferProduct()

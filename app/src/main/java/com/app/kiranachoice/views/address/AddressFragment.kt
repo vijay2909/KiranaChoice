@@ -22,6 +22,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.DialogAddAddressBinding
 import com.app.kiranachoice.databinding.FragmentAddressBinding
@@ -97,6 +98,7 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
         }
     }
 
+    private val args : AddressFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -132,7 +134,7 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
         })
 
         binding.btnConfirmOrder.setOnClickListener {
-            view.findNavController().navigate(AddressFragmentDirections.actionAddressFragmentToPaymentFragment(deliveryAddress))
+            view.findNavController().navigate(AddressFragmentDirections.actionAddressFragmentToPaymentFragment(deliveryAddress, args.totalAmount, args.couponCode, args.couponDescription))
         }
     }
 

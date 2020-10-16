@@ -21,7 +21,6 @@ import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class ProductsFragment : Fragment(),
-//    , ProductClickListener,
     VerticalProductsAdapter.ProductListener {
 
     private var _bindingProduct: FragmentProductsBinding? = null
@@ -87,24 +86,6 @@ class ProductsFragment : Fragment(),
         super.onDestroyView()
         _bindingProduct = null
     }
-
-//    override fun addItemToCart(
-//        productModel: ProductModel,
-//        packagingSizeModel: PackagingSizeModel,
-//        quantity: String
-//    ) {
-//        viewModel.addItemToCart(productModel, packagingSizeModel, quantity)
-//    }
-//
-//
-//    override fun onItemClick(productModel: ProductModel) {
-//        navController?.navigate(
-//            ProductsFragmentDirections.actionProductsFragmentToProductDetailsFragment(
-//                productModel.productTitle.toString(), productModel
-//            )
-//        )
-//    }
-
 
     companion object {
         private const val TAG = "ProductsFragment"

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="listener"
+            type="com.app.kiranachoice.recyclerView_adapters.MyOrdersAdapter.OrderClickListener" />
+
+        <variable
+            name="model"
+            type="com.app.kiranachoice.models.BookItemOrderModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:onClick="@{() -> listener.onOrderClicked(model)}"
+        android:background="@color/white"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/productImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/placeholder_image"
+            app:imageUrl="@{model.productList.get(0).productImage}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textProductName"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:totalProducts="@{String.valueOf(model.productList.size())}"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/productImage"
+            app:layout_constraintTop_toTopOf="@id/productImage"
+            tools:text="Total 3 Products" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textOrderStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@{model.productList.get(0).status}"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/colorPrimaryDark"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/textProductName"
+            app:layout_constraintTop_toBottomOf="@+id/textProductName"
+            tools:text="Awaiting pickup" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textOrderPrice"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@{@string/rupees_string_format(model.invoiceAmount)}"
+            app:layout_constraintStart_toStartOf="@+id/textOrderStatus"
+            app:layout_constraintTop_toBottomOf="@+id/textOrderStatus"
+            tools:text="₹ 123" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:drawableEndCompat="@drawable/ic_arrow_right"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textOrderStatus" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textOrderId"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@{@string/order_format(model.orderId)}"
+            app:layout_constraintStart_toStartOf="@id/textOrderPrice"
+            app:layout_constraintTop_toBottomOf="@id/textOrderPrice"
+            tools:text="Order ID: KC100001" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textPlaceDate"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{@string/placed_date_format(model.orderPlacedDate)}"
+            app:layout_constraintStart_toStartOf="@id/textOrderId"
+            app:layout_constraintTop_toBottomOf="@id/textOrderId"
+            tools:text="Placed on: 10th Oct 2020 02:05pm" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

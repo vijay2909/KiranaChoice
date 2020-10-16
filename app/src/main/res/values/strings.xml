@@ -158,7 +158,8 @@
     <string name="notification_description">Be notified when your order booked successfully.</string>
     <string name="notification_name">Order Confirmation</string>
     <string name="apply_now">Apply Now</string>
-    <string name="avail_coupon_discount">Avail coupon discount</string>
+    <string name="remove">Remove</string>
+    <string name="available_coupon_discount">Available coupon discount</string>
 
     <!--    apply_coupon_layout     -->
     <string name="apply_coupon">Apply Coupon</string>
@@ -174,4 +175,23 @@
     <string name="view_details">+ view details</string>
 
     <string name="dash">-</string>
+    <string name="coupon_applied">Coupon Applied</string>
+    <string name="saved_amount">Saved ₹%s</string>
+    <string name="order_format">Order ID: %s</string>
+    <string name="placed_date_format">Placed on: %s</string>
+    <plurals name="total_products">
+        <item quantity="one">Total %d Product</item>
+        <item quantity="other">Total %d Products</item>
+    </plurals>
+
+    <string name="multiply_price">x  ₹%s.00</string>
+    <string name="ordered_on">ORDERED ON</string>
+    <string name="ordered_id">ORDERED ID</string>
+    <string name="total_amount_caps">TOTAL AMOUNT</string>
+    <string name="delivery_address_caps">DELIVERY ADDRESS</string>
+    <string name="cost_summary">COST SUMMARY</string>
+    <string name="invoice_amount">Invoice Amount</string>
+    <string name="ordered_items">ORDERED ITEMS</string>
+    <string name="support">SUPPORT</string>
+    <string name="call_customer_support">Call Customer Support</string>
 </resources>

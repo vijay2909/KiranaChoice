@@ -72,7 +72,11 @@
             app:popUpTo="@id/homeFragment" />
         <action
             android:id="@+id/action_myAccountFragment_to_myOrdersFragment"
-            app:destination="@id/myOrdersFragment" />
+            app:destination="@id/myOrdersFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
@@ -97,8 +101,19 @@
         <action
             android:id="@+id/action_myOrdersFragment_to_myAccountFragment"
             app:destination="@id/myAccountFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/myAccountFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_myOrdersFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/contactUsFragment"
@@ -164,7 +179,9 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/cartFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_cartFragment_to_addressFragment"
             app:destination="@id/addressFragment"
@@ -197,6 +214,19 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="totalAmount"
+            app:argType="string" />
+        <argument
+            android:name="couponCode"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="couponDescription"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/paymentFragment"
@@ -214,5 +244,27 @@
         <argument
             android:name="deliveryAddress"
             app:argType="string" />
+        <argument
+            android:name="totalAmount"
+            app:argType="string" />
+        <argument
+            android:name="couponCode"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="couponDescription"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderDetailsFragment"
+        android:name="com.app.kiranachoice.views.my_orders.OrderDetailsFragment"
+        android:label="Order Details"
+        tools:layout="@layout/fragment_order_details">
+        <argument
+            android:name="bookItemOrderModel"
+            app:argType="com.app.kiranachoice.models.BookItemOrderModel" />
     </fragment>
 </navigation>

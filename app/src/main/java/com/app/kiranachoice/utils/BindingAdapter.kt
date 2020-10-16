@@ -1,6 +1,8 @@
 package com.app.kiranachoice.utils
 
 import android.graphics.Paint
+import android.text.format.DateFormat
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
@@ -12,6 +14,8 @@ import com.app.kiranachoice.models.ProductModel
 import com.bumptech.glide.Glide
 import com.google.android.material.textview.MaterialTextView
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @BindingAdapter("profileImage")
@@ -86,4 +90,9 @@ fun setAddress(view: MaterialTextView, addressModel: AddressModel) {
         addressModel.flat_num_or_building_name + " " + addressModel.area + " " + addressModel.city +
                 " " + addressModel.state + " " + addressModel.pincode
     view.text = address
+}
+
+@BindingAdapter("totalProducts")
+fun setTotalProducts(view : TextView, size: String){
+    view.text = view.context.resources.getQuantityString(R.plurals.total_products, size.toInt(), size.toInt())
 }

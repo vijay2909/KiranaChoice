@@ -66,6 +66,7 @@ class CouponsAdapter(private val listener: CouponApplyListener) :
         }
 
         holder.binding.applyCouponButton.setOnClickListener {
+            holder.binding.applyCouponButton.isEnabled = false
             listener.onCouponApplied(list[position], position)
         }
     }

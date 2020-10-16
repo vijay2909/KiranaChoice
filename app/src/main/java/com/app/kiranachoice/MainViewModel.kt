@@ -2,10 +2,12 @@ package com.app.kiranachoice
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.*
 import com.app.kiranachoice.db.CartDao
 import com.app.kiranachoice.db.CartDatabase
 import com.app.kiranachoice.db.CartItem
+import com.app.kiranachoice.models.AppliedCouponModel
 import com.app.kiranachoice.models.CouponModel
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.models.User
@@ -20,8 +22,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainViewModel(application: Application) : ViewModel() {
     private var mAuth: FirebaseAuth? = null
@@ -48,15 +53,11 @@ class MainViewModel(application: Application) : ViewModel() {
     private var _productTotalAmount = MutableLiveData<String>()
     val productTotalAmount: LiveData<String> get() = _productTotalAmount
 
-//    private var _deliveryFee = MutableLiveData<String>()
-//    val deliveryFee: LiveData<String> get() = _deliveryFee
 
     private var _totalAmount = MutableLiveData<String>()
     val totalAmount: LiveData<String> get() = _totalAmount
 
     var allCartItems: LiveData<List<CartItem>>
-
-    var cartItems: List<CartItem> = ArrayList()
 
     init {
         mAuth = FirebaseAuth.getInstance()
@@ -189,10 +190,18 @@ class MainViewModel(application: Application) : ViewModel() {
         _resultList.value = fakeList
     }
 
+    private var _eventDeleteItem = MutableLiveData<Boolean>()
+    val eventDeleteItem : LiveData<Boolean> get() = _eventDeleteItem
+
     fun removeCartItem(cartItem: CartItem) = viewModelScope.launch(Dispatchers.IO) {
         cartRepo.delete(cartItem.productKey)
-        getAllCartItems()
+        _eventDeleteItem.postValue(true)
     }
+
+    fun eventDeleteItemFinished(){
+        _eventDeleteItem.value = false
+    }
+
 
     private var _savedAmount = MutableLiveData("0")
     val savedAmount: LiveData<String> get() = _savedAmount
@@ -210,17 +219,17 @@ class MainViewModel(application: Application) : ViewModel() {
                 amount.plus(cartItem.productPrice.toInt())
             }
 
-            savedAmt = if (cartItem.productMRP.toInt() > cartItem.productPrice.toInt()) {
-                cartItem.productMRP.toInt().minus(cartItem.productPrice.toInt()).toLong()
+            if (cartItem.productMRP.toInt() > cartItem.productPrice.toInt()) {
+                savedAmt += cartItem.productMRP.toInt().minus(cartItem.productPrice.toInt())
+                    .toLong()
             } else {
-                0
+                savedAmt += 0
             }
         }
 
         _productTotalAmount.value = amount.toString()
         _savedAmount.value = savedAmt.toString()
 
-//        addDeliveryFeeIfRequire(amount)
     }
 
     val deliveryFee: LiveData<String> = Transformations.map(productTotalAmount) {
@@ -233,17 +242,12 @@ class MainViewModel(application: Application) : ViewModel() {
         }
     }
 
-//    private fun addDeliveryFeeIfRequire(amount: Long) {
-//        if (amount < MAXIMUM_AMOUNT_TO_AVOID_DELIVERY_CHARGE) {
-//            _deliveryFee.value = DELIVERY_CHARGE.toString()
-//            _totalAmount.value = amount.plus(DELIVERY_CHARGE).toString()
-//        } else {
-//            _deliveryFee.value = DELIVERY_FREE
-//            _totalAmount.value = amount.toString()
-//        }
-//    }
 
-    fun setTotalAmount(amountPlus: Int? = null, amountMinus: Int? = null, mrpAndPriceDifference: Int) {
+    fun setTotalAmount(
+        amountPlus: Int? = null,
+        amountMinus: Int? = null,
+        mrpAndPriceDifference: Int
+    ) {
         if (amountPlus != null) {
             _productTotalAmount.value =
                 productTotalAmount.value?.toInt()?.plus(amountPlus).toString()
@@ -258,7 +262,6 @@ class MainViewModel(application: Application) : ViewModel() {
                     _savedAmount.value?.toInt()?.minus(mrpAndPriceDifference).toString()
             }
         }
-//        addDeliveryFeeIfRequire(_productTotalAmount.value?.toLong()!!)
     }
 
 
@@ -289,6 +292,95 @@ class MainViewModel(application: Application) : ViewModel() {
                 override fun onCancelled(error: DatabaseError) {}
 
             })
+    }
+
+    private var _snackBarForAlreadyAppliedCoupon = MutableLiveData<Boolean>()
+    val snackBarForAlreadyAppliedCoupon : LiveData<Boolean> get() = _snackBarForAlreadyAppliedCoupon
+
+    var couponCode: String? = null
+
+    fun couponApplied(couponModel: CouponModel) {
+        Log.i("CartFragment", "viewModel couponApplied: called ")
+        mAuth?.currentUser?.let { user ->
+            dbFire?.collection(USER_REFERENCE)
+                ?.document(user.uid)
+                ?.collection(APPLIED_COUPON)
+                ?.orderBy("couponCode")
+                ?.whereEqualTo("couponCode", couponModel.couponCode)
+                ?.get()
+                ?.addOnSuccessListener {
+                    // check.. if user already used coupon
+                    if (it != null && !it.isEmpty) {
+                        Log.i("CartFragment", "couponApplied if block: ")
+                        // user used coupon already
+                        _snackBarForAlreadyAppliedCoupon.postValue(true)
+                    } else {
+                        Log.i("CartFragment", "couponApplied else block: ")
+                        // user use coupon first time
+                        couponApply(couponModel)
+                    }
+                }
+                ?.addOnFailureListener {
+                    Log.i("CartFragment", "add on FailureListener: ")
+                    couponApply(couponModel)
+                }
+        }
+    }
+
+    private var _showCoupon = MutableLiveData<Boolean>()
+    val showCoupon : LiveData<Boolean> get() = _showCoupon
+
+    private var _couponDescription = MutableLiveData<String>()
+    val couponDescription : LiveData<String> get() = _couponDescription
+
+    private var discount : Double? = null
+    private var couponKey: String? = null
+
+    private fun couponApply(couponModel: CouponModel) {
+        couponCode = couponModel.couponCode
+        // discount rate not null means there is some discount rate... which we have to less from total amount
+        if (couponModel.discountRate != null){
+            discount = productTotalAmount.value.toString().toDouble().times(couponModel.discountRate.toString().toDouble()).div(100)
+            _totalAmount.value = totalAmount.value.toString().toDouble().minus(discount!!).toString()
+            _couponDescription.value = "₹$discount"
+        } else {
+            // discount rate null -> a coupon without discount rate ( e.g. 1 kg. sugar free )
+            _couponDescription.value = couponModel.couponDescription?.substringBefore("on", "On")?.trim()?.plus(" Free")
+        }
+
+        couponKey = UUID.randomUUID().toString()
+        val appliedCouponModel = AppliedCouponModel(
+            couponKey,
+            couponCode,
+            System.currentTimeMillis()
+        )
+
+        dbFire?.collection(USER_REFERENCE)?.document(mAuth?.currentUser!!.uid)
+            ?.collection(APPLIED_COUPON)?.document(couponKey.toString())
+            ?.set(appliedCouponModel)
+
+        _showCoupon.value = true
+    }
+
+    fun showCouponFinished(){
+        _showCoupon.value = false
+    }
+
+    fun snackBarEventFinished(){
+        _snackBarForAlreadyAppliedCoupon.value = false
+    }
+
+    fun removeCoupon() {
+        couponCode = null
+        discount?.let {discount ->
+            _totalAmount.value = totalAmount.value.toString().toDouble().plus(discount).toString()
+        }
+
+        couponKey?.let {
+            dbFire?.collection(USER_REFERENCE)?.document(mAuth?.currentUser!!.uid)
+                ?.collection(APPLIED_COUPON)?.document(it)
+                ?.delete()
+        }
     }
 
 }

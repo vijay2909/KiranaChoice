@@ -3,6 +3,7 @@ package com.app.kiranachoice.views.payment
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context.NOTIFICATION_SERVICE
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -46,9 +47,6 @@ class PaymentFragment : Fragment() {
 
         bindingPayment = FragmentPaymentBinding.inflate(inflater, container, false)
 
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.paymentViewModel = viewModel
-
         manager = requireActivity().getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         return binding.root
@@ -58,6 +56,10 @@ class PaymentFragment : Fragment() {
     private val args: PaymentFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.paymentViewModel = viewModel
+        binding.totalAmount = args.totalAmount
+        binding.couponDescription = args.couponDescription
 
         viewModel.allProducts.observe(viewLifecycleOwner, {
             viewModel.cartItems = it
@@ -67,7 +69,7 @@ class PaymentFragment : Fragment() {
         binding.btnPlaceOrder.setOnClickListener {
             binding.btnPlaceOrder.isEnabled = false
             binding.progressBar.root.visibility = View.VISIBLE
-            viewModel.saveUserOrder(args.deliveryAddress)
+            viewModel.saveUserOrder(args.deliveryAddress, args.couponCode)
         }
 
         /**
@@ -145,6 +147,10 @@ class PaymentFragment : Fragment() {
             .setContentText("Thank you for order ${viewModel.user?.name?.substringBefore(" ")}")
             .setContentIntent(pendingIntent)
             .setColor(resources.getColor(R.color.colorPrimaryDark, null))
+            .setStyle(
+                NotificationCompat.BigPictureStyle()
+                    .bigPicture(BitmapFactory.decodeResource(resources, R.drawable.yiepiie))
+            )
             .setOnlyAlertOnce(true)
             .priority = NotificationCompat.PRIORITY_HIGH
 

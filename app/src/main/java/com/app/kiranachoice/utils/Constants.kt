@@ -39,3 +39,9 @@ const val ORDER_ID_FORMAT = "KC1000"
 const val ADMIN_REFERENCE = "Admin"
 
 const val COUPON_REFERENCE = "Coupons"
+const val APPLIED_COUPON = "Coupons Applied"
+
+const val ORDER_PLACED = "Order Placed"
+const val PACKED = "Packed"
+const val SHIPPED = "Shipped"
+const val DELIVERED = "Delivered"

@@ -114,7 +114,7 @@ class PaymentViewModel(val application: Application) : ViewModel() {
     private var _orderSaved = MutableLiveData<Boolean>()
     val orderSaved: LiveData<Boolean> get() = _orderSaved
 
-    fun saveUserOrder(deliveryAddress: String) {
+    fun saveUserOrder(deliveryAddress: String, couponCode: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             val itemList = ArrayList<Product>()
             cartItems?.forEach {
@@ -132,16 +132,31 @@ class PaymentViewModel(val application: Application) : ViewModel() {
 
             val key = UUID.randomUUID().toString()
             if (this@PaymentViewModel::orderPlacedDate.isInitialized) {
-                val bookItemOrderModel = BookItemOrderModel(
-                    key = key,
-                    productList = itemList,
-                    totalAmount = totalProductsAmount.value.toString(),
-                    deliveryCharge = deliveryCharge.value.toString(),
-                    deliveryAddress = deliveryAddress,
-                    couponCode = null,
-                    isCouponApplied = false,
-                    orderPlacedDate = orderPlacedDate
-                )
+                val bookItemOrderModel = if (couponCode != null) {
+                    BookItemOrderModel(
+                        key = key,
+                        productList = itemList,
+                        invoiceAmount = totalProductsAmount.value.toString().substringBefore("."),
+                        deliveryCharge = deliveryCharge.value.toString(),
+                        deliveryAddress = deliveryAddress,
+                        couponCode = couponCode,
+                        isCouponApplied = true,
+                        orderPlacedDate = orderPlacedDate,
+                        orderId = orderId
+                    )
+                } else {
+                    BookItemOrderModel(
+                        key = key,
+                        productList = itemList,
+                        invoiceAmount = totalProductsAmount.value.toString().substringBefore("."),
+                        deliveryCharge = deliveryCharge.value.toString(),
+                        deliveryAddress = deliveryAddress,
+                        couponCode = null,
+                        isCouponApplied = false,
+                        orderPlacedDate = orderPlacedDate,
+                        orderId = orderId
+                    )
+                }
 
                 dbFire.collection(USER_REFERENCE)
                     .document(mAuth.currentUser!!.uid)
@@ -181,7 +196,7 @@ class PaymentViewModel(val application: Application) : ViewModel() {
 
         val payload = buildNotificationPayload()
 
-        api.sendChatNotification(payload).enqueue(object : Callback<JsonObject>{
+        api.sendChatNotification(payload).enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {}
 
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {}

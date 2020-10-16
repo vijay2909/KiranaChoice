@@ -40,7 +40,8 @@ class CartItemAdapter(private val listener: CartListener) :
                     getItem(position),
                     null,
                     getItem(position).productPrice.toInt(),
-                    getItem(position).productMRP.toInt().minus(getItem(position).productPrice.toInt())
+                    getItem(position).productMRP.toInt()
+                        .minus(getItem(position).productPrice.toInt())
                 )
                 holder.binding.userQuantity.text = quantity.toString()
             }
@@ -56,7 +57,8 @@ class CartItemAdapter(private val listener: CartListener) :
                     getItem(position),
                     getItem(position).productPrice.toInt(),
                     null,
-                    getItem(position).productMRP.toInt().minus(getItem(position).productPrice.toInt())
+                    getItem(position).productMRP.toInt()
+                        .minus(getItem(position).productPrice.toInt())
                 )
                 holder.binding.userQuantity.text = quantity.toString()
             } else {
@@ -67,6 +69,7 @@ class CartItemAdapter(private val listener: CartListener) :
                 ).show()
             }
         }
+
     }
 
     class CartItemViewHolder(val binding: ItemCartProductBinding) :
@@ -91,8 +94,14 @@ class CartItemAdapter(private val listener: CartListener) :
         }
     }
 
+
     interface CartListener {
         fun removeCartItem(cartItem: CartItem)
-        fun onQuantityChange(cartItem: CartItem, amountPlus: Int? = null, amountMinus: Int? = null, mrpAndPriceDifference : Int)
+        fun onQuantityChange(
+            cartItem: CartItem,
+            amountPlus: Int? = null,
+            amountMinus: Int? = null,
+            mrpAndPriceDifference: Int
+        )
     }
 }

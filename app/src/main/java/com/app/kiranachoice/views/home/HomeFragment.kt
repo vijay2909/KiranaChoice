@@ -18,11 +18,11 @@ import com.app.kiranachoice.databinding.FragmentHomeBinding
 import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.models.BannerImageModel
 import com.app.kiranachoice.models.Category1Model
-import com.app.kiranachoice.models.PackagingSizeModel
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.recyclerView_adapters.*
 import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.auth.FirebaseAuth
 
 class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, ProductClickListener {
 
@@ -32,6 +32,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
     private lateinit var viewModel: HomeViewModel
 
     private lateinit var navController: NavController
+    private lateinit var mAuth: FirebaseAuth
 
     private lateinit var viewPager: ViewPager2
     private lateinit var handler: Handler
@@ -49,6 +50,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         homeBannerImageList = ArrayList()
         viewPager = binding.homeBanner1
         handler = Handler(Looper.getMainLooper())
+        mAuth = FirebaseAuth.getInstance()
         return binding.root
     }
 
@@ -184,8 +186,9 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
     override fun addItemToCart(
         productModel: ProductModel,
-        packagingSizeModel: PackagingSizeModel,
-        quantity: String
+        packagingSize: Int,
+        quantity: String,
+        position: Int
     ) {
 
     }

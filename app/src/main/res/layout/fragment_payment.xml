@@ -8,6 +8,14 @@
         <import type="com.app.kiranachoice.utils.ConstantsKt" />
 
         <variable
+            name="totalAmount"
+            type="String" />
+
+        <variable
+            name="couponDescription"
+            type="String" />
+
+        <variable
             name="paymentViewModel"
             type="com.app.kiranachoice.views.payment.PaymentViewModel" />
     </data>
@@ -185,12 +193,39 @@
                                     android:textColor="@{ConstantsKt.DELIVERY_FREE == paymentViewModel.deliveryCharge ? @color/colorPrimaryDark : @color/black}"
                                     tools:text="₹40" />
 
+                                <TextView
+                                    android:id="@+id/textCouponApplied"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:layout_below="@id/text_delivery_charge_price"
+                                    android:layout_toStartOf="@id/textCoupon"
+                                    android:text="@string/coupon_applied"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:textColor="@android:color/holo_red_dark"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/textCoupon"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_below="@id/text_delivery_charge_price"
+                                    android:layout_marginTop="8dp"
+                                    android:text="@{couponDescription}"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"
+                                    android:textColor="@android:color/holo_red_dark"
+                                    android:textStyle="bold"
+                                    tools:text="1 kg. sugar free" />
+
+
                                 <View
                                     android:id="@+id/dashed_line"
                                     android:layout_width="match_parent"
-                                    android:layout_height="2dp"
-                                    android:layout_below="@id/text_delivery_charge_price"
-                                    android:layout_marginTop="16dp"
+                                    android:layout_height="1.5dp"
+                                    android:layout_below="@id/textCoupon"
+                                    android:layout_marginTop="12dp"
                                     android:background="@drawable/dashed_line" />
 
                                 <TextView
@@ -212,7 +247,7 @@
                                     android:layout_marginTop="8dp"
                                     android:textColor="@android:color/black"
                                     android:textStyle="bold"
-                                    app:priceFormatted="@{paymentViewModel.totalAmount}"
+                                    app:priceFormatted="@{totalAmount}"
                                     tools:text="₹139" />
                             </RelativeLayout>
 
@@ -248,7 +283,7 @@
                     android:layout_toStartOf="@id/btnPlaceOrder"
                     android:textColor="@android:color/black"
                     android:textSize="25sp"
-                    app:priceFormatted="@{paymentViewModel.totalAmount}"
+                    app:priceFormatted="@{totalAmount}"
                     tools:text="₹73,990" />
 
                 <com.google.android.material.button.MaterialButton

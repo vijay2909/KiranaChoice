@@ -1,6 +1,7 @@
 package com.app.kiranachoice.views.cart
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,7 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     private lateinit var viewModel: MainViewModel
+    private lateinit var cartItemAdapter: CartItemAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,18 +44,10 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
         _bindingCart = FragmentCartBinding.inflate(inflater, container, false)
 
         binding.mainViewModel = viewModel
+        binding.showCoupon = false
         binding.lifecycleOwner = viewLifecycleOwner
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet.couponBottomSheet)
-
-        binding.btnCouponApply.setOnClickListener {
-            val state =
-                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
-                    BottomSheetBehavior.STATE_COLLAPSED
-                else
-                    BottomSheetBehavior.STATE_EXPANDED
-            bottomSheetBehavior.state = state
-        }
 
         return binding.root
     }
@@ -61,6 +55,15 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.btnCouponApply.setOnClickListener {
+            if (binding.btnCouponApply.text == getString(R.string.apply_now))
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            else {
+                viewModel.removeCoupon()
+                view.findNavController().navigate(R.id.action_cartFragment_self)
+            }
+        }
 
         binding.bottomSheet.btnApply.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -70,7 +73,7 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
-        val cartItemAdapter = CartItemAdapter(this)
+        cartItemAdapter = CartItemAdapter(this)
         binding.recyclerViewCartList.adapter = cartItemAdapter
 
         binding.recyclerViewCartList.addItemDecoration(
@@ -89,8 +92,9 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
             }
         })
 
+
         binding.btnPlaceOrder.setOnClickListener {
-            view.findNavController().navigate(R.id.action_cartFragment_to_addressFragment)
+            view.findNavController().navigate(CartFragmentDirections.actionCartFragmentToAddressFragment(viewModel.totalAmount.value.toString(), viewModel.couponCode, viewModel.couponDescription.value))
         }
 
         val couponsAdapter = CouponsAdapter(this)
@@ -98,6 +102,32 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
 
         viewModel.couponList.observe(viewLifecycleOwner, {
             couponsAdapter.list = it
+        })
+
+        viewModel.eventDeleteItem.observe(viewLifecycleOwner, {
+            if (it) {
+                viewModel.eventDeleteItemFinished()
+                view.findNavController().navigate(R.id.action_cartFragment_self)
+            }
+        })
+
+        viewModel.snackBarForAlreadyAppliedCoupon.observe(viewLifecycleOwner, {
+            if (it) {
+                viewModel.snackBarEventFinished()
+                Snackbar.make(
+                    view,
+                    "Already applied! you can use the coupon once in a month.",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+        viewModel.showCoupon.observe(viewLifecycleOwner, {
+            if (it) {
+                binding.showCoupon = true
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                viewModel.showCouponFinished()
+            }
         })
     }
 
@@ -141,20 +171,37 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
     }
 
 
-    override fun onQuantityChange(cartItem: CartItem, amountPlus: Int?, amountMinus: Int?, mrpAndPriceDifference : Int) {
-        if (amountPlus != null) viewModel.setTotalAmount(amountPlus,null,  mrpAndPriceDifference)
+    override fun onQuantityChange(
+        cartItem: CartItem,
+        amountPlus: Int?,
+        amountMinus: Int?,
+        mrpAndPriceDifference: Int
+    ) {
+        if (amountPlus != null) viewModel.setTotalAmount(amountPlus, null, mrpAndPriceDifference)
         else viewModel.setTotalAmount(null, amountMinus, mrpAndPriceDifference)
     }
 
     override fun onCouponApplied(couponModel: CouponModel, position: Int) {
-        if (couponModel.isActive){
-            if (couponModel.upToPrice.toString().toInt() <= viewModel.totalAmount.value.toString().toInt()){
-
+        Log.i(TAG, "onCouponApplied: called")
+        if (couponModel.isActive) {
+            Log.i(TAG, "coupon is active.")
+            if (couponModel.upToPrice.toString().toDouble() <= viewModel.totalAmount.value.toString().toDouble()
+            ) {
+                Log.i(TAG, "coupon going to applied")
+                viewModel.couponApplied(couponModel)
             } else {
-                Snackbar.make(requireView(), "Coupon Valid on order value greater than Rs. ${couponModel.upToPrice}.", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(
+                    requireView(),
+                    "Coupon Valid on order value greater than Rs. ${couponModel.upToPrice}.",
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
         } else {
             Snackbar.make(requireView(), "Coupon Expired.", Snackbar.LENGTH_SHORT).show()
         }
+    }
+
+    companion object {
+        private const val TAG = "CartFragment"
     }
 }
