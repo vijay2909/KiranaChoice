@@ -15,130 +15,164 @@
         android:layout_height="match_parent"
         tools:context=".screens.EditProfileFragment">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="195dp"
-                android:layout_height="195dp"
-                android:background="@drawable/circle_shape"
-                android:indeterminate="false"
-                android:max="100"
-                android:progress="@{mainViewModel.currentProgress}"
-                android:progressDrawable="@drawable/circular_progress_bar"
-                app:layout_constraintBottom_toBottomOf="@id/circleImageView"
-                app:layout_constraintEnd_toEndOf="@id/circleImageView"
-                app:layout_constraintStart_toStartOf="@id/circleImageView"
-                app:layout_constraintTop_toTopOf="@id/circleImageView" />
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/circleImageView"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_marginTop="32dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:profileImage="@{mainViewModel.user.imageUrl}"
-                tools:src="@drawable/default_user_image" />
-
-            <ImageButton
-                android:id="@+id/editUserImage"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/edit_image_circle_background"
-                android:contentDescription="@string/edit_picture"
-                android:src="@drawable/ic_camera"
-                app:layout_constraintBottom_toBottomOf="@+id/circleImageView"
-                app:layout_constraintEnd_toEndOf="@+id/circleImageView" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/userNameCard"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="16dp"
-                android:visibility="visible"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="4dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textPleaseWait">
-
-                <EditText
-                    android:id="@+id/etUserName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="@null"
-                    android:hint="@string/enter_your_name"
-                    android:inputType="textPersonName"
-                    android:text="@{mainViewModel.user.name}"
-                    android:importantForAutofill="no" />
-            </com.google.android.material.card.MaterialCardView>
-
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/phoneCard"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:visibility="visible"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="4dp"
-                app:layout_constraintEnd_toEndOf="@id/userNameCard"
-                app:layout_constraintStart_toStartOf="@id/userNameCard"
-                app:layout_constraintTop_toBottomOf="@id/userNameCard">
-
-                <EditText
-                    android:id="@+id/editText"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="@null"
-                    android:clickable="false"
-                    android:enabled="false"
-                    android:focusable="false"
-                    android:inputType="none"
-                    android:text="@{mainViewModel.user.phoneNumber}"
-                    android:importantForAutofill="no"
-                    tools:ignore="LabelFor" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <Button
-                android:id="@+id/btnUpdateDetails"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:background="@drawable/curved_button_background"
-                android:text="@string/save_details"
-                android:textAllCaps="false"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="@id/phoneCard"
-                app:layout_constraintStart_toStartOf="@id/phoneCard"
-                app:layout_constraintTop_toBottomOf="@id/phoneCard" />
+                android:background="@color/colorPrimaryLight">
 
-            <TextView
-                android:id="@+id/textPleaseWait"
-                style="@style/TextAppearance.MaterialComponents.Headline6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/please_wait"
-                android:textColor="@color/colorPrimary"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="@id/circleImageView"
-                app:layout_constraintStart_toStartOf="@id/circleImageView"
-                app:layout_constraintTop_toBottomOf="@id/circleImageView" />
+                <ProgressBar
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="195dp"
+                    android:layout_height="195dp"
+                    android:background="@drawable/circle_shape"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="@{mainViewModel.currentProgress}"
+                    android:progressDrawable="@drawable/circular_progress_bar"
+                    app:layout_constraintBottom_toBottomOf="@id/circleImageView"
+                    app:layout_constraintEnd_toEndOf="@id/circleImageView"
+                    app:layout_constraintStart_toStartOf="@id/circleImageView"
+                    app:layout_constraintTop_toTopOf="@id/circleImageView" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/circleImageView"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginTop="32dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:profileImage="@{mainViewModel.user.imageUrl}"
+                    tools:src="@drawable/default_user_image" />
+
+                <ImageButton
+                    android:id="@+id/editUserImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/edit_image_circle_background"
+                    android:contentDescription="@string/edit_picture"
+                    android:src="@drawable/ic_camera"
+                    app:layout_constraintBottom_toBottomOf="@+id/circleImageView"
+                    app:layout_constraintEnd_toEndOf="@+id/circleImageView" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/userNameCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:visibility="visible"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textPleaseWait">
+
+                    <EditText
+                        android:id="@+id/etUserName"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@null"
+                        android:hint="@string/enter_your_name"
+                        android:importantForAutofill="no"
+                        android:inputType="textPersonName"
+                        android:text="@{mainViewModel.user.name}" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/emailCard"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="210dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/userNameCard">
+
+                    <EditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@null"
+                        android:hint="@string/enter_email_address"
+                        android:imeOptions="actionDone"
+                        android:importantForAutofill="no"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:text="@{mainViewModel.user.email}" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/phoneCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:visibility="visible"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="4dp"
+                    app:layout_constraintEnd_toEndOf="@id/emailCard"
+                    app:layout_constraintStart_toStartOf="@id/emailCard"
+                    app:layout_constraintTop_toBottomOf="@id/emailCard">
+
+                    <EditText
+                        android:id="@+id/editText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@null"
+                        android:clickable="false"
+                        android:enabled="false"
+                        android:focusable="false"
+                        android:importantForAutofill="no"
+                        android:inputType="none"
+                        android:text="@{mainViewModel.user.phoneNumber}"
+                        tools:ignore="LabelFor" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <Button
+                    android:id="@+id/btnUpdateDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:background="@drawable/curved_button_background"
+                    android:text="@string/save_details"
+                    android:textAllCaps="false"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="@id/phoneCard"
+                    app:layout_constraintStart_toStartOf="@id/phoneCard"
+                    app:layout_constraintTop_toBottomOf="@id/phoneCard" />
+
+                <TextView
+                    android:id="@+id/textPleaseWait"
+                    style="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/please_wait"
+                    android:textColor="@color/colorPrimary"
+                    android:visibility="invisible"
+                    app:layout_constraintEnd_toEndOf="@id/circleImageView"
+                    app:layout_constraintStart_toStartOf="@id/circleImageView"
+                    app:layout_constraintTop_toBottomOf="@id/circleImageView" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
 
         <include
             android:id="@+id/progressBar"

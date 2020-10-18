@@ -18,12 +18,16 @@ class AuthViewModel : ViewModel() {
     private var userSequence: Long = 1
     var phoneNumber : String? = null
 
+    lateinit var user : User
+
     init {
         mAuth = FirebaseAuth.getInstance()
         dbFire = FirebaseFirestore.getInstance()
         getTotalUserCount()
     }
 
+    // get total documents size in [[ User ]] Collection in firebase
+    // it helps to set sequence number of new user
     private fun getTotalUserCount() {
         viewModelScope.launch(Dispatchers.IO) {
             dbFire?.collection(USER_REFERENCE)?.get()
@@ -36,22 +40,40 @@ class AuthViewModel : ViewModel() {
     private var _userAlreadyExist = MutableLiveData<Boolean>()
     val userAlreadyExist: LiveData<Boolean> get() = _userAlreadyExist
 
+    private var _userDoesNotExist = MutableLiveData<Boolean>()
+    val userDoesNotExist: LiveData<Boolean> get() = _userDoesNotExist
+
     fun onAuthSuccess() {
         viewModelScope.launch(Dispatchers.IO) {
             dbFire?.collection(USER_REFERENCE)?.document(mAuth?.currentUser!!.uid)
                 ?.get()
                 ?.addOnSuccessListener { documentSnapShot ->
                     if (documentSnapShot.exists()) _userAlreadyExist.postValue(true)
-                    else saveUser()
+                    else _userDoesNotExist.postValue(true)
                 }
         }
     }
 
-    private fun saveUser() {
-        val user = User(userSequence,  phoneNumber)
+    fun eventUserAlreadyExistFinished(){
+        _userAlreadyExist.value = false
+    }
+
+    fun eventUserDoesNotExistFinished(){
+        _userDoesNotExist.value = false
+    }
+
+    fun saveUser(name: String, email : String) {
+        user = User(userSequence,  phoneNumber, null, name, email)
         dbFire?.collection(USER_REFERENCE)?.document(mAuth?.currentUser!!.uid)?.set(user)
             ?.addOnSuccessListener {
                 _userAlreadyExist.value = true
             }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        if (!this::user.isInitialized){
+            mAuth?.signOut()
+        }
     }
 }

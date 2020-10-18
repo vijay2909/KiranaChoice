@@ -22,7 +22,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -42,6 +41,7 @@ class MainViewModel(application: Application) : ViewModel() {
     val user: LiveData<User> get() = _user
 
     var userName: String? = null
+    var email: String? = null
 
     var fileExtension: String? = null
     private var _imageUrl = MutableLiveData<String>()
@@ -153,6 +153,7 @@ class MainViewModel(application: Application) : ViewModel() {
     fun saveData() {
         val userDetails = mapOf(
             "name" to userName,
+            "email" to email,
             "imageUrl" to imageUrl.value
         )
 

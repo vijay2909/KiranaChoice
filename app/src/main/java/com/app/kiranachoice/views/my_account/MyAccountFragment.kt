@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.app.kiranachoice.DevicecureMapActivity
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.MainViewModelFactory
@@ -30,12 +31,16 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
     private lateinit var navController: NavController
     private lateinit var mAuth: FirebaseAuth
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
-        viewModel = ViewModelProvider(requireActivity(), mainViewModelFactory).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(
+            requireActivity(),
+            mainViewModelFactory
+        ).get(MainViewModel::class.java)
         _bindingAccount = FragmentMyAccountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         mAuth = FirebaseAuth.getInstance()
@@ -50,7 +55,6 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
             textEditProfile.setOnClickListener(this@MyAccountFragment)
             textMyOrders.setOnClickListener(this@MyAccountFragment)
             textOurStore.setOnClickListener(this@MyAccountFragment)
-            buttonLogin.setOnClickListener(this@MyAccountFragment)
             textSignOut.setOnClickListener(this@MyAccountFragment)
         }
 
@@ -58,6 +62,15 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
             binding.user = it
             binding.invalidateAll()
         })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (mAuth.currentUser == null) {
+            this.findNavController().navigate(R.id.action_myAccountFragment_to_authActivity)
+        } else {
+            binding.progressBar.root.visibility = View.GONE
+        }
     }
 
     override fun onResume() {
@@ -68,16 +81,18 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.textEditProfile.id -> navController.navigate(R.id.action_myAccountFragment_to_editProfileFragment)
-            binding.textMyOrders.id -> { navController.navigate(R.id.action_myAccountFragment_to_myOrdersFragment) }
+            binding.textMyOrders.id -> {
+                navController.navigate(R.id.action_myAccountFragment_to_myOrdersFragment)
+            }
             binding.textOurStore.id -> startActivity(
                 Intent(
                     requireContext(),
                     DevicecureMapActivity::class.java
                 )
             )
-            binding.buttonLogin.id -> navController.navigate(R.id.action_myAccountFragment_to_authActivity)
             binding.textSignOut.id -> {
                 mAuth.signOut()
+                binding.invalidateAll()
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.sign_out_msg),

@@ -142,6 +142,7 @@ class EditProfileFragment : Fragment(), View.OnClickListener {
                 binding.textPleaseWait.visibility = View.VISIBLE
                 binding.btnUpdateDetails.visibility = View.GONE
                 viewModel.userName = binding.etUserName.text.toString().trim()
+                viewModel.email = binding.etEmail.text.toString().trim()
                 viewModel.saveData()
             }
         }

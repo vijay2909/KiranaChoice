@@ -194,4 +194,8 @@
     <string name="ordered_items">ORDERED ITEMS</string>
     <string name="support">SUPPORT</string>
     <string name="call_customer_support">Call Customer Support</string>
+    <string name="enter_email_address">Enter email address*</string>
+    <string name="enter_your_name_here">Enter your name here*</string>
+    <string name="submit">Submit</string>
+    <string name="enter_details">Enter Details</string>
 </resources>

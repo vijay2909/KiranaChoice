@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'  // Google Services plugin
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 30
@@ -27,8 +28,8 @@ android {
     }
 
     buildFeatures {
-        dataBinding = true
-        viewBinding = true
+        dataBinding true
+        viewBinding true
     }
 
     compileOptions {
@@ -87,6 +88,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database-ktx:19.5.0'
     implementation 'com.google.firebase:firebase-config-ktx:19.2.0'
     implementation 'com.google.android.gms:play-services-auth:18.1.0'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:17.2.2'
 
 
     // facebook shimmer effect
