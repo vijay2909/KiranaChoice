@@ -1,13 +1,18 @@
 package com.app.kiranachoice.views.home
 
+import android.app.Application
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -20,7 +25,11 @@ import com.app.kiranachoice.models.BannerImageModel
 import com.app.kiranachoice.models.Category1Model
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.recyclerView_adapters.*
+import com.app.kiranachoice.utils.BEST_OFFER_PRODUCT
+import com.app.kiranachoice.utils.BEST_SELLING_PRODUCT
+import com.app.kiranachoice.viewpager_adapters.HomeMiddleBannerAdapter
 import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
+import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 
@@ -34,22 +43,33 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
     private lateinit var navController: NavController
     private lateinit var mAuth: FirebaseAuth
 
-    private lateinit var viewPager: ViewPager2
-    private lateinit var handler: Handler
-    private lateinit var callback: ViewPager2.OnPageChangeCallback
-    private lateinit var homeBannerImageList: List<BannerImageModel>
+    private lateinit var viewPager1: ViewPager2
+    private lateinit var viewPager2: ViewPager2
+    private lateinit var handler1: Handler
+    private lateinit var handler2: Handler
+    private lateinit var callbackTopBanner: ViewPager2.OnPageChangeCallback
+    private lateinit var callbackMiddleBanner: ViewPager2.OnPageChangeCallback
+    private lateinit var homeTopBannerImageList: List<BannerImageModel>
+    private lateinit var homeMiddleBannerImageList: List<BannerImageModel>
+
+    private lateinit var bestOfferProductsAdapter: HorizontalProductsAdapter
+    private lateinit var bestSellingProductsAdapter: HorizontalProductsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        val factory = HomeViewModelFactory(requireActivity().application)
+        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
         (activity as AppCompatActivity).supportActionBar?.show()
         _bindingHome = FragmentHomeBinding.inflate(inflater, container, false)
-        homeBannerImageList = ArrayList()
-        viewPager = binding.homeBanner1
-        handler = Handler(Looper.getMainLooper())
+        homeTopBannerImageList = ArrayList()
+        homeMiddleBannerImageList = ArrayList()
+        viewPager1 = binding.homeBanner1
+        viewPager2 = binding.homeBanner2
+        handler1 = Handler(Looper.getMainLooper())
+        handler2 = Handler(Looper.getMainLooper())
         mAuth = FirebaseAuth.getInstance()
         return binding.root
     }
@@ -65,7 +85,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         binding.homeBanner1.adapter = banner1Adapter
         TabLayoutMediator(binding.tabLayout, binding.homeBanner1) { _, _ -> }.attach()
         viewModel.bannersList.observe(viewLifecycleOwner, {
-            homeBannerImageList = it
+            homeTopBannerImageList = it
             banner1Adapter.list = it
         })
         // Home Top Banner [[END]]>>>>>>>>>>>>>
@@ -87,7 +107,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
 
         // Best Offer Products [[ START ]] >>>>>>>>>>>>>>
-        val bestOfferProductsAdapter = HorizontalProductsAdapter(this)
+        bestOfferProductsAdapter = HorizontalProductsAdapter(this)
         binding.recyclerViewBestOffers.apply {
             setHasFixedSize(true)
             adapter = bestOfferProductsAdapter
@@ -105,7 +125,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
 
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
-        val bestSellingProductsAdapter = HorizontalProductsAdapter(this)
+        bestSellingProductsAdapter = HorizontalProductsAdapter(this)
         binding.recyclerViewBestSelling.apply {
             setHasFixedSize(true)
             adapter = bestSellingProductsAdapter
@@ -120,6 +140,17 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             adapter = SmallBannerCategoryAdapter(null)
         }
 
+        // Home Middle Banner [[START]] >>>>>>>>>>>>>
+        val banner2Adapter = HomeMiddleBannerAdapter()
+        binding.homeBanner2.adapter = banner2Adapter
+        TabLayoutMediator(binding.tabLayout2, binding.homeBanner2) { _, _ -> }.attach()
+        viewModel.bannersList.observe(viewLifecycleOwner, {
+            homeMiddleBannerImageList = it
+            banner2Adapter.list = it
+        })
+        // Home Middle Banner [[END]]>>>>>>>>>>>>>
+
+
         binding.recyclerViewCategory4.apply {
             adapter = BannerCategoryAdapter(null)
         }
@@ -132,42 +163,85 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             adapter = BigBannersAdapter(null)
         }
 
-        binding.recyclerViewRecommendedProducts.apply {
-            adapter = HorizontalProductsAdapter(null)
-        }
+//        binding.recyclerViewRecommendedProducts.apply {
+//            adapter = HorizontalProductsAdapter(null)
+//        }
 
 
-        callback = object : ViewPager2.OnPageChangeCallback() {
+        // Top Banner Callback >>>>>>>>>>>>>>>>>>>>>>>>>>
+        callbackTopBanner = object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                handler.removeCallbacks(slideRunnable)
-                handler.postDelayed(slideRunnable, 3000)
+                handler1.removeCallbacks(slideRunnable1)
+                handler1.postDelayed(slideRunnable1, 3000)
             }
         }
 
-        binding.homeBanner1.registerOnPageChangeCallback(callback)
+        binding.homeBanner1.registerOnPageChangeCallback(callbackTopBanner)
+        // Top Banner Callback >>>>>>>>>>>>>>>>>>>>>>>>>>
+
+        // Middle banner callback >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        callbackMiddleBanner = object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                handler2.removeCallbacks(slideRunnable2)
+                handler2.postDelayed(slideRunnable2, 3000)
+            }
+        }
+
+        binding.homeBanner2.registerOnPageChangeCallback(callbackMiddleBanner)
+        // Middle banner callback >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         binding.searchCard.setOnClickListener {
             view.findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
         }
+
+        viewModel.navigateToAuthActivity.observe(viewLifecycleOwner, {
+            if (it) {
+                startActivity(Intent(requireContext(), AuthActivity::class.java))
+                viewModel.authActivityNavigated()
+            }
+        })
+
+        viewModel.alreadyAddedMsg.observe(viewLifecycleOwner, {
+            it?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        viewModel.productAdded.observe(viewLifecycleOwner, {
+            if (it) {
+                Toast.makeText(requireContext(), "1 item added", Toast.LENGTH_SHORT).show()
+                viewModel.productAddedSuccessful()
+            }
+        })
     }
 
-    private val slideRunnable = Runnable {
-        viewPager.currentItem =
-            if (homeBannerImageList.size.minus(1) == viewPager.currentItem) 0
-            else viewPager.currentItem.plus(1)
+    private val slideRunnable1 = Runnable {
+        viewPager1.currentItem =
+            if (homeTopBannerImageList.size.minus(1) == viewPager1.currentItem) 0
+            else viewPager1.currentItem.plus(1)
+    }
+    private val slideRunnable2 = Runnable {
+        viewPager2.currentItem =
+            if (homeMiddleBannerImageList.size.minus(1) == viewPager2.currentItem) 0
+            else viewPager2.currentItem.plus(1)
     }
 
     override fun onResume() {
         super.onResume()
         binding.shimmerLayout.rootLayout.startShimmer()
-        handler.postDelayed(slideRunnable, 3000)
+        handler1.postDelayed(slideRunnable1, 3000)
+        handler2.postDelayed(slideRunnable2, 3000)
     }
 
     override fun onPause() {
         super.onPause()
         binding.shimmerLayout.rootLayout.stopShimmer()
-        handler.removeCallbacks(slideRunnable)
-        viewPager.unregisterOnPageChangeCallback(callback)
+
+        handler1.removeCallbacks(slideRunnable1)
+        viewPager1.unregisterOnPageChangeCallback(callbackTopBanner)
+
+        handler2.removeCallbacks(slideRunnable2)
+        viewPager2.unregisterOnPageChangeCallback(callbackMiddleBanner)
     }
 
     override fun onDestroyView() {
@@ -190,7 +264,26 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         quantity: String,
         position: Int
     ) {
-
+        Log.i("Helper", "addItemToCart: called")
+        if (mAuth.currentUser != null) {
+            val packagingSizeModel = if (productModel.productPackagingSize.size > 1) {
+                productModel.productPackagingSize[packagingSize]
+            } else {
+                productModel.productPackagingSize[0]
+            }
+            when (viewModel.addItemToCart(productModel, packagingSizeModel, quantity)) {
+                BEST_OFFER_PRODUCT -> {
+                    bestOfferProductsAdapter.addToCartClickedItemPosition = position
+                    bestOfferProductsAdapter.notifyItemChanged(position)
+                }
+                BEST_SELLING_PRODUCT -> {
+                    bestSellingProductsAdapter.addToCartClickedItemPosition = position
+                    bestSellingProductsAdapter.notifyItemChanged(position)
+                }
+            }
+        } else {
+            startActivity(Intent(requireContext(), AuthActivity::class.java))
+        }
     }
 
     override fun onItemClick(productModel: ProductModel) {
@@ -201,4 +294,15 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             )
         )
     }
+}
+
+@Suppress("UNCHECKED_CAST")
+class HomeViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
+            return HomeViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+
 }

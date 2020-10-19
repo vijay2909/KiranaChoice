@@ -44,7 +44,6 @@ suspend fun addToCart(
     return addedSuccessfully
 }
 
-
 fun TextInputEditText.isNotNullOrEmpty(errorString: String): Boolean {
     val textInputLayout = this.parent.parent as TextInputLayout
     textInputLayout.errorIconDrawable = null

@@ -195,7 +195,7 @@ class MainViewModel(application: Application) : ViewModel() {
     val eventDeleteItem : LiveData<Boolean> get() = _eventDeleteItem
 
     fun removeCartItem(cartItem: CartItem) = viewModelScope.launch(Dispatchers.IO) {
-        cartRepo.delete(cartItem.productKey)
+        cartRepo.delete(cartItem.productKey, cartItem.packagingSize)
         _eventDeleteItem.postValue(true)
     }
 

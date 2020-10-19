@@ -27,6 +27,7 @@
             android:orientation="vertical">
 
             <include
+                android:visibility="gone"
                 android:id="@+id/shimmerLayout"
                 layout="@layout/shimmer_effect_home_page_layout" />
 
@@ -35,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="invisible">
+                android:visibility="visible">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/searchCard"
@@ -191,14 +192,18 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <LinearLayout
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/tabLayout2"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorPrimary"
-                        android:padding="15dp"
+                        android:layout_height="10dp"
+                        android:layout_marginTop="4dp"
                         app:layout_constraintBottom_toBottomOf="@+id/home_banner2"
                         app:layout_constraintEnd_toEndOf="@+id/home_banner2"
-                        app:layout_constraintStart_toStartOf="@+id/home_banner2" />
+                        app:layout_constraintStart_toStartOf="@+id/home_banner2"
+                        app:tabBackground="@drawable/tab_selector"
+                        app:tabGravity="center"
+                        app:tabIndicatorAnimationDuration="1000"
+                        app:tabIndicatorHeight="0dp" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -248,27 +253,27 @@
                     tools:itemCount="3"
                     tools:listitem="@layout/item_banner_layout" />
 
-                <TextView
-                    android:id="@+id/textRecommendProduct"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="32dp"
-                    android:text="@string/recommended_products"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+<!--                <TextView-->
+<!--                    android:id="@+id/textRecommendProduct"-->
+<!--                    style="@style/TextAppearance.AppCompat.Body1"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="8dp"-->
+<!--                    android:layout_marginTop="32dp"-->
+<!--                    android:text="@string/recommended_products"-->
+<!--                    android:textSize="15sp"-->
+<!--                    android:textStyle="bold" />-->
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView_recommended_products"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:orientation="horizontal"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/item_horizontol_product_item" />
+<!--                <androidx.recyclerview.widget.RecyclerView-->
+<!--                    android:id="@+id/recyclerView_recommended_products"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="8dp"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:layout_marginEnd="8dp"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
+<!--                    tools:listitem="@layout/item_horizontol_product_item" />-->
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

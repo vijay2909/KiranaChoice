@@ -1,29 +1,43 @@
 package com.app.kiranachoice.views.home
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.app.kiranachoice.models.BannerImageModel
-import com.app.kiranachoice.models.Category1Model
-import com.app.kiranachoice.models.PackagingSizeModel
-import com.app.kiranachoice.models.ProductModel
+import com.app.kiranachoice.db.CartDao
+import com.app.kiranachoice.db.CartDatabase
+import com.app.kiranachoice.models.*
+import com.app.kiranachoice.repositories.CartRepo
 import com.app.kiranachoice.utils.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(application: Application) : ViewModel() {
 
     private var dbRef: FirebaseDatabase? = null
-    private var mAuth: FirebaseAuth? = null
+    private var dbFire: FirebaseFirestore
+    private var mAuth: FirebaseAuth
+
+    private val database: CartDatabase
+    private val cartDao: CartDao
+    private val cartRepo: CartRepo
 
     init {
         dbRef = FirebaseDatabase.getInstance()
+        dbFire = FirebaseFirestore.getInstance()
         mAuth = FirebaseAuth.getInstance()
+
+        database = CartDatabase.getInstance(application)
+        cartDao = database.cartDao
+        cartRepo = CartRepo(cartDao)
+
+        getBanners()
         getBanners()
         getCategories()
         getBestOfferProduct()
@@ -38,7 +52,6 @@ class HomeViewModel : ViewModel() {
         dbRef?.getReference(HOME_TOP_BANNER)
             ?.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-
                     fakeBannersList.clear()
 
                     snapshot.children.forEach { dataSnapshot ->
@@ -126,8 +139,53 @@ class HomeViewModel : ViewModel() {
             })
     }
 
-    companion object {
-        private const val TAG = "HomeViewModel"
+
+    private var _navigateToAuthActivity = MutableLiveData<Boolean>()
+    val navigateToAuthActivity: LiveData<Boolean> get() = _navigateToAuthActivity
+
+    private var _productAdded = MutableLiveData<Boolean>()
+    val productAdded: LiveData<Boolean> get() = _productAdded
+
+    private var _alreadyAddedMsg = MutableLiveData<String>()
+    val alreadyAddedMsg: LiveData<String> get() = _alreadyAddedMsg
+
+    fun addItemToCart(
+        productModel: ProductModel,
+        packagingSizeModel: PackagingSizeModel,
+        quantity: String
+    ) : String {
+        if (mAuth.currentUser == null) {
+            _navigateToAuthActivity.value = true
+            return ""
+        } else {
+            var added = ""
+            runBlocking {
+                val result = async { addToCart(cartRepo, productModel, packagingSizeModel, quantity) }
+                if (result.await()){
+                    _productAdded.postValue(true)
+                    added = when {
+                        productModel.makeBestOffer -> BEST_OFFER_PRODUCT
+                        productModel.makeBestSelling -> BEST_SELLING_PRODUCT
+                        productModel.makeRecommendedProduct -> BEST_RECOMMENDED_PRODUCT
+                        else -> ""
+                    }
+                } else{
+                    _alreadyAddedMsg.postValue("Already added in cart.")
+                }
+            }
+
+            return added
+        }
     }
+
+
+    fun authActivityNavigated() {
+        _navigateToAuthActivity.value = false
+    }
+
+    fun productAddedSuccessful() {
+        _productAdded.value = false
+    }
+
 
 }

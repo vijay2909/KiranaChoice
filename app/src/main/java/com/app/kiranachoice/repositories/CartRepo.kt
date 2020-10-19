@@ -12,7 +12,7 @@ class CartRepo(private val cartDao: CartDao) {
 
     suspend fun isAlreadyAdded(key: String, packagingSize: String) = cartDao.isAlreadyAdded(key, packagingSize)
 
-    suspend fun delete(key: String) = cartDao.delete(key)
+    suspend fun delete(key: String, packagingSize: String?) = cartDao.delete(key, packagingSize ?: "")
 
     suspend fun update(productName: String, quantity : String) {
         cartDao.update(productName, quantity)

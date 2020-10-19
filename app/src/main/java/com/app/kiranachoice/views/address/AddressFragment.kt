@@ -98,7 +98,7 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
         }
     }
 
-    private val args : AddressFragmentArgs by navArgs()
+    private val args: AddressFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -114,7 +114,7 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
             binding.isAddressListEmpty = it.isEmpty()
             addressAdapter.list = it
             binding.progressBar.root.visibility = View.GONE
-            binding.btnConfirmOrder.isEnabled = true
+            if (it.isNotEmpty()) binding.btnConfirmOrder.isEnabled = true
         })
 
         viewModel.updatedDetails.observe(viewLifecycleOwner, {
@@ -134,7 +134,14 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
         })
 
         binding.btnConfirmOrder.setOnClickListener {
-            view.findNavController().navigate(AddressFragmentDirections.actionAddressFragmentToPaymentFragment(deliveryAddress, args.totalAmount, args.couponCode, args.couponDescription))
+            view.findNavController().navigate(
+                AddressFragmentDirections.actionAddressFragmentToPaymentFragment(
+                    deliveryAddress,
+                    args.totalAmount,
+                    args.couponCode,
+                    args.couponDescription
+                )
+            )
         }
     }
 

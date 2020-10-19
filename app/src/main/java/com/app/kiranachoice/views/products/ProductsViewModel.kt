@@ -121,7 +121,7 @@ class ProductsViewModel(application: Application) : ViewModel() {
     }
 
     fun deleteCartItem(productModel: ProductModel) = viewModelScope.launch(Dispatchers.IO) {
-        cartRepo.delete(productModel.product_key.toString())
+        cartRepo.delete(productModel.product_key.toString(), null)
         cartRepo.allCartItems
     }
 }

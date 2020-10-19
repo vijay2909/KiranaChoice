@@ -280,7 +280,7 @@ class PaymentViewModel(val application: Application) : ViewModel() {
     fun removeCartItems() {
         viewModelScope.launch(Dispatchers.IO) {
             cartItems?.forEach { cartItem ->
-                repository.delete(cartItem.productKey)
+                repository.delete(cartItem.productKey, cartItem.packagingSize)
             }
         }
     }

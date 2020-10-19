@@ -11,8 +11,8 @@ const val PRODUCT_REFERENCE = "Products"
 const val SEARCHABLE_PRODUCT_REFERENCE = "Searchable Products"
 
 const val USER_REFERENCE = "Users"
+const val USER_CART_ITEMS_REFERENCE = "Cart Items"
 const val USER_MY_ORDERS_REFERENCE = "My Orders"
-
 const val USER_ADDRESSES_REFERENCE = "Addresses"
 
 const val USER_IMAGE_REFERENCE = "Users Profile Images"

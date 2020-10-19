@@ -15,7 +15,7 @@
     </data>
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:onClick="@{() -> clickListener.onItemClick(productModel)}"
@@ -85,39 +85,78 @@
                 app:productMRP="@{productModel.productPackagingSize.get(0).mrp}"
                 tools:text="₹149.00" />
 
-            <TextView
-                android:id="@+id/textProductQuantity"
+            <Spinner
+                android:id="@+id/spinnerPackaging"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:background="@drawable/curved_border"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/curved_border"
-                android:clickable="true"
-                android:focusable="true"
-                android:paddingStart="16dp"
+                android:paddingStart="8dp"
                 android:paddingTop="4dp"
-                android:paddingEnd="16dp"
+                android:paddingEnd="8dp"
                 android:paddingBottom="4dp"
-                android:text="@{String.valueOf(productModel.productPackagingSize.get(0).packagingSize)}"
-                android:textColor="@color/colorPrimary"
-                android:textSize="13sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textProductPrice"
-                tools:text="500 gm" />
+                app:sizes="@{productModel}" />
 
-            <Button
-                android:layout_width="140dp"
+            <FrameLayout
+                android:id="@+id/addToCartLayout"
+                android:layout_width="0dp"
                 android:layout_height="35dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/curved_less_button_background"
-                android:text="@string/add_to_cart"
-                android:textAllCaps="false"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textProductQuantity" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/spinnerPackaging" >
+
+                <Button
+                    android:id="@+id/btnAddToCart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/curved_less_button_background"
+                    android:text="@string/add_to_cart"
+                    android:textAllCaps="false" />
+
+                <!--android:onClick="@{() -> clickListener.onAddToCartClick(productModel)}"-->
+
+                <LinearLayout
+                    android:id="@+id/quantityLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btnDecrease"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:contentDescription="@string/quantity_decrease_button"
+                        android:src="@drawable/ic_minus_box" />
+
+                    <TextView
+                        android:id="@+id/userQuantity"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/one" />
+
+                    <ImageButton
+                        android:id="@+id/btnIncrease"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:contentDescription="@string/quantity_increase_button"
+                        android:src="@drawable/ic_add_box" />
+                </LinearLayout>
+            </FrameLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
