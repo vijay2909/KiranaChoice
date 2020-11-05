@@ -27,7 +27,6 @@
             android:orientation="vertical">
 
             <include
-                android:visibility="gone"
                 android:id="@+id/shimmerLayout"
                 layout="@layout/shimmer_effect_home_page_layout" />
 
@@ -36,7 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="invisible">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/searchCard"

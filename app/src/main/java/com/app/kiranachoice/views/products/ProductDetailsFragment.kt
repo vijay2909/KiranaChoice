@@ -1,6 +1,9 @@
 package com.app.kiranachoice.views.products
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +14,8 @@ import com.app.kiranachoice.databinding.FragmentProductDetailsBinding
 import com.app.kiranachoice.recyclerView_adapters.AboutProductAdapter
 import com.app.kiranachoice.recyclerView_adapters.HorizontalProductsAdapter
 import com.app.kiranachoice.recyclerView_adapters.PackagingSizeAdapter
+import com.google.firebase.dynamiclinks.ktx.*
+import com.google.firebase.ktx.Firebase
 
 class ProductDetailsFragment : Fragment() {
 
@@ -60,6 +65,38 @@ class ProductDetailsFragment : Fragment() {
             similarProductsAdapter.list = it
         })
 
+        binding.shareButton.setOnClickListener {
+            val productId = args.productModel.product_key
+            val dynamicLink = Firebase.dynamicLinks.dynamicLink { // or Firebase.dynamicLinks.shortLinkAsync
+                link = Uri.parse("https://www.kiranachoice.com/refer.php?productId=$productId")
+                domainUriPrefix = "https://kiranachoice.page.link"
+                androidParameters("com.app.kiranachoice") {
+
+                    minimumVersion = 1
+                }
+                googleAnalyticsParameters {
+                    source = "orkut"
+                    medium = "social"
+                    campaign = "example-promo"
+                }
+                socialMetaTagParameters {
+                    title = "Example of a Dynamic Link"
+                    description = "This link works whether the app is installed or not!"
+                }
+            }
+
+            Log.i(TAG, "dynamicLink uri : ${dynamicLink.uri}")
+
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "text/plain"
+            intent.putExtra(Intent.EXTRA_TEXT, "Try this amazing app: " + dynamicLink.uri)
+            startActivity(Intent.createChooser(intent, "Share using"))
+        }
+
+    }
+
+    companion object {
+        private const val TAG = "ProductDetailsFragment"
     }
 
     override fun onStart() {

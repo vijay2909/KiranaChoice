@@ -1,12 +1,13 @@
 package com.app.kiranachoice.views.payment
 
 import android.app.Application
-import android.text.format.DateFormat
+import android.util.Log
 import androidx.lifecycle.*
 import com.app.kiranachoice.db.CartDatabase
 import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.*
 import com.app.kiranachoice.network.DateTimeApi
+import com.app.kiranachoice.network.RetrofitClient
 import com.app.kiranachoice.network.SendNotificationAPI
 import com.app.kiranachoice.repositories.CartRepo
 import com.app.kiranachoice.utils.*
@@ -19,7 +20,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,7 +40,9 @@ class PaymentViewModel(val application: Application) : ViewModel() {
 
     val allProducts: LiveData<List<CartItem>>
 
-    lateinit var orderPlacedDate: String
+    private var _orderPlacedDate = MutableLiveData<Long>()
+    val orderPlacedDate : LiveData<Long> get() = _orderPlacedDate
+
     private var sequence: Int? = null
 
     init {
@@ -50,9 +52,7 @@ class PaymentViewModel(val application: Application) : ViewModel() {
         mAuth = FirebaseAuth.getInstance()
         getUserInfo()
         generateOrderId()
-        viewModelScope.launch {
-            getTime()
-        }
+        getTime()
     }
 
     var orderId: String? = null
@@ -131,45 +131,43 @@ class PaymentViewModel(val application: Application) : ViewModel() {
             }
 
             val key = UUID.randomUUID().toString()
-            if (this@PaymentViewModel::orderPlacedDate.isInitialized) {
-                val bookItemOrderModel = if (couponCode != null) {
-                    BookItemOrderModel(
-                        key = key,
-                        productList = itemList,
-                        invoiceAmount = totalProductsAmount.value.toString().substringBefore("."),
-                        deliveryCharge = deliveryCharge.value.toString(),
-                        deliveryAddress = deliveryAddress,
-                        couponCode = couponCode,
-                        isCouponApplied = true,
-                        orderPlacedDate = orderPlacedDate,
-                        orderId = orderId
-                    )
-                } else {
-                    BookItemOrderModel(
-                        key = key,
-                        productList = itemList,
-                        invoiceAmount = totalProductsAmount.value.toString().substringBefore("."),
-                        deliveryCharge = deliveryCharge.value.toString(),
-                        deliveryAddress = deliveryAddress,
-                        couponCode = null,
-                        isCouponApplied = false,
-                        orderPlacedDate = orderPlacedDate,
-                        orderId = orderId
-                    )
-                }
-
-                dbFire.collection(USER_REFERENCE)
-                    .document(mAuth.currentUser!!.uid)
-                    .collection(USER_MY_ORDERS_REFERENCE)
-                    .document(key)
-                    .set(bookItemOrderModel)
-                    .addOnSuccessListener {
-                        _orderSaved.postValue(true)
-                        updateOrderIdSequence()
-                        saveOrderForAdmin()
-                        sendNotificationToAdmin()
-                    }
+            val bookItemOrderModel = if (couponCode != null) {
+                BookItemOrderModel(
+                    key = key,
+                    productList = itemList,
+                    invoiceAmount = totalProductsAmount.value.toString().substringBefore("."),
+                    deliveryCharge = deliveryCharge.value.toString(),
+                    deliveryAddress = deliveryAddress,
+                    couponCode = couponCode,
+                    isCouponApplied = true,
+                    orderPlacedDate = orderPlacedDate.value,
+                    orderId = orderId
+                )
+            } else {
+                BookItemOrderModel(
+                    key = key,
+                    productList = itemList,
+                    invoiceAmount = totalProductsAmount.value.toString().substringBefore("."),
+                    deliveryCharge = deliveryCharge.value.toString(),
+                    deliveryAddress = deliveryAddress,
+                    couponCode = null,
+                    isCouponApplied = false,
+                    orderPlacedDate = orderPlacedDate.value,
+                    orderId = orderId
+                )
             }
+
+            dbFire.collection(USER_REFERENCE)
+                .document(mAuth.currentUser!!.uid)
+                .collection(USER_MY_ORDERS_REFERENCE)
+                .document(key)
+                .set(bookItemOrderModel)
+                .addOnSuccessListener {
+                    _orderSaved.postValue(true)
+                    updateOrderIdSequence()
+                    saveOrderForAdmin()
+                    sendNotificationToAdmin()
+                }
         }
     }
 
@@ -220,56 +218,40 @@ class PaymentViewModel(val application: Application) : ViewModel() {
         return payload
     }
 
-    private suspend fun getTime() {
-        withContext(Dispatchers.IO) {
-            val retrofit: Retrofit = Retrofit.Builder()
-                .baseUrl(DateTimeApi.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
+    private fun getTime() {
+        val retrofit = RetrofitClient.getRetrofitClient()
 
-            val api: DateTimeApi = retrofit.create(DateTimeApi::class.java)
+        val api: DateTimeApi = retrofit.create(DateTimeApi::class.java)
 
-            api.getTime().enqueue(object : Callback<CurrentDateTime> {
-                override fun onResponse(
-                    call: Call<CurrentDateTime>,
-                    response: Response<CurrentDateTime>
-                ) {
-                    val currentTime = response.body()
-                    val unixTime =
-                        currentTime?.raw_offset?.toInt()?.plus(currentTime.unixtime?.toLong()!!)
-                    getDate(unixTime)
-                }
+        api.getTime().enqueue(object : Callback<CurrentDateTime> {
+            override fun onResponse(
+                call: Call<CurrentDateTime>,
+                response: Response<CurrentDateTime>
+            ) {
+                val currentDateTime = response.body()
+//                val unix = currentDateTime?.unixtime?.let { currentDateTime.rawOffset?.plus(it) }
+                val unix = currentDateTime?.unixtime
+                getDate(unix)
+            }
 
-                override fun onFailure(
-                    call: Call<CurrentDateTime>,
-                    t: Throwable
-                ) {
-                    t.printStackTrace()
-                }
-            })
-        }
+            override fun onFailure(
+                call: Call<CurrentDateTime>,
+                t: Throwable
+            ) {
+                Log.i(TAG, "onFailure: ${t.message}")
+                t.printStackTrace()
+            }
+        })
     }
 
 
-    fun getDate(value: Long?) {
-        if (value != null) {
-            val unix = value * 1000
-            val weekDay = DateFormat.format("EEE", unix).toString()
-            val month = DateFormat.format("MMM", unix).toString()
-            val date = DateFormat.format("d", unix).toString().toInt()
-            val year = DateFormat.format("yyyy", unix).toString().toInt()
-
-            orderPlacedDate = weekDay.plus(", $month").plus(" $date").plus(getMark(date.toString()))
-                .plus(" $year")
-        }
+    companion object {
+        private const val TAG = "PaymentViewModel"
     }
 
-    private fun getMark(date: String): String {
-        return when (date.last().toString()) {
-            "1" -> "st"
-            "2" -> "nd"
-            "3" -> "rd"
-            else -> "th"
+    fun getDate(unix: Long?) {
+        if (unix != null) {
+            _orderPlacedDate.value = unix * 1000
         }
     }
 

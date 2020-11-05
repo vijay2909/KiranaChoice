@@ -306,7 +306,6 @@
 
         <include
             android:id="@+id/progressBar"
-            layout="@layout/progress_bar_with_text"
-            android:visibility="gone" />
+            layout="@layout/progress_bar_with_text" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

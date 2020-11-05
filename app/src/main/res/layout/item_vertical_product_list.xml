@@ -11,10 +11,6 @@
             name="clickListener"
             type="com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter.ProductListener" />
 
-        <!--<variable
-            name="productListener"
-            type="com.app.kiranachoice.listeners.ProductClickListener" />-->
-
         <variable
             name="productModel"
             type="com.app.kiranachoice.models.ProductModel" />
@@ -24,12 +20,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:onClick="@{() -> clickListener.onItemClick(productModel)}"
         app:rippleColor="?attr/colorPrimary"
         app:cardBackgroundColor="@color/colorPrimaryLight"
         app:cardCornerRadius="10dp"
         app:cardElevation="4dp">
 
-        <!--android:onClick="@{() -> productListener.onItemClick(productModel)}"-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

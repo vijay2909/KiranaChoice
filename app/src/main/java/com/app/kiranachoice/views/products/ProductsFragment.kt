@@ -24,7 +24,7 @@ class ProductsFragment : Fragment(),
     private val binding get() = _bindingProduct!!
     private lateinit var viewModel: ProductsViewModel
 
-    private var navController: NavController? = null
+    private lateinit var navController: NavController
     private var verticalProductsAdapter: VerticalProductsAdapter? = null
 
     private lateinit var mAuth: FirebaseAuth
@@ -84,10 +84,6 @@ class ProductsFragment : Fragment(),
         _bindingProduct = null
     }
 
-    companion object {
-        private const val TAG = "ProductsFragment"
-    }
-
     override fun onAddToCartButtonClick(
         productModel: ProductModel,
         packagingSize: Int,
@@ -112,6 +108,10 @@ class ProductsFragment : Fragment(),
 
     override fun onItemRemoved(productModel: ProductModel) {
         viewModel.deleteCartItem(productModel)
+    }
+
+    override fun onItemClick(productModel: ProductModel) {
+        navController.navigate(ProductsFragmentDirections.actionProductsFragmentToProductDetailsFragment(productModel.productTitle.toString(), productModel))
     }
 
 }

@@ -69,6 +69,7 @@ class VerticalProductsAdapter(private val listener: ProductListener) :
 
         fun bind(productModel: ProductModel) {
             this.model = productModel
+            binding.clickListener = listener
             binding.productModel = productModel
             binding.executePendingBindings()
         }
@@ -100,5 +101,6 @@ class VerticalProductsAdapter(private val listener: ProductListener) :
             position: Int
         )
         fun onItemRemoved(productModel: ProductModel)
+        fun onItemClick(productModel: ProductModel)
     }
 }

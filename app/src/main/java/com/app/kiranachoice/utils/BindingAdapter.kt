@@ -96,3 +96,8 @@ fun setAddress(view: MaterialTextView, addressModel: AddressModel) {
 fun setTotalProducts(view : TextView, size: String){
     view.text = view.context.resources.getQuantityString(R.plurals.total_products, size.toInt(), size.toInt())
 }
+
+@BindingAdapter("unixToDate")
+fun setUnixToDate(view: TextView, unix : Long){
+    view.text = getDateFromUnix(unix)
+}

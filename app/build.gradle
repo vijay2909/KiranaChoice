@@ -89,6 +89,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-config-ktx:19.2.0'
     implementation 'com.google.android.gms:play-services-auth:18.1.0'
     implementation 'com.google.firebase:firebase-crashlytics-ktx:17.2.2'
+    implementation 'com.google.firebase:firebase-dynamic-links-ktx:19.1.1'
 
 
     // facebook shimmer effect

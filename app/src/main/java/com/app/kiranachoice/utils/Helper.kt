@@ -10,6 +10,8 @@ import com.app.kiranachoice.repositories.CartRepo
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun String.toPriceAmount(): String {
     val dec = DecimalFormat("##,##,###.00")
@@ -67,4 +69,12 @@ fun EditText.onChange(cb: (String) -> Unit) {
             cb(s.toString())
         }
     })
+}
+
+
+fun getDateFromUnix(unix: Long?) : String {
+    val date = unix?.let { Date(it) }
+    val sdf = SimpleDateFormat("dd MMM, yyyy hh:mm a", Locale.getDefault())
+    sdf.timeZone = TimeZone.getTimeZone("GMT+5:30")
+    return sdf.format(date!!)
 }

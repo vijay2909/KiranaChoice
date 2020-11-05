@@ -22,7 +22,7 @@ data class BookItemOrderModel(
     val deliveryCharge: String? = null,
     val deliveryAddress: String? = null,
     val orderId: String? = null,
-    val orderPlacedDate: String? = null,
+    val orderPlacedDate: Long? = null,
     val couponCode: String? = null,
     val isCouponApplied: Boolean? = null,
     val status: String? = ORDER_PLACED

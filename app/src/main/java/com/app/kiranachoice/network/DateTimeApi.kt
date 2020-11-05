@@ -6,9 +6,10 @@ import retrofit2.http.GET
 
 interface DateTimeApi {
     companion object {
-        const val BASE_URL: String = "https://worldtimeapi.org/api/timezone/"
+        const val BASE_URL: String = "http://worldtimeapi.org/api/timezone/"
     }
 
-    @GET("Asia/Kolkata/")
+
+    @GET("Asia/Kolkata")
     fun getTime(): Call<CurrentDateTime>
 }

@@ -26,6 +26,7 @@ import com.app.kiranachoice.databinding.DialogBookingConfirmedBinding
 import com.app.kiranachoice.databinding.FragmentPaymentBinding
 import com.app.kiranachoice.utils.DELIVERY_FREE
 import com.app.kiranachoice.utils.Mailer
+import com.app.kiranachoice.utils.getDateFromUnix
 import com.app.kiranachoice.utils.toPriceAmount
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -83,6 +84,13 @@ class PaymentFragment : Fragment() {
                 viewModel.orderSaveFinished()
             }
         })
+
+        // hide the progress bar after get date from the API
+        viewModel.orderPlacedDate.observe(viewLifecycleOwner, {
+            it?.let {
+                binding.progressBar.root.visibility = View.GONE
+            }
+        })
     }
 
 
@@ -96,12 +104,14 @@ class PaymentFragment : Fragment() {
                 .toString().toPriceAmount()
         }
 
+        val orderPlacedDate = getDateFromUnix(viewModel.orderPlacedDate.value)
+
         Mailer.sendMail(
             requireContext(),
-            "vijaysaini2925@gmail.com",
+            viewModel.user?.email.toString(),
             viewModel.user?.name.toString(),
             viewModel.orderId.toString(),
-            viewModel.orderPlacedDate,
+            orderPlacedDate,
             viewModel.totalProductsAmount.value.toString(),
             getString(R.string.rupee).plus(viewModel.deliveryCharge.value.toString()),
             amountWithDeliveryCharge.toString()
