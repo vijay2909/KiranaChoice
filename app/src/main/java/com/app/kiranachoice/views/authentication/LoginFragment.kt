@@ -8,11 +8,11 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.app.kiranachoice.R
@@ -21,10 +21,7 @@ import com.google.android.gms.auth.api.credentials.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -33,8 +30,9 @@ private const val RC_HINT = 1
 
 class LoginFragment : Fragment(), View.OnClickListener {
 
-    private var _bindingLogin : FragmentLoginBinding? = null
+    private var _bindingLogin: FragmentLoginBinding? = null
     private val binding get() = _bindingLogin!!
+
 
     private lateinit var mAuth: FirebaseAuth
     private lateinit var dbFireStore: FirebaseFirestore
@@ -45,7 +43,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
     private var otpCode: String? = null
     private lateinit var phoneNumberWithCountryCode: String
     private lateinit var mCredentialsClient: CredentialsClient
-    private var timer : CountDownTimer? = null
+    private var timer: CountDownTimer? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,7 +61,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
         return binding.root
     }
 
-    private val viewModel : AuthViewModel by activityViewModels()
+
+    private val viewModel: AuthViewModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -102,10 +102,12 @@ class LoginFragment : Fragment(), View.OnClickListener {
         }
 
         viewModel.userDoesNotExist.observe(viewLifecycleOwner, {
-            if (it){
+            if (it) {
                 binding.progressBar.root.visibility = View.GONE
                 viewModel.eventUserDoesNotExistFinished()
-                view.findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToUserDetailsFragment(phoneNumber!!))
+                view.findNavController().navigate(
+                    LoginFragmentDirections.actionLoginFragmentToUserDetailsFragment(phoneNumber!!)
+                )
             }
         })
 
@@ -141,13 +143,15 @@ class LoginFragment : Fragment(), View.OnClickListener {
                 binding.textResend.isEnabled = false
             }
         }.start()
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-            phoneNumber, // Phone number to verify
-            60L, // Timeout duration
-            TimeUnit.SECONDS, // Unit of timeout
-            requireActivity(), // Activity (for callback binding)
-            callbacks
-        )
+
+        val options = PhoneAuthOptions.newBuilder(mAuth)
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(requireActivity())
+            .setCallbacks(callbacks)
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
     private fun verifyPhoneNumberWithCode(verificationId: String?, code: String?) {
@@ -161,28 +165,32 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
     private fun resendVerificationCode(
         phoneNumber: String,
-        token: PhoneAuthProvider.ForceResendingToken?
+        token: PhoneAuthProvider.ForceResendingToken
     ) {
-        Log.i("auth", "resendVerificationCode()")
-        timer = object : CountDownTimer(60000, 1000) {
-            override fun onFinish() {
-                binding.textResend.isEnabled = true
-                binding.textTimer.setText(R.string.sixty)
-            }
+        if (this::resendToken.isInitialized) {
+            Log.i("auth", "resendVerificationCode()")
+            timer = object : CountDownTimer(60000, 1000) {
+                override fun onFinish() {
+                    binding.textResend.isEnabled = true
+                    binding.textTimer.setText(R.string.sixty)
+                }
 
-            override fun onTick(l: Long) {
-                binding.textTimer.text = ("" + l / 1000)
-                binding.textResend.isEnabled = false
-            }
-        }.start()
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-            phoneNumber,
-            60L,
-            TimeUnit.SECONDS,
-            requireActivity(),
-            callbacks,
-            token
-        )
+                override fun onTick(l: Long) {
+                    binding.textTimer.text = ("" + l / 1000)
+                    binding.textResend.isEnabled = false
+                }
+            }.start()
+
+            val options = PhoneAuthOptions.newBuilder(mAuth)
+                .setPhoneNumber(phoneNumber)
+                .setTimeout(60L, TimeUnit.SECONDS)
+                .setActivity(requireActivity())
+                .setCallbacks(callbacks)
+                .setForceResendingToken(token)
+                .build()
+
+            PhoneAuthProvider.verifyPhoneNumber(options)
+        }
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
@@ -260,6 +268,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.btnLogin.id -> {
+
                 // get Button text and perform action accordingly to text
                 when (binding.btnLogin.text) {
                     getString(R.string.send_otp) -> {

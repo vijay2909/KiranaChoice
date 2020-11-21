@@ -5,11 +5,11 @@
     android:layout_height="match_parent"
     tools:context=".views.chat.ChatFragment">
 
-    <TextView
+   <!-- <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="Chat page"
         android:textSize="25sp"
-        android:gravity="center"/>
+        android:gravity="center"/>-->
 
 </FrameLayout>

@@ -36,24 +36,27 @@ class ProductDetailsFragment : Fragment() {
     private val args: ProductDetailsFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.productModel = args.productModel
 
         val packagingSizeAdapter = PackagingSizeAdapter()
         binding.recyclerPackagingSize.adapter = packagingSizeAdapter
 
-        packagingSizeAdapter.list = args.productModel.productPackagingSize
+        args.productModel?.let {
+            binding.productModel = it
+            packagingSizeAdapter.list = it.productPackagingSize
 
-        if (!args.productModel.aboutTheProduct.isNullOrEmpty()) {
-            binding.isListEmpty = false
-            val aboutProductAdapter = AboutProductAdapter()
-            binding.recyclerViewAboutProduct.apply {
-                aboutProductAdapter.list = args.productModel.aboutTheProduct
-                setHasFixedSize(true)
-                adapter = aboutProductAdapter
+            if (!it.aboutTheProduct.isNullOrEmpty()) {
+                binding.isListEmpty = false
+                val aboutProductAdapter = AboutProductAdapter()
+                binding.recyclerViewAboutProduct.apply {
+                    aboutProductAdapter.list = it.aboutTheProduct
+                    setHasFixedSize(true)
+                    adapter = aboutProductAdapter
+                }
+            } else {
+                binding.isListEmpty = true
             }
-        } else {
-            binding.isListEmpty = true
         }
+
 
         val similarProductsAdapter = HorizontalProductsAdapter(null)
         binding.recyclerViewSimilarProducts.apply {
@@ -66,8 +69,9 @@ class ProductDetailsFragment : Fragment() {
         })
 
         binding.shareButton.setOnClickListener {
-            val productId = args.productModel.product_key
-            val dynamicLink = Firebase.dynamicLinks.dynamicLink { // or Firebase.dynamicLinks.shortLinkAsync
+            val productId = args.productModel?.product_key
+
+            Firebase.dynamicLinks.shortLinkAsync {
                 link = Uri.parse("https://www.kiranachoice.com/refer.php?productId=$productId")
                 domainUriPrefix = "https://kiranachoice.page.link"
                 androidParameters("com.app.kiranachoice") {
@@ -83,14 +87,15 @@ class ProductDetailsFragment : Fragment() {
                     title = "Example of a Dynamic Link"
                     description = "This link works whether the app is installed or not!"
                 }
+            }.addOnSuccessListener { (shortLink, _) ->
+                // Short link created
+                Log.i(TAG, "shortLink: $shortLink")
+
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.type = "text/plain"
+                intent.putExtra(Intent.EXTRA_TEXT, "Try this amazing app: $shortLink")
+                startActivity(Intent.createChooser(intent, "Share using"))
             }
-
-            Log.i(TAG, "dynamicLink uri : ${dynamicLink.uri}")
-
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "text/plain"
-            intent.putExtra(Intent.EXTRA_TEXT, "Try this amazing app: " + dynamicLink.uri)
-            startActivity(Intent.createChooser(intent, "Share using"))
         }
 
     }
@@ -101,7 +106,9 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.getProductList(args.productModel.sub_category_name.toString())
+        args.productModel?.let {
+            viewModel.getProductList(it.sub_category_name.toString())
+        }
     }
 
     override fun onDestroyView() {

@@ -1,14 +1,11 @@
 package com.app.kiranachoice
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -19,10 +16,8 @@ import androidx.navigation.ui.*
 import com.app.kiranachoice.databinding.ActivityMainBinding
 import com.app.kiranachoice.databinding.NavHeaderMainBinding
 import com.app.kiranachoice.views.authentication.AuthActivity
-import com.google.firebase.dynamiclinks.ktx.dynamicLinks
-import com.google.firebase.ktx.Firebase
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -102,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        Firebase.dynamicLinks
+        /*Firebase.dynamicLinks
             .getDynamicLink(intent)
             .addOnSuccessListener(this) { pendingDynamicLinkData ->
                 // Get deep link from result (may be null if no link is found)
@@ -111,10 +106,14 @@ class MainActivity : AppCompatActivity() {
                     deepLink = pendingDynamicLinkData.link
                 }
 
-                val productId = deepLink.toString().substringAfter("=")
+                deepLink?.let {
+                    val productId = deepLink.toString().substringAfter("=")
+                    Log.i(TAG, "productId : $productId")
+
+                }
 
             }
-            .addOnFailureListener(this) { e -> Log.w(TAG, "getDynamicLink:onFailure", e) }
+            .addOnFailureListener(this) { e -> Log.w(TAG, "getDynamicLink:onFailure", e) }*/
     }
 
     companion object {

@@ -76,7 +76,8 @@ class ProductsFragment : Fragment(),
 
     override fun onResume() {
         super.onResume()
-        viewModel.getProductList(args.subCategoryModel)
+        if (args.subCategoryModel != null) viewModel.getProductList(args.subCategoryModel, null)
+        else viewModel.getProductList(null, args.categoryModel)
     }
 
     override fun onDestroyView() {

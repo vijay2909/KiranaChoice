@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -247,8 +249,10 @@ class SplashActivity : AppCompatActivity() {
 //    }
 
     private fun moveForward() {
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
+        Handler(Looper.getMainLooper()).postDelayed({
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }, 2000)
     }
 
 //    private fun openAppOnPlayStore(ctx: Context) {

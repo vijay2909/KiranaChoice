@@ -14,7 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import com.app.kiranachoice.DevicecureMapActivity
+import com.app.kiranachoice.KiranaChoiceMapActivity
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.MainViewModelFactory
 import com.app.kiranachoice.R
@@ -87,7 +87,7 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
             binding.textOurStore.id -> startActivity(
                 Intent(
                     requireContext(),
-                    DevicecureMapActivity::class.java
+                    KiranaChoiceMapActivity::class.java
                 )
             )
             binding.textSignOut.id -> {

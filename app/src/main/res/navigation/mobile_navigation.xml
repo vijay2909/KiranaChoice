@@ -31,6 +31,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_homeFragment_to_productsFragment"
+            app:destination="@id/productsFragment" />
     </fragment>
 
     <fragment
@@ -148,7 +151,9 @@
         tools:layout="@layout/fragment_products">
         <argument
             android:name="subCategoryModel"
-            app:argType="com.app.kiranachoice.models.SubCategoryModel" />
+            app:argType="com.app.kiranachoice.models.SubCategoryModel"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <action
             android:id="@+id/action_productsFragment_to_productDetailsFragment"
             app:destination="@id/productDetailsFragment"
@@ -159,6 +164,11 @@
         <argument
             android:name="title"
             app:argType="string" />
+        <argument
+            android:name="categoryModel"
+            app:argType="com.app.kiranachoice.models.Category1Model"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <activity
         android:id="@+id/authActivity"
@@ -202,7 +212,9 @@
             app:argType="string" />
         <argument
             android:name="productModel"
-            app:argType="com.app.kiranachoice.models.ProductModel" />
+            app:argType="com.app.kiranachoice.models.ProductModel"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/addressFragment"

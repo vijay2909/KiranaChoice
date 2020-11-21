@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:translationZ="2dp"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="2dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:layout_width="180dp"
-        android:layout_height="110dp"
-        android:contentDescription="@string/category_image"
-        android:src="@drawable/placeholder_image"
-        android:scaleType="fitXY"/>
-</com.google.android.material.card.MaterialCardView>
+    <data>
+        <variable
+            name="model"
+            type="com.app.kiranachoice.models.Category1Model" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:translationZ="2dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="2dp">
+
+        <ImageView
+            android:layout_width="180dp"
+            android:layout_height="110dp"
+            app:imageUrl="@{model.category_image_url}"
+            android:contentDescription="@string/category_image"
+            tools:src="@drawable/placeholder_image"
+            android:scaleType="fitXY" />
+    </com.google.android.material.card.MaterialCardView>
+</layout>

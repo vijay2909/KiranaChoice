@@ -2,6 +2,7 @@ package com.app.kiranachoice.views.home
 
 import android.app.Application
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -32,6 +33,8 @@ import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.dynamiclinks.ktx.dynamicLinks
+import com.google.firebase.ktx.Firebase
 
 class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, ProductClickListener {
 
@@ -78,7 +81,42 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        Firebase.dynamicLinks
+            .getDynamicLink(requireActivity().intent)
+            .addOnSuccessListener(requireActivity()) { pendingDynamicLinkData ->
+                // Get deep link from result (may be null if no link is found)
+                var deepLink: Uri? = null
+                if (pendingDynamicLinkData != null) {
+                    deepLink = pendingDynamicLinkData.link
+                }
+
+                deepLink?.let {
+                    val productId = deepLink.toString().substringAfter("=")
+                    viewModel.getProductDetails(productId)
+                }
+
+            }
+            .addOnFailureListener(requireActivity()) { e ->
+                Log.w(
+                    TAG,
+                    "getDynamicLink:onFailure: ${e.message}"
+                )
+            }
+
         navController = Navigation.findNavController(view)
+
+        viewModel.product.observe(viewLifecycleOwner, {
+            it?.let {
+                navController.navigate(
+                    HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
+                        it.productTitle.toString(),
+                        it
+                    )
+                )
+                viewModel.productShouldBeNull()
+            }
+        })
+
 
         // Home Top Banner [[START]] >>>>>>>>>>>>>
         val banner1Adapter = HomeTopBannerAdapter()
@@ -98,10 +136,11 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             adapter = category1Adapter
         }
         viewModel.categoryList.observe(viewLifecycleOwner, {
+            Log.w(TAG, "onViewCreated: categoryList observe method" )
+            category1Adapter.list = it
             binding.shimmerLayout.rootLayout.stopShimmer()
             binding.shimmerLayout.root.visibility = View.GONE
             binding.actualUiLayout.visibility = View.VISIBLE
-            category1Adapter.list = it
         })
         // Category [[ END ]] >>>>>>>>>>>>>>>
 
@@ -119,9 +158,13 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         // Best Offer Products [[ END ]] >>>>>>>>>>>>>>
 
 
-        binding.recyclerViewCategory2.apply {
-            adapter = SmallBannerCategoryAdapter(null)
-        }
+        val smallBannerCategoryAdapter = SmallBannerCategoryAdapter()
+        binding.recyclerViewCategory2.adapter = smallBannerCategoryAdapter
+
+        viewModel.category2.observe(viewLifecycleOwner, {
+            binding.recyclerViewCategory2.setHasFixedSize(true)
+            smallBannerCategoryAdapter.list = it
+        })
 
 
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
@@ -137,7 +180,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
 
         binding.recyclerViewCategory3.apply {
-            adapter = SmallBannerCategoryAdapter(null)
+            adapter = SmallBannerCategoryAdapter()
         }
 
         // Home Middle Banner [[START]] >>>>>>>>>>>>>
@@ -293,6 +336,10 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
                 productModel
             )
         )
+    }
+
+    companion object {
+        private const val TAG = "HomeFragment"
     }
 }
 
