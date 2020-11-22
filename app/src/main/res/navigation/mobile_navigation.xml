@@ -45,7 +45,11 @@
         android:id="@+id/myOffersFragment"
         android:name="com.app.kiranachoice.views.my_offers.MyOffersFragment"
         android:label="My Offers"
-        tools:layout="@layout/fragment_my_offers" />
+        tools:layout="@layout/fragment_my_offers" >
+        <action
+            android:id="@+id/action_myOffersFragment_to_offerDetailFragment"
+            app:destination="@id/offerDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/myAccountFragment"
         android:name="com.app.kiranachoice.views.my_account.MyAccountFragment"
@@ -280,5 +284,14 @@
         <argument
             android:name="bookItemOrderModel"
             app:argType="com.app.kiranachoice.models.BookItemOrderModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/offerDetailFragment"
+        android:name="com.app.kiranachoice.views.my_offers.OfferDetailFragment"
+        android:label="@string/offer_details"
+        tools:layout="@layout/fragment_offer_detail" >
+        <argument
+            android:name="offerModel"
+            app:argType="com.app.kiranachoice.models.OfferModel" />
     </fragment>
 </navigation>

@@ -6,6 +6,7 @@ const val PASSWORD = "iuosuohgqcugpmmc"
 
 const val HOME_TOP_BANNER = "Home Top Banner"
 const val CATEGORY_REFERENCE = "Category"
+const val OFFER_REFERENCE = "Offer"
 const val SECOND_CATEGORY_REFERENCE = "Category2"
 const val SUB_CATEGORY_REFERENCE = "Sub Categories"
 const val PRODUCT_REFERENCE = "Products"

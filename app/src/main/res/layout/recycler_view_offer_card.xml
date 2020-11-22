@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="clickListener"
+            type="com.app.kiranachoice.recyclerView_adapters.OffersAdapter.OfferClickListener" />
+
+        <variable
+            name="model"
+            type="com.app.kiranachoice.models.OfferModel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="0dp"
+            android:paddingBottom="16dp">
+
+            <ImageView
+                android:id="@+id/imageRepairOffer"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:scaleType="fitXY"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/textDescription"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@{model.detail}"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="Get Rs 100 extra on the buyback price for your old Xiaomi mobile" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOfferDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="48dp"
+                android:background="@drawable/curved_button_background"
+                android:minHeight="0dp"
+                android:onClick="@{() -> clickListener.onOfferItemClicked(model)}"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:text="@string/offer_details"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

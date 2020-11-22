@@ -17,6 +17,8 @@
     <string name="hi_userName">Hi,</string>
     <string name="hi_user">Hi, User</string>
 
+    <string name="offer_details">Offer Details</string>
+
     <!--    my account fragment     -->
     <string name="sign_in">Sign in</string>
     <string name="order_history">Order History</string>
