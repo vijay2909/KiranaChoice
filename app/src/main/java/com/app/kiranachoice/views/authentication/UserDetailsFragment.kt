@@ -11,6 +11,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
+import com.app.kiranachoice.MessagingService
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentUserDetailsBinding
 
@@ -55,7 +56,7 @@ class UserDetailsFragment : Fragment() {
             binding.progressBar.root.visibility = View.VISIBLE
             val name = binding.etName.text.toString().trim()
             val email = binding.etEmail.text.toString().trim()
-            viewModel.saveUser(name, email)
+            viewModel.saveUser(name, email, MessagingService.getToken(requireContext()))
         }
 
         viewModel.userAlreadyExist.observe(viewLifecycleOwner, {

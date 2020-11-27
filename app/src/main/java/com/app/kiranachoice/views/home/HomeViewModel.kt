@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.app.kiranachoice.db.CartDao
 import com.app.kiranachoice.db.CartDatabase
+import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.*
 import com.app.kiranachoice.repositories.CartRepo
 import com.app.kiranachoice.utils.*
@@ -29,6 +30,8 @@ class HomeViewModel(application: Application) : ViewModel() {
     private val cartDao: CartDao
     private val cartRepo: CartRepo
 
+    val cartItems : LiveData<List<CartItem>>
+
     init {
         dbRef = FirebaseDatabase.getInstance()
         dbFire = FirebaseFirestore.getInstance()
@@ -37,6 +40,8 @@ class HomeViewModel(application: Application) : ViewModel() {
         database = CartDatabase.getInstance(application)
         cartDao = database.cartDao
         cartRepo = CartRepo(cartDao)
+
+        cartItems = cartRepo.allCartItems
 
         getBanners()
         getCategories()

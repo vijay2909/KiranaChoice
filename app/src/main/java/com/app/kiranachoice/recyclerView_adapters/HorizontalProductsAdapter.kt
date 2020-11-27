@@ -5,21 +5,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemHorizontolProductItemBinding
+import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.models.ProductModel
 import com.google.android.material.snackbar.Snackbar
 
 
-class HorizontalProductsAdapter(private val listener: ProductClickListener?) :
+class HorizontalProductsAdapter(
+    private val list : List<ProductModel>,
+    private val cartItem : List<CartItem>,
+    private val listener: ProductClickListener?
+) :
     RecyclerView.Adapter<HorizontalProductsAdapter.HorizontalProductsViewHolder>() {
 
     var addToCartClickedItemPosition = -1
 
-    var list = listOf<ProductModel>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -37,6 +37,17 @@ class HorizontalProductsAdapter(private val listener: ProductClickListener?) :
     override fun onBindViewHolder(holder: HorizontalProductsViewHolder, position: Int) {
         holder.bind(list[position])
 
+        if (!cartItem.isNullOrEmpty() ){
+            for (cartItem in cartItem) {
+                if (cartItem.productKey == list[position].product_key){
+                    holder.binding.btnAddToCart.visibility = View.GONE
+                    holder.binding.quantityLayout.visibility = View.VISIBLE
+                    holder.binding.userQuantity.text = cartItem.quantity
+                    break
+                }
+            }
+        }
+
         holder.binding.btnIncrease.setOnClickListener {
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
             if (quantity < 5) ++quantity else Snackbar.make(
@@ -51,7 +62,6 @@ class HorizontalProductsAdapter(private val listener: ProductClickListener?) :
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
             --quantity
             if (quantity == 0) {
-//                listener.onItemRemoved(list[position])
                 holder.binding.btnAddToCart.visibility = View.VISIBLE
                 holder.binding.quantityLayout.visibility = View.GONE
             } else {

@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.provider.Settings
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -28,6 +29,8 @@ class App : Application(){
             )
 
             channelOrderBooked.description = getString(R.string.notification_description)
+            channelOrderBooked.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, null)
+            channelOrderBooked.vibrationPattern = longArrayOf(1000,1000)
 
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channelOrderBooked)

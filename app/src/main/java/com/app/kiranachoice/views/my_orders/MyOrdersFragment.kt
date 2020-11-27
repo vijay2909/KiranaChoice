@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.app.kiranachoice.databinding.FragmentMyOrdersBinding
 import com.app.kiranachoice.models.BookItemOrderModel
 import com.app.kiranachoice.recyclerView_adapters.MyOrdersAdapter
@@ -31,6 +32,7 @@ class MyOrdersFragment : Fragment(), MyOrdersAdapter.OrderClickListener {
 
         val myOrdersAdapter = MyOrdersAdapter(this)
         binding.recyclerViewMyOrdersList.adapter = myOrdersAdapter
+        binding.recyclerViewMyOrdersList.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
 
         viewModel.ordersList.observe(viewLifecycleOwner, {
             myOrdersAdapter.list = it

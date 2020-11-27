@@ -35,7 +35,7 @@ class ProductsViewModel(application: Application) : ViewModel() {
     private val cartDao: CartDao
     private val cartRepo: CartRepo
 
-    private val allCartItems: LiveData<List<CartItem>>
+    val allCartItems: LiveData<List<CartItem>>
 
     init {
         dbRef = FirebaseDatabase.getInstance()

@@ -22,7 +22,7 @@ class ProductDetailsFragment : Fragment() {
     private var _bindingProductDetails: FragmentProductDetailsBinding? = null
     private val binding get() = _bindingProductDetails!!
 
-    private lateinit var viewModel : ProductDetailsViewModel
+    private lateinit var viewModel: ProductDetailsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,14 +58,12 @@ class ProductDetailsFragment : Fragment() {
         }
 
 
-        val similarProductsAdapter = HorizontalProductsAdapter(null)
-        binding.recyclerViewSimilarProducts.apply {
-            setHasFixedSize(true)
-            adapter = similarProductsAdapter
-        }
-
         viewModel.productsList.observe(viewLifecycleOwner, {
-            similarProductsAdapter.list = it
+            val similarProductsAdapter = HorizontalProductsAdapter(it, emptyList(),null)
+            binding.recyclerViewSimilarProducts.apply {
+                setHasFixedSize(true)
+                adapter = similarProductsAdapter
+            }
         })
 
         binding.shareButton.setOnClickListener {

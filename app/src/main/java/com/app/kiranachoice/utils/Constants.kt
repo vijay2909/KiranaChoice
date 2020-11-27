@@ -4,6 +4,8 @@ package com.app.kiranachoice.utils
 const val EMAIL = "kiranachoice@gmail.com"
 const val PASSWORD = "iuosuohgqcugpmmc"
 
+const val DEVICE_TOKEN = "Device Token"
+
 const val HOME_TOP_BANNER = "Home Top Banner"
 const val CATEGORY_REFERENCE = "Category"
 const val OFFER_REFERENCE = "Offer"

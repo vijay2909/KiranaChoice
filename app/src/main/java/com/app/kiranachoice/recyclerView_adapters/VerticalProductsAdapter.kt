@@ -5,20 +5,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemVerticalProductListBinding
+import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.ProductModel
 import com.google.android.material.snackbar.Snackbar
 
 
-class VerticalProductsAdapter(private val listener: ProductListener) :
+class VerticalProductsAdapter(
+    private val list : List<ProductModel>,
+    private val cartItem: List<CartItem>,
+    private val listener: ProductListener
+) :
     RecyclerView.Adapter<VerticalProductsAdapter.VerticalProductViewHolder>() {
 
     var addToCartClickedItemPosition = -1
-
-    var list = listOf<ProductModel>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VerticalProductViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -30,6 +29,17 @@ class VerticalProductsAdapter(private val listener: ProductListener) :
 
     override fun onBindViewHolder(holder: VerticalProductViewHolder, position: Int) {
         holder.bind(list[position])
+
+        if (!cartItem.isNullOrEmpty() ){
+            for (cartItem in cartItem) {
+                if (cartItem.productKey == list[position].product_key){
+                    holder.binding.btnAddToCart.visibility = View.GONE
+                    holder.binding.quantityLayout.visibility = View.VISIBLE
+                    holder.binding.userQuantity.text = cartItem.quantity
+                    break
+                }
+            }
+        }
 
         holder.binding.btnIncrease.setOnClickListener {
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
@@ -57,6 +67,8 @@ class VerticalProductsAdapter(private val listener: ProductListener) :
             holder.binding.btnAddToCart.visibility = View.GONE
             holder.binding.quantityLayout.visibility = View.VISIBLE
         }
+
+
     }
 
     inner class VerticalProductViewHolder(
@@ -100,6 +112,7 @@ class VerticalProductsAdapter(private val listener: ProductListener) :
             quantity: String,
             position: Int
         )
+
         fun onItemRemoved(productModel: ProductModel)
         fun onItemClick(productModel: ProductModel)
     }

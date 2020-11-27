@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "918158063188-ojigi8ti5qgu2b8covq90noem9nbmhoh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.kiranachoice",
+            "certificate_hash": "683be20ee7029b222de13471e4c0882c3bf820b5"
+          }
+        },
+        {
           "client_id": "918158063188-9jn1ei72s2k9dfh62kphvr124dpct98f.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -43,14 +51,6 @@
         }
       },
       "oauth_client": [
-        {
-          "client_id": "918158063188-g2b0h3t89c2m9rkj8jckp9suutcnri10.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.app.kiranachoiceadmin",
-            "certificate_hash": "cc757442ac6e39b0e7209746e7cf15a569c44bc2"
-          }
-        },
         {
           "client_id": "918158063188-9jn1ei72s2k9dfh62kphvr124dpct98f.apps.googleusercontent.com",
           "client_type": 3

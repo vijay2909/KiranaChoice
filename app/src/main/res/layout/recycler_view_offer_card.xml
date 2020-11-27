@@ -35,6 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 android:scaleType="fitXY"
+                app:imageUrl="@{model.image}"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:ignore="ContentDescription" />
 
@@ -58,6 +59,8 @@
                 android:layout_marginTop="48dp"
                 android:background="@drawable/curved_button_background"
                 android:minHeight="0dp"
+                android:insetTop="4dp"
+                android:insetBottom="4dp"
                 android:onClick="@{() -> clickListener.onOfferItemClicked(model)}"
                 android:paddingStart="15dp"
                 android:paddingEnd="15dp"

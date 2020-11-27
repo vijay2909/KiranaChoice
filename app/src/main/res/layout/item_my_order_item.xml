@@ -17,9 +17,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:onClick="@{() -> listener.onOrderClicked(model)}"
         android:background="@color/white"
+        android:onClick="@{() -> listener.onOrderClicked(model)}"
         android:padding="16dp">
 
         <ImageView
@@ -40,11 +39,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            app:totalProducts="@{String.valueOf(model.productList.size())}"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/productImage"
             app:layout_constraintTop_toTopOf="@id/productImage"
+            app:totalProducts="@{String.valueOf(model.productList.size())}"
             tools:text="Total 3 Products" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -62,11 +61,12 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textOrderPrice"
-            style="@style/TextAppearance.MaterialComponents.Caption"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@{@string/rupees_string_format(model.invoiceAmount)}"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/textOrderStatus"
             app:layout_constraintTop_toBottomOf="@+id/textOrderStatus"
             tools:text="₹ 123" />
@@ -85,20 +85,45 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@{@string/order_format(model.orderId)}"
+            android:text="@string/order_id"
             app:layout_constraintStart_toStartOf="@id/textOrderPrice"
             app:layout_constraintTop_toBottomOf="@id/textOrderPrice"
-            tools:text="Order ID: KC100001" />
+            tools:text="Order ID:" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvOrderId"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:text="@{model.orderId}"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/textOrderId"
+            app:layout_constraintTop_toBottomOf="@id/textOrderPrice"
+            tools:text="KC100001" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textPlaceDate"
             style="@style/TextAppearance.MaterialComponents.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{@string/placed_date_format(model.orderPlacedDate)}"
+            android:text="@string/placed_date"
             app:layout_constraintStart_toStartOf="@id/textOrderId"
             app:layout_constraintTop_toBottomOf="@id/textOrderId"
-            tools:text="Placed on: 10th Oct 2020 02:05pm" />
+            tools:text="Placed on:" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvPlaceDate"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/textPlaceDate"
+            app:layout_constraintTop_toBottomOf="@id/textOrderId"
+            app:unixToDateTime="@{model.orderPlacedDate}"
+            tools:text="10th Oct 2020 02:05pm" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

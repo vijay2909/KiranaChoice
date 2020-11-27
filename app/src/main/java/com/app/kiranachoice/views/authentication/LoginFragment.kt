@@ -14,7 +14,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentLoginBinding
 import com.google.android.gms.auth.api.credentials.*
@@ -36,7 +36,6 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
     private lateinit var mAuth: FirebaseAuth
     private lateinit var dbFireStore: FirebaseFirestore
-    private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private var storedVerificationId: String? = ""
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private var phoneNumber: String? = null
@@ -56,58 +55,57 @@ class LoginFragment : Fragment(), View.OnClickListener {
         mAuth = FirebaseAuth.getInstance()
         dbFireStore = FirebaseFirestore.getInstance()
 
-        getHintPhoneNumber()
-
         return binding.root
+    }
+
+    private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+            Log.i("auth", "onVerificationCompleted() called")
+            binding.progressBar.root.visibility = View.GONE
+            signInWithPhoneAuthCredential(credential)
+        }
+
+        override fun onVerificationFailed(e: FirebaseException) {
+            Log.i("auth", "onVerificationFailed() called")
+            binding.progressBar.root.visibility = View.GONE
+            if (e is FirebaseAuthInvalidCredentialsException) {
+                Log.i("auth", "onVerificationFailed() FirebaseAuthInvalidCredentialsException")
+                binding.etPhoneNumber.error = getString(R.string.invalid_number)
+            } else if (e is FirebaseTooManyRequestsException) {
+                Log.i("auth", "onVerificationFailed() FirebaseTooManyRequestsException")
+                Snackbar.make(
+                    requireView(),
+                    getString(R.string.too_many_request_attempt),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        override fun onCodeSent(
+            verificationId: String,
+            token: PhoneAuthProvider.ForceResendingToken
+        ) {
+            binding.progressBar.root.visibility = View.GONE
+            Log.i("auth", "onCodeSent()")
+            storedVerificationId = verificationId
+            resendToken = token
+        }
     }
 
 
     private val viewModel: AuthViewModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                Log.i("auth", "onVerificationCompleted() called")
-                binding.progressBar.root.visibility = View.GONE
-                signInWithPhoneAuthCredential(credential)
-            }
-
-            override fun onVerificationFailed(e: FirebaseException) {
-                Log.i("auth", "onVerificationFailed() called")
-                binding.progressBar.root.visibility = View.GONE
-                if (e is FirebaseAuthInvalidCredentialsException) {
-                    Log.i("auth", "onVerificationFailed() FirebaseAuthInvalidCredentialsException")
-                    binding.etPhoneNumber.error = getString(R.string.invalid_number)
-                } else if (e is FirebaseTooManyRequestsException) {
-                    Log.i("auth", "onVerificationFailed() FirebaseTooManyRequestsException")
-                    Snackbar.make(
-                        view,
-                        getString(R.string.too_many_request_attempt),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
-
-            override fun onCodeSent(
-                verificationId: String,
-                token: PhoneAuthProvider.ForceResendingToken
-            ) {
-                binding.progressBar.root.visibility = View.GONE
-                Log.i("auth", "onCodeSent()")
-                storedVerificationId = verificationId
-                resendToken = token
-            }
-        }
+        getHintPhoneNumber()
 
         viewModel.userDoesNotExist.observe(viewLifecycleOwner, {
             if (it) {
                 binding.progressBar.root.visibility = View.GONE
-                viewModel.eventUserDoesNotExistFinished()
-                view.findNavController().navigate(
+                findNavController().navigate(
                     LoginFragmentDirections.actionLoginFragmentToUserDetailsFragment(phoneNumber!!)
                 )
+                viewModel.eventUserDoesNotExistFinished()
             }
         })
 
@@ -154,6 +152,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
+
     private fun verifyPhoneNumberWithCode(verificationId: String?, code: String?) {
         Log.i("auth", "verifyPhoneNumberWithCode()")
         if (!code.isNullOrEmpty()) {
@@ -193,6 +192,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
         }
     }
 
+
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         Log.i("auth", "signInWithPhoneAuthCredential()")
         mAuth.signInWithCredential(credential)
@@ -230,6 +230,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
         }
     }
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_HINT) {
@@ -239,6 +240,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
             }
         }
     }
+
 
     private fun validatePhoneNumber(): Boolean {
         phoneNumber = binding.etPhoneNumber.text.toString().trim()
@@ -251,10 +253,12 @@ class LoginFragment : Fragment(), View.OnClickListener {
         return true
     }
 
+
     override fun onPause() {
         super.onPause()
         timer?.cancel()
     }
+
 
     private fun validateOTP(): Boolean {
         otpCode = binding.etOtpCode.text.toString().trim()
@@ -265,10 +269,10 @@ class LoginFragment : Fragment(), View.OnClickListener {
         return true
     }
 
+
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.btnLogin.id -> {
-
                 // get Button text and perform action accordingly to text
                 when (binding.btnLogin.text) {
                     getString(R.string.send_otp) -> {
@@ -279,8 +283,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
                             binding.btnLogin.text = getString(R.string.continue_text)
                             // set visibility
 
-                            phoneNumberWithCountryCode =
-                                getString(R.string.country_code).plus(phoneNumber)
+                            phoneNumberWithCountryCode = getString(R.string.country_code).plus(phoneNumber)
 
                             // show progress bar for few seconds
                             binding.progressBar.root.visibility = View.VISIBLE
@@ -304,6 +307,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

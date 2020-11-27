@@ -12,6 +12,7 @@
     <string name="menu_chat">Chat</string>
     <string name="menu_offers">Offers</string>
     <string name="menu_my_account">My Account</string>
+    <string name="app_version">App Version:</string>
 
 
     <string name="hi_userName">Hi,</string>
@@ -179,8 +180,8 @@
     <string name="dash">-</string>
     <string name="coupon_applied">Coupon Applied</string>
     <string name="saved_amount">Saved ₹%s</string>
-    <string name="order_format">Order ID: %s</string>
-    <string name="placed_date_format">Placed on: %s</string>
+    <string name="order_id">Order ID:</string>
+    <string name="placed_date">Placed on:</string>
     <plurals name="total_products">
         <item quantity="one">Total %d Product</item>
         <item quantity="other">Total %d Products</item>
@@ -200,4 +201,8 @@
     <string name="enter_your_name_here">Enter your name here*</string>
     <string name="submit">Submit</string>
     <string name="enter_details">Enter Details</string>
+
+    <string name="termsConditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="coupon_validity">Coupon Validity :</string>
+    <string name="copy">COPY</string>
 </resources>

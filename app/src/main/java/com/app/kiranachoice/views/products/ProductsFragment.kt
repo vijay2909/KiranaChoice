@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.databinding.FragmentProductsBinding
+import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
 import com.app.kiranachoice.views.authentication.AuthActivity
@@ -28,6 +29,8 @@ class ProductsFragment : Fragment(),
     private var verticalProductsAdapter: VerticalProductsAdapter? = null
 
     private lateinit var mAuth: FirebaseAuth
+
+    private lateinit var cartItems : List<CartItem>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,11 +49,14 @@ class ProductsFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
 
-        verticalProductsAdapter = VerticalProductsAdapter(this)
-        binding.recyclerViewProductList.adapter = verticalProductsAdapter
+        viewModel.allCartItems.observe(viewLifecycleOwner, {
+            cartItems = it
+        })
 
         viewModel.productsList.observe(viewLifecycleOwner, {
-            if (!it.isNullOrEmpty()) verticalProductsAdapter?.list = it
+            verticalProductsAdapter = VerticalProductsAdapter(it, cartItems , this)
+            binding.recyclerViewProductList.setHasFixedSize(true)
+            binding.recyclerViewProductList.adapter = verticalProductsAdapter
         })
 
         viewModel.navigateToAuthActivity.observe(viewLifecycleOwner, {

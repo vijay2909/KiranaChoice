@@ -5,5 +5,6 @@ data class User(
     var phoneNumber: String? = null,
     var imageUrl: String? = null,
     var name: String? = null,
-    var email: String? = null
+    var email: String? = null,
+    var deviceToken: String? = null
 )

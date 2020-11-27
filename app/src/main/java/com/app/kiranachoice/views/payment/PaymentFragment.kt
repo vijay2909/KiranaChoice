@@ -5,7 +5,9 @@ import android.app.NotificationManager
 import android.content.Context.NOTIFICATION_SERVICE
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.media.RingtoneManager
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +28,7 @@ import com.app.kiranachoice.databinding.DialogBookingConfirmedBinding
 import com.app.kiranachoice.databinding.FragmentPaymentBinding
 import com.app.kiranachoice.utils.DELIVERY_FREE
 import com.app.kiranachoice.utils.Mailer
-import com.app.kiranachoice.utils.getDateFromUnix
+import com.app.kiranachoice.utils.getDateTimeFromUnix
 import com.app.kiranachoice.utils.toPriceAmount
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -104,7 +106,7 @@ class PaymentFragment : Fragment() {
                 .toString().toPriceAmount()
         }
 
-        val orderPlacedDate = getDateFromUnix(viewModel.orderPlacedDate.value)
+        val orderPlacedDate = getDateTimeFromUnix(viewModel.orderPlacedDate.value)
 
         Mailer.sendMail(
             requireContext(),
@@ -152,11 +154,14 @@ class PaymentFragment : Fragment() {
 
 
         val builder = NotificationCompat.Builder(requireContext(), App.CHANNEL_ORDER_BOOKED_ID)
-        builder.setSmallIcon(R.drawable.ic_check_circle)
+//        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        builder.setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(getString(R.string.order_booked))
             .setContentText("Thank you for order ${viewModel.user?.name?.substringBefore(" ")}")
             .setContentIntent(pendingIntent)
             .setColor(resources.getColor(R.color.colorPrimaryDark, null))
+            .setVibrate(longArrayOf(1000,1000))
+            .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
             .setStyle(
                 NotificationCompat.BigPictureStyle()
                     .bigPicture(BitmapFactory.decodeResource(resources, R.drawable.yiepiie))

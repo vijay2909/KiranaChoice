@@ -47,6 +47,8 @@ class MainActivity : BaseActivity() {
             navHeader.user = it
         })
 
+        binding.textAppVersion.text = getString(R.string.app_version).plus(" ${BuildConfig.VERSION_NAME}")
+
         binding.navView.addHeaderView(navHeader.root)
 
         val host: NavHostFragment = supportFragmentManager

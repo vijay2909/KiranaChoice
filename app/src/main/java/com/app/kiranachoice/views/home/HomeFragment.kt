@@ -21,6 +21,7 @@ import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentHomeBinding
+import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.models.BannerImageModel
 import com.app.kiranachoice.models.Category1Model
@@ -57,6 +58,8 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
     private lateinit var bestOfferProductsAdapter: HorizontalProductsAdapter
     private lateinit var bestSellingProductsAdapter: HorizontalProductsAdapter
+
+    private lateinit var cartItems : List<CartItem>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -103,6 +106,10 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
                 )
             }
 
+        viewModel.cartItems.observe(viewLifecycleOwner, {
+            cartItems = it
+        })
+
         navController = Navigation.findNavController(view)
 
         viewModel.product.observe(viewLifecycleOwner, {
@@ -136,7 +143,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             adapter = category1Adapter
         }
         viewModel.categoryList.observe(viewLifecycleOwner, {
-            Log.w(TAG, "onViewCreated: categoryList observe method" )
+            Log.w(TAG, "onViewCreated: categoryList observe method")
             category1Adapter.list = it
             binding.shimmerLayout.rootLayout.stopShimmer()
             binding.shimmerLayout.root.visibility = View.GONE
@@ -146,14 +153,13 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
 
         // Best Offer Products [[ START ]] >>>>>>>>>>>>>>
-        bestOfferProductsAdapter = HorizontalProductsAdapter(this)
-        binding.recyclerViewBestOffers.apply {
-            setHasFixedSize(true)
-            adapter = bestOfferProductsAdapter
-        }
         viewModel.bestOfferProductList.observe(viewLifecycleOwner, {
             binding.bestOfferProductsAvailable = it.isNotEmpty()
-            bestOfferProductsAdapter.list = it
+            bestOfferProductsAdapter = HorizontalProductsAdapter(it, cartItems,this)
+            binding.recyclerViewBestOffers.apply {
+                setHasFixedSize(true)
+                adapter = bestOfferProductsAdapter
+            }
         })
         // Best Offer Products [[ END ]] >>>>>>>>>>>>>>
 
@@ -168,14 +174,14 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
 
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
-        bestSellingProductsAdapter = HorizontalProductsAdapter(this)
-        binding.recyclerViewBestSelling.apply {
-            setHasFixedSize(true)
-            adapter = bestSellingProductsAdapter
-        }
+
         viewModel.bestSellingProductList.observe(viewLifecycleOwner, {
             binding.bestSellingProductAvailable = it.isNotEmpty()
-            bestSellingProductsAdapter.list = it
+            bestSellingProductsAdapter = HorizontalProductsAdapter(it, cartItems,this)
+            binding.recyclerViewBestSelling.apply {
+                setHasFixedSize(true)
+                adapter = bestSellingProductsAdapter
+            }
         })
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
 
@@ -198,9 +204,9 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             adapter = BannerCategoryAdapter(null)
         }
 
-        binding.recyclerViewBestProductForYou.apply {
+       /* binding.recyclerViewBestProductForYou.apply {
             adapter = HorizontalProductsAdapter(null)
-        }
+        }*/
 
         binding.recyclerViewBanner3.apply {
             adapter = BigBannersAdapter(null)
@@ -307,7 +313,8 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         quantity: String,
         position: Int
     ) {
-        Log.i("Helper", "addItemToCart: called")
+        Log.i(TAG, "addItemToCart: called")
+        Log.w(TAG, "currentUser: ${mAuth.currentUser}" )
         if (mAuth.currentUser != null) {
             val packagingSizeModel = if (productModel.productPackagingSize.size > 1) {
                 productModel.productPackagingSize[packagingSize]
@@ -327,6 +334,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         } else {
             startActivity(Intent(requireContext(), AuthActivity::class.java))
         }
+
     }
 
     override fun onItemClick(productModel: ProductModel) {

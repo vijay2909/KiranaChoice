@@ -72,9 +72,16 @@ fun EditText.onChange(cb: (String) -> Unit) {
 }
 
 
-fun getDateFromUnix(unix: Long?) : String {
+fun getDateTimeFromUnix(unix: Long?) : String {
     val date = unix?.let { Date(it) }
     val sdf = SimpleDateFormat("dd MMM, yyyy hh:mm a", Locale.getDefault())
     sdf.timeZone = TimeZone.getTimeZone("GMT+5:30")
     return sdf.format(date!!)
+}
+
+fun getDateFromUnix(unix: Long?) : String?{
+    val date = unix?.let { Date(it) }
+    val sdf = SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault())
+    sdf.timeZone = TimeZone.getTimeZone("GMT+5:30")
+    return date?.let { sdf.format(it) }
 }
