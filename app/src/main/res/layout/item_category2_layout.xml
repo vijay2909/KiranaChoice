@@ -5,6 +5,9 @@
 
     <data>
         <variable
+            name="clickListener"
+            type="com.app.kiranachoice.recyclerView_adapters.Category1Adapter.CategoryClickListener" />
+        <variable
             name="model"
             type="com.app.kiranachoice.models.Category1Model" />
     </data>
@@ -13,6 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:onClick="@{() -> clickListener.onCategoryItemClick(model)}"
         android:translationZ="2dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="2dp">

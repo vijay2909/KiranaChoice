@@ -1,7 +1,6 @@
 package com.app.kiranachoice.views.payment
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.app.kiranachoice.db.CartDatabase
 import com.app.kiranachoice.db.CartItem
@@ -131,31 +130,19 @@ class PaymentViewModel(val application: Application) : ViewModel() {
             }
 
             val key = UUID.randomUUID().toString()
-            val bookItemOrderModel = if (couponCode != null) {
-                BookItemOrderModel(
-                    key = key,
-                    productList = itemList,
-                    invoiceAmount = totalProductsAmount.value.toString().substringBefore("."),
-                    deliveryCharge = deliveryCharge.value.toString(),
-                    deliveryAddress = deliveryAddress,
-                    couponCode = couponCode,
-                    isCouponApplied = true,
-                    orderPlacedDate = orderPlacedDate.value,
-                    orderId = orderId
-                )
-            } else {
-                BookItemOrderModel(
-                    key = key,
-                    productList = itemList,
-                    invoiceAmount = totalProductsAmount.value.toString().substringBefore("."),
-                    deliveryCharge = deliveryCharge.value.toString(),
-                    deliveryAddress = deliveryAddress,
-                    couponCode = null,
-                    isCouponApplied = false,
-                    orderPlacedDate = orderPlacedDate.value,
-                    orderId = orderId
-                )
-            }
+
+            val bookItemOrderModel = BookItemOrderModel(
+                key = key,
+                userUid = mAuth.currentUser?.uid,
+                productList = itemList,
+                invoiceAmount = totalProductsAmount.value.toString().substringBefore("."),
+                deliveryCharge = deliveryCharge.value.toString(),
+                deliveryAddress = deliveryAddress,
+                couponCode = couponCode,
+                couponApplied = couponCode != null,
+                orderPlacedDate = orderPlacedDate.value,
+                orderId = orderId
+            )
 
             dbFire.collection(USER_REFERENCE)
                 .document(mAuth.currentUser!!.uid)
@@ -238,16 +225,11 @@ class PaymentViewModel(val application: Application) : ViewModel() {
                 call: Call<CurrentDateTime>,
                 t: Throwable
             ) {
-                Log.i(TAG, "onFailure: ${t.message}")
                 t.printStackTrace()
             }
         })
     }
 
-
-    companion object {
-        private const val TAG = "PaymentViewModel"
-    }
 
     fun getDate(unix: Long?) {
         if (unix != null) {

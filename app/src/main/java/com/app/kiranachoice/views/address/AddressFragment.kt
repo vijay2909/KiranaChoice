@@ -148,7 +148,7 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
 
     private fun showDialogToAddAddress(addressModel: AddressModel?) {
         addAddressView =
-            DialogAddAddressBinding.inflate(LayoutInflater.from(requireContext()), null, false)
+            DialogAddAddressBinding.inflate(LayoutInflater.from(requireContext()))
 
         addressModel?.let {
             addAddressView.etFlatNo.editText?.setText(it.flat_num_or_building_name)

@@ -16,14 +16,18 @@ import androidx.navigation.ui.*
 import com.app.kiranachoice.databinding.ActivityMainBinding
 import com.app.kiranachoice.databinding.NavHeaderMainBinding
 import com.app.kiranachoice.views.authentication.AuthActivity
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
 
     private lateinit var navController: NavController
+
+    private lateinit var mAuth : FirebaseAuth
 
     private var totalCartItem = 0
 
@@ -37,6 +41,7 @@ class MainActivity : BaseActivity() {
         val mainViewModelFactory = MainViewModelFactory(this.application)
         viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
 
+        mAuth = FirebaseAuth.getInstance()
 
         val navHeader: NavHeaderMainBinding = DataBindingUtil.inflate(
             layoutInflater, R.layout.nav_header_main, binding.navView, false
@@ -86,6 +91,8 @@ class MainActivity : BaseActivity() {
             }
         })
 
+        binding.navView.setNavigationItemSelectedListener(this)
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.cartFragment, R.id.contactUsFragment,
@@ -118,9 +125,6 @@ class MainActivity : BaseActivity() {
             .addOnFailureListener(this) { e -> Log.w(TAG, "getDynamicLink:onFailure", e) }*/
     }
 
-    companion object {
-        private const val TAG = "MainActivity"
-    }
 
     private fun setupActionBar() {
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -158,7 +162,14 @@ class MainActivity : BaseActivity() {
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
+        if (item.itemId == R.id.cartFragment){
+            if (mAuth.currentUser == null){
+                startActivity(Intent(this, AuthActivity::class.java))
+            }else {
+                navController.navigate(R.id.cartFragment)
+            }
+        }
+        return /*item.onNavDestinationSelected(navController) || */super.onOptionsItemSelected(item)
     }
 
 
@@ -171,4 +182,33 @@ class MainActivity : BaseActivity() {
         super.onStart()
         viewModel.getUserDetails()
     }
+
+    private fun onShareClicked() {
+
+        try {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
+            val msg = "https://play.google.com/store/apps/details?id=$packageName"
+            shareIntent.putExtra(Intent.EXTRA_TEXT, msg)
+            startActivity(Intent.createChooser(shareIntent, "choose one"))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val handled = NavigationUI.onNavDestinationSelected(item, navController)
+        if (!handled) {
+            when (item.itemId) {
+                R.id.nav_share -> {
+                    onShareClicked()
+                }
+            }
+        }
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
+        return true
+    }
+
 }

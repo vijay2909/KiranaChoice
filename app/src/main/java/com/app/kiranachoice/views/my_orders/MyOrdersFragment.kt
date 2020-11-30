@@ -35,9 +35,15 @@ class MyOrdersFragment : Fragment(), MyOrdersAdapter.OrderClickListener {
         binding.recyclerViewMyOrdersList.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
 
         viewModel.ordersList.observe(viewLifecycleOwner, {
+            binding.isOrderAvailable = !it.isNullOrEmpty()
             myOrdersAdapter.list = it
             binding.progressBar.root.visibility = View.GONE
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getOrders()
     }
 
     override fun onDestroyView() {

@@ -1,12 +1,14 @@
 package com.app.kiranachoice.recyclerView_adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemOrderDetailBinding
 import com.app.kiranachoice.models.Product
+import com.app.kiranachoice.utils.CANCELED
 
-class ProductDetailAdapter : RecyclerView.Adapter<ProductDetailAdapter.ProductViewHolder>() {
+class ProductDetailAdapter(val listener : CancelOrderListener) : RecyclerView.Adapter<ProductDetailAdapter.ProductViewHolder>() {
 
     var list = listOf<Product>()
         set(value) {
@@ -23,7 +25,16 @@ class ProductDetailAdapter : RecyclerView.Adapter<ProductDetailAdapter.ProductVi
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         holder.bind(list[position])
+
+        if (list[position].status == CANCELED){
+            holder.binding.canceled.visibility = View.VISIBLE
+        }
+
+        holder.binding.btnCancelOrder.setOnClickListener {
+            listener.onOrderCancel(position)
+        }
     }
+
 
     override fun getItemCount(): Int = list.size
 
@@ -35,4 +46,7 @@ class ProductDetailAdapter : RecyclerView.Adapter<ProductDetailAdapter.ProductVi
         }
     }
 
+    interface CancelOrderListener {
+        fun onOrderCancel(position: Int)
+    }
 }

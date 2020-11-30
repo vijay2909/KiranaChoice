@@ -5,20 +5,21 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemCategory2LayoutBinding
 import com.app.kiranachoice.models.Category1Model
-import com.app.kiranachoice.models.Category2Model
 
-class SmallBannerCategoryAdapter : RecyclerView.Adapter<SmallBannerCategoryAdapter.Category2ViewHolder>() {
+class SmallBannerCategoryAdapter(val listener: Category1Adapter.CategoryClickListener) :
+    RecyclerView.Adapter<SmallBannerCategoryAdapter.Category2ViewHolder>() {
 
     var list = listOf<Category1Model>()
-    set(value) {
-        field = value
-        notifyDataSetChanged()
-    }
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Category2ViewHolder {
-        return Category2ViewHolder(
+        val view =
             ItemCategory2LayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        )
+        view.clickListener = listener
+        return Category2ViewHolder(view)
     }
 
     override fun getItemCount(): Int = list.size

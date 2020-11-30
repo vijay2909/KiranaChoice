@@ -7,7 +7,6 @@ import android.content.IntentSender
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,19 +60,15 @@ class LoginFragment : Fragment(), View.OnClickListener {
     private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-            Log.i("auth", "onVerificationCompleted() called")
             binding.progressBar.root.visibility = View.GONE
             signInWithPhoneAuthCredential(credential)
         }
 
         override fun onVerificationFailed(e: FirebaseException) {
-            Log.i("auth", "onVerificationFailed() called")
             binding.progressBar.root.visibility = View.GONE
             if (e is FirebaseAuthInvalidCredentialsException) {
-                Log.i("auth", "onVerificationFailed() FirebaseAuthInvalidCredentialsException")
                 binding.etPhoneNumber.error = getString(R.string.invalid_number)
             } else if (e is FirebaseTooManyRequestsException) {
-                Log.i("auth", "onVerificationFailed() FirebaseTooManyRequestsException")
                 Snackbar.make(
                     requireView(),
                     getString(R.string.too_many_request_attempt),
@@ -87,7 +82,6 @@ class LoginFragment : Fragment(), View.OnClickListener {
             token: PhoneAuthProvider.ForceResendingToken
         ) {
             binding.progressBar.root.visibility = View.GONE
-            Log.i("auth", "onCodeSent()")
             storedVerificationId = verificationId
             resendToken = token
         }
@@ -128,8 +122,6 @@ class LoginFragment : Fragment(), View.OnClickListener {
     }
 
     private fun startPhoneNumberVerification(phoneNumber: String) {
-        Log.i("auth", "startPhoneNumberVerification()")
-        Log.i("auth", "phoneNumber : $phoneNumber")
         timer = object : CountDownTimer(60000, 1000) {
             override fun onFinish() {
                 binding.textResend.isEnabled = true
@@ -154,7 +146,6 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
 
     private fun verifyPhoneNumberWithCode(verificationId: String?, code: String?) {
-        Log.i("auth", "verifyPhoneNumberWithCode()")
         if (!code.isNullOrEmpty()) {
             val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
             signInWithPhoneAuthCredential(credential)
@@ -167,7 +158,6 @@ class LoginFragment : Fragment(), View.OnClickListener {
         token: PhoneAuthProvider.ForceResendingToken
     ) {
         if (this::resendToken.isInitialized) {
-            Log.i("auth", "resendVerificationCode()")
             timer = object : CountDownTimer(60000, 1000) {
                 override fun onFinish() {
                     binding.textResend.isEnabled = true
@@ -194,7 +184,6 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        Log.i("auth", "signInWithPhoneAuthCredential()")
         mAuth.signInWithCredential(credential)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {

@@ -17,13 +17,12 @@ class MyOrdersViewModel : ViewModel() {
     init {
         mAuth = FirebaseAuth.getInstance()
         dbFire = FirebaseFirestore.getInstance()
-        getOrders()
     }
 
     private var _ordersList = MutableLiveData<List<BookItemOrderModel>>()
     val ordersList : LiveData<List<BookItemOrderModel>> get() = _ordersList
 
-    private fun getOrders() {
+    fun getOrders() {
         mAuth?.currentUser?.let { user ->
             dbFire.collection(USER_REFERENCE)
                 .document(user.uid)

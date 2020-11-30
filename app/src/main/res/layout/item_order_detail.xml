@@ -5,6 +5,10 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <import type="com.app.kiranachoice.utils.ConstantsKt" />
+
         <variable
             name="product"
             type="com.app.kiranachoice.models.Product" />
@@ -37,6 +41,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/quantity"
             style="@style/TextAppearance.MaterialComponents.Body1"
@@ -63,6 +68,41 @@
             app:layout_constraintStart_toEndOf="@+id/quantity"
             app:layout_constraintTop_toTopOf="@+id/quantity"
             tools:text="x  ₹55.00" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/btnCancelOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/canceld_red_border"
+            android:paddingStart="10dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="2dp"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/red"
+            android:textSize="12sp"
+            android:visibility="@{product.status.equals(ConstantsKt.PACKED) || product.status.equals(ConstantsKt.ON_THE_WAY) ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageView3" />
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/canceled"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/order_cancelled"
+            android:textColor="@color/red"
+            android:visibility="@{product.status.equals(ConstantsKt.CANCELED) ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageView3"
+            tools:visibility="invisible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="isOrderAvailable"
+            type="Boolean" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".views.my_orders.MyOrdersFragment">
@@ -15,13 +22,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorPrimaryLight"
+            android:visibility="@{isOrderAvailable ? View.VISIBLE : View.INVISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="4"
             tools:listitem="@layout/item_my_order_item" />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/imagNoOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/empty_order"
+            android:visibility="@{isOrderAvailable ? View.INVISIBLE : View.VISIBLE}"
+            tools:ignore="ContentDescription"
+            tools:visibility="invisible" />
 
-    <include
-        android:id="@+id/progressBar"
-        layout="@layout/progress_bar_with_text"/>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <include
+            android:id="@+id/progressBar"
+            layout="@layout/progress_bar_with_text" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

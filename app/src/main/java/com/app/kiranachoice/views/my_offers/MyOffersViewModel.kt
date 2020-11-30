@@ -1,6 +1,5 @@
 package com.app.kiranachoice.views.my_offers
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,10 +12,9 @@ import com.google.firebase.database.ValueEventListener
 
 class MyOffersViewModel : ViewModel() {
 
-    private var dbRef: FirebaseDatabase
+    private var dbRef: FirebaseDatabase = FirebaseDatabase.getInstance()
 
     init {
-        dbRef = FirebaseDatabase.getInstance()
 
         getOffers()
     }
@@ -26,7 +24,7 @@ class MyOffersViewModel : ViewModel() {
     val offersList: LiveData<List<OfferModel>> get() = _offersList
 
 
-    fun getOffers() {
+    private fun getOffers() {
         dbRef.getReference(OFFER_REFERENCE)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {

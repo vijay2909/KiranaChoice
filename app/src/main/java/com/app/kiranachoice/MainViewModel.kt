@@ -2,7 +2,6 @@ package com.app.kiranachoice
 
 import android.app.Application
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.*
 import com.app.kiranachoice.db.CartDao
 import com.app.kiranachoice.db.CartDatabase
@@ -301,28 +300,23 @@ class MainViewModel(application: Application) : ViewModel() {
     var couponCode: String? = null
 
     fun couponApplied(couponModel: CouponModel) {
-        Log.i("CartFragment", "viewModel couponApplied: called ")
         mAuth?.currentUser?.let { user ->
             dbFire?.collection(USER_REFERENCE)
                 ?.document(user.uid)
                 ?.collection(APPLIED_COUPON)
-                ?.orderBy("couponCode")
                 ?.whereEqualTo("couponCode", couponModel.couponCode)
                 ?.get()
                 ?.addOnSuccessListener {
                     // check.. if user already used coupon
                     if (it != null && !it.isEmpty) {
-                        Log.i("CartFragment", "couponApplied if block: ")
                         // user used coupon already
                         _snackBarForAlreadyAppliedCoupon.postValue(true)
                     } else {
-                        Log.i("CartFragment", "couponApplied else block: ")
                         // user use coupon first time
                         couponApply(couponModel)
                     }
                 }
                 ?.addOnFailureListener {
-                    Log.i("CartFragment", "add on FailureListener: ")
                     couponApply(couponModel)
                 }
         }

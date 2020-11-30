@@ -1,5 +1,7 @@
 package com.app.kiranachoice.recyclerView_adapters
 
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,6 +69,9 @@ class CouponsAdapter(private val listener: CouponApplyListener) :
 
         holder.binding.applyCouponButton.setOnClickListener {
             holder.binding.applyCouponButton.isEnabled = false
+            Handler(Looper.getMainLooper()).postDelayed({
+                holder.binding.applyCouponButton.isEnabled = true
+            }, 1000)
             listener.onCouponApplied(list[position], position)
         }
     }

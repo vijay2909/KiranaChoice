@@ -1,11 +1,11 @@
 package com.app.kiranachoice.views.cart
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -32,6 +32,8 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
 
     private lateinit var viewModel: MainViewModel
     private lateinit var cartItemAdapter: CartItemAdapter
+
+    private var couponPosition : Int = -1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,14 +76,12 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
         }
 
         cartItemAdapter = CartItemAdapter(this)
-        binding.recyclerViewCartList.adapter = cartItemAdapter
+        binding.recyclerViewCartList.apply {
+            adapter = cartItemAdapter
+            setHasFixedSize(true)
+            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+        }
 
-        binding.recyclerViewCartList.addItemDecoration(
-            DividerItemDecoration(
-                requireContext(),
-                DividerItemDecoration.VERTICAL
-            )
-        )
 
         viewModel.allCartItems.observe(viewLifecycleOwner, {
             it?.let {
@@ -114,11 +114,7 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
         viewModel.snackBarForAlreadyAppliedCoupon.observe(viewLifecycleOwner, {
             if (it) {
                 viewModel.snackBarEventFinished()
-                Snackbar.make(
-                    view,
-                    "Already applied! you can use the coupon once in a month.",
-                    Snackbar.LENGTH_SHORT
-                ).show()
+                Toast.makeText(requireContext(), "Already applied! you can use the coupon once in a month.", Toast.LENGTH_LONG).show()
             }
         })
 
@@ -182,12 +178,10 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
     }
 
     override fun onCouponApplied(couponModel: CouponModel, position: Int) {
-        Log.i(TAG, "onCouponApplied: called")
+        couponPosition = position
         if (couponModel.isActive) {
-            Log.i(TAG, "coupon is active.")
             if (couponModel.upToPrice.toString().toDouble() <= viewModel.totalAmount.value.toString().toDouble()
             ) {
-                Log.i(TAG, "coupon going to applied")
                 viewModel.couponApplied(couponModel)
             } else {
                 Snackbar.make(
@@ -201,7 +195,4 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
         }
     }
 
-    companion object {
-        private const val TAG = "CartFragment"
-    }
 }

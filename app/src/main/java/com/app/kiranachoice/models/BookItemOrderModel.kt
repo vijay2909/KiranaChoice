@@ -1,6 +1,6 @@
 package com.app.kiranachoice.models
 
-import com.app.kiranachoice.utils.ORDER_PLACED
+import com.app.kiranachoice.utils.AWAITING_PICKUP
 import java.io.Serializable
 
 data class Product(
@@ -11,11 +11,12 @@ data class Product(
     val productQuantity : String? = null,
     val productMRP: String? = null,
     val productPrice: String? = null,
-    val status : String = ORDER_PLACED
+    val status : String = AWAITING_PICKUP
 )
 
 data class BookItemOrderModel(
     val key: String? = null,
+    val userUid: String? = null,
     val productList: List<Product>? = null,
     // total amount without delivery charge
     val invoiceAmount: String? = null,
@@ -24,6 +25,6 @@ data class BookItemOrderModel(
     val orderId: String? = null,
     val orderPlacedDate: Long? = null,
     val couponCode: String? = null,
-    val isCouponApplied: Boolean? = null,
-    val status: String? = ORDER_PLACED
+    val couponApplied: Boolean? = null,
+    val status: String? = AWAITING_PICKUP
 ) : Serializable

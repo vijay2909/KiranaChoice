@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,10 +25,11 @@ import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.models.BannerImageModel
 import com.app.kiranachoice.models.Category1Model
 import com.app.kiranachoice.models.ProductModel
-import com.app.kiranachoice.recyclerView_adapters.*
+import com.app.kiranachoice.recyclerView_adapters.Category1Adapter
+import com.app.kiranachoice.recyclerView_adapters.HorizontalProductsAdapter
+import com.app.kiranachoice.recyclerView_adapters.SmallBannerCategoryAdapter
 import com.app.kiranachoice.utils.BEST_OFFER_PRODUCT
 import com.app.kiranachoice.utils.BEST_SELLING_PRODUCT
-import com.app.kiranachoice.viewpager_adapters.HomeMiddleBannerAdapter
 import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.android.material.tabs.TabLayoutMediator
@@ -48,11 +48,11 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
     private lateinit var mAuth: FirebaseAuth
 
     private lateinit var viewPager1: ViewPager2
-    private lateinit var viewPager2: ViewPager2
+//    private lateinit var viewPager2: ViewPager2
     private lateinit var handler1: Handler
-    private lateinit var handler2: Handler
+//    private lateinit var handler2: Handler
     private lateinit var callbackTopBanner: ViewPager2.OnPageChangeCallback
-    private lateinit var callbackMiddleBanner: ViewPager2.OnPageChangeCallback
+//    private lateinit var callbackMiddleBanner: ViewPager2.OnPageChangeCallback
     private lateinit var homeTopBannerImageList: List<BannerImageModel>
     private lateinit var homeMiddleBannerImageList: List<BannerImageModel>
 
@@ -73,9 +73,9 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         homeTopBannerImageList = ArrayList()
         homeMiddleBannerImageList = ArrayList()
         viewPager1 = binding.homeBanner1
-        viewPager2 = binding.homeBanner2
+//        viewPager2 = binding.homeBanner2
         handler1 = Handler(Looper.getMainLooper())
-        handler2 = Handler(Looper.getMainLooper())
+//        handler2 = Handler(Looper.getMainLooper())
         mAuth = FirebaseAuth.getInstance()
         return binding.root
     }
@@ -98,12 +98,6 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
                     viewModel.getProductDetails(productId)
                 }
 
-            }
-            .addOnFailureListener(requireActivity()) { e ->
-                Log.w(
-                    TAG,
-                    "getDynamicLink:onFailure: ${e.message}"
-                )
             }
 
         viewModel.cartItems.observe(viewLifecycleOwner, {
@@ -143,7 +137,6 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             adapter = category1Adapter
         }
         viewModel.categoryList.observe(viewLifecycleOwner, {
-            Log.w(TAG, "onViewCreated: categoryList observe method")
             category1Adapter.list = it
             binding.shimmerLayout.rootLayout.stopShimmer()
             binding.shimmerLayout.root.visibility = View.GONE
@@ -164,7 +157,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         // Best Offer Products [[ END ]] >>>>>>>>>>>>>>
 
 
-        val smallBannerCategoryAdapter = SmallBannerCategoryAdapter()
+        val smallBannerCategoryAdapter = SmallBannerCategoryAdapter(this)
         binding.recyclerViewCategory2.adapter = smallBannerCategoryAdapter
 
         viewModel.category2.observe(viewLifecycleOwner, {
@@ -185,7 +178,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         })
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
 
-        binding.recyclerViewCategory3.apply {
+        /*binding.recyclerViewCategory3.apply {
             adapter = SmallBannerCategoryAdapter()
         }
 
@@ -198,19 +191,20 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             banner2Adapter.list = it
         })
         // Home Middle Banner [[END]]>>>>>>>>>>>>>
+*/
 
 
-        binding.recyclerViewCategory4.apply {
+      /*  binding.recyclerViewCategory4.apply {
             adapter = BannerCategoryAdapter(null)
         }
-
+*/
        /* binding.recyclerViewBestProductForYou.apply {
             adapter = HorizontalProductsAdapter(null)
         }*/
 
-        binding.recyclerViewBanner3.apply {
+        /*binding.recyclerViewBanner3.apply {
             adapter = BigBannersAdapter(null)
-        }
+        }*/
 
 //        binding.recyclerViewRecommendedProducts.apply {
 //            adapter = HorizontalProductsAdapter(null)
@@ -229,14 +223,14 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         // Top Banner Callback >>>>>>>>>>>>>>>>>>>>>>>>>>
 
         // Middle banner callback >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        callbackMiddleBanner = object : ViewPager2.OnPageChangeCallback() {
+        /*callbackMiddleBanner = object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 handler2.removeCallbacks(slideRunnable2)
                 handler2.postDelayed(slideRunnable2, 3000)
             }
-        }
+        }*/
 
-        binding.homeBanner2.registerOnPageChangeCallback(callbackMiddleBanner)
+//        binding.homeBanner2.registerOnPageChangeCallback(callbackMiddleBanner)
         // Middle banner callback >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         binding.searchCard.setOnClickListener {
@@ -269,17 +263,17 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             if (homeTopBannerImageList.size.minus(1) == viewPager1.currentItem) 0
             else viewPager1.currentItem.plus(1)
     }
-    private val slideRunnable2 = Runnable {
+   /* private val slideRunnable2 = Runnable {
         viewPager2.currentItem =
             if (homeMiddleBannerImageList.size.minus(1) == viewPager2.currentItem) 0
             else viewPager2.currentItem.plus(1)
-    }
+    }*/
 
     override fun onResume() {
         super.onResume()
         binding.shimmerLayout.rootLayout.startShimmer()
         handler1.postDelayed(slideRunnable1, 3000)
-        handler2.postDelayed(slideRunnable2, 3000)
+//        handler2.postDelayed(slideRunnable2, 3000)
     }
 
     override fun onPause() {
@@ -289,8 +283,8 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         handler1.removeCallbacks(slideRunnable1)
         viewPager1.unregisterOnPageChangeCallback(callbackTopBanner)
 
-        handler2.removeCallbacks(slideRunnable2)
-        viewPager2.unregisterOnPageChangeCallback(callbackMiddleBanner)
+        /*handler2.removeCallbacks(slideRunnable2)
+        viewPager2.unregisterOnPageChangeCallback(callbackMiddleBanner)*/
     }
 
     override fun onDestroyView() {
@@ -313,8 +307,6 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         quantity: String,
         position: Int
     ) {
-        Log.i(TAG, "addItemToCart: called")
-        Log.w(TAG, "currentUser: ${mAuth.currentUser}" )
         if (mAuth.currentUser != null) {
             val packagingSizeModel = if (productModel.productPackagingSize.size > 1) {
                 productModel.productPackagingSize[packagingSize]
@@ -346,9 +338,6 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         )
     }
 
-    companion object {
-        private const val TAG = "HomeFragment"
-    }
 }
 
 @Suppress("UNCHECKED_CAST")

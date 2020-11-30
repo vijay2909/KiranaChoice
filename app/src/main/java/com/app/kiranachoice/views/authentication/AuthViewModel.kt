@@ -1,6 +1,5 @@
 package com.app.kiranachoice.views.authentication
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -37,21 +36,15 @@ class AuthViewModel : ViewModel() {
     val userDoesNotExist: LiveData<Boolean> get() = _userDoesNotExist
 
     fun onAuthSuccess() {
-        Log.d(TAG, "onAuthSuccess: called")
         mAuth.currentUser?.let { user ->
             dbFire.collection(USER_REFERENCE).document(user.uid).get()
                 .addOnSuccessListener { documentSnapShot ->
                     if (documentSnapShot.exists()) {
-                        Log.i(TAG, "onAuthSuccess: user exists")
                         _userAlreadyExist.postValue(true)
                     }
                     else {
-                        Log.w(TAG, "onAuthSuccess: else block" )
                         _userDoesNotExist.postValue(true)
                     }
-                }
-                .addOnFailureListener {
-                    Log.e(TAG, "onAuthSuccess: failure: ${it.message}")
                 }
         }
     }
@@ -72,7 +65,4 @@ class AuthViewModel : ViewModel() {
             }
     }
 
-    companion object {
-        private const val TAG = "AuthViewModel"
-    }
 }

@@ -3,7 +3,6 @@ package com.app.kiranachoice.views.products
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -87,7 +86,6 @@ class ProductDetailsFragment : Fragment() {
                 }
             }.addOnSuccessListener { (shortLink, _) ->
                 // Short link created
-                Log.i(TAG, "shortLink: $shortLink")
 
                 val intent = Intent(Intent.ACTION_SEND)
                 intent.type = "text/plain"
@@ -98,9 +96,6 @@ class ProductDetailsFragment : Fragment() {
 
     }
 
-    companion object {
-        private const val TAG = "ProductDetailsFragment"
-    }
 
     override fun onStart() {
         super.onStart()

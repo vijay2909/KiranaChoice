@@ -205,4 +205,10 @@
     <string name="termsConditions"><![CDATA[Terms & Conditions]]></string>
     <string name="coupon_validity">Coupon Validity :</string>
     <string name="copy">COPY</string>
+    <string name="cancel_order_msg">Are you sure you want to cancel this order?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="canceled">Canceled</string>
+    <string name="cancel_order">Cancel Order</string>
+    <string name="order_cancelled">Order canceled</string>
 </resources>

@@ -1,7 +1,6 @@
 package com.app.kiranachoice.views.home
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -56,10 +55,8 @@ class HomeViewModel(application: Application) : ViewModel() {
     val bannersList: LiveData<List<BannerImageModel>> get() = _bannersList
 
     private fun getBanners() {
-        Log.d(TAG, "getBanners called")
         dbRef.getReference(HOME_TOP_BANNER).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.i(TAG, "onDataChange: called")
                     fakeBannersList.clear()
 
                     snapshot.children.forEach { dataSnapshot ->
@@ -73,8 +70,6 @@ class HomeViewModel(application: Application) : ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e(TAG, "getBanners error code: ${error.code}")
-                    Log.e(TAG, "getBanners error message: ${error.message}")
                 }
 
             })
@@ -85,7 +80,6 @@ class HomeViewModel(application: Application) : ViewModel() {
     val categoryList: LiveData<List<Category1Model>> get() = _categoryList
 
     private fun getCategories() {
-        Log.w(TAG, "getCategories: called" )
         dbRef.getReference(CATEGORY_REFERENCE).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 fakeCategoryList.clear()
@@ -99,8 +93,6 @@ class HomeViewModel(application: Application) : ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "getCategories error code: ${error.code}")
-                Log.e(TAG, "getCategories error message: ${error.message}")
             }
 
         })
@@ -145,8 +137,6 @@ class HomeViewModel(application: Application) : ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e(TAG, "getBestOfferProduct error code: ${error.code}")
-                    Log.e(TAG, "getBestOfferProduct error message: ${error.message}")
                 }
 
             })
@@ -171,8 +161,6 @@ class HomeViewModel(application: Application) : ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e(TAG, "getBestSellingProduct error code: ${error.code}")
-                    Log.e(TAG, "getBestSellingProduct error message: ${error.message}")
                 }
 
             })
@@ -230,11 +218,9 @@ class HomeViewModel(application: Application) : ViewModel() {
     val product: LiveData<ProductModel> get() = _product
 
     fun getProductDetails(productId: String) {
-        Log.i(TAG, "getProductDetails: called")
         dbRef.getReference(PRODUCT_REFERENCE)
             .child(productId).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.i(TAG, "value: ${snapshot.getValue(ProductModel::class.java)} ")
                     _product.postValue(snapshot.getValue(ProductModel::class.java))
                 }
 
