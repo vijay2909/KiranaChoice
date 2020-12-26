@@ -3,100 +3,98 @@ package com.app.kiranachoice.views.searchPage
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.speech.RecognizerIntent
-import android.text.Editable
-import android.text.TextUtils
-import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DividerItemDecoration
-import com.app.kiranachoice.MainViewModel
-import com.app.kiranachoice.MainViewModelFactory
+import androidx.navigation.fragment.findNavController
+import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentSearchBinding
 import com.app.kiranachoice.recyclerView_adapters.SearchResultsAdapter
 import java.util.*
+
 
 class SearchFragment : Fragment() {
 
     private var _bindingSearch: FragmentSearchBinding? = null
     private val binding get() = _bindingSearch!!
 
-    private lateinit var viewModel: MainViewModel
+    private var searchView: SearchView? = null
 
-    private var userInput: String? = null
+    private val viewModel: SearchViewModel by lazy {
+        val factory = SearchViewModelFactory(requireActivity().application)
+        ViewModelProvider(this, factory).get(SearchViewModel::class.java)
+    }
+
+    private lateinit var searchResultsAdapter: SearchResultsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            mainViewModelFactory
-        ).get(MainViewModel::class.java)
+    ): View {
         _bindingSearch = FragmentSearchBinding.inflate(inflater, container, false)
+
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+
+        setHasOptionsMenu(true)
+
+        searchResultsAdapter = SearchResultsAdapter(SearchResultsAdapter.OnClickListener {
+            viewModel.showSearchProducts(it)
+        })
+
+        binding.recyclerViewSearchItem.adapter = searchResultsAdapter
+
+        viewModel.navigateToSelectedProduct.observe(viewLifecycleOwner, {
+            if (null != it) {
+                this.findNavController().navigate(
+                    SearchFragmentDirections.actionShowProducts(it.categoryName, it.key)
+                )
+                viewModel.showSearchProductsComplete()
+            }
+        })
+
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-        binding.searchBox.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(input: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                binding.searchButton.visibility = View.VISIBLE
-                binding.searchProgress.visibility = View.INVISIBLE
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.clear()
+        requireActivity().menuInflater.inflate(R.menu.search_menu, menu)
+        val searchItem = menu.findItem(R.id.action_search)
+        searchView = searchItem.actionView as SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.isIconified = false
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String): Boolean {
+                viewModel.getSearchWords(newText).observe(viewLifecycleOwner, {
+                    searchResultsAdapter.submitList(it)
+                })
+                return true
             }
 
-            override fun onTextChanged(input: CharSequence?, start: Int, before: Int, count: Int) {
-                userInput = input.toString().toLowerCase(Locale.getDefault())
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    binding.searchButton.visibility = View.INVISIBLE
-                    binding.searchProgress.visibility = View.VISIBLE
-                    if (TextUtils.isEmpty(userInput)) {
-                        binding.textNoResult.visibility = View.VISIBLE
-                        binding.recyclerViewSearchItem.visibility = View.INVISIBLE
-                        binding.searchButton.visibility = View.VISIBLE
-                        binding.searchProgress.visibility = View.INVISIBLE
-                    } else {
-                        userInput?.let { viewModel.getResultFromProducts(it) }
-                        binding.recyclerViewSearchItem.visibility = View.VISIBLE
-                        binding.textNoResult.visibility = View.GONE
-                    }
-                }, 500)
-            }
-
-        })
-
-        val searchResultsAdapter = SearchResultsAdapter()
-        binding.recyclerViewSearchItem.adapter = searchResultsAdapter
-
-        binding.recyclerViewSearchItem.addItemDecoration(
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        )
-
-        viewModel.resultList.observe(viewLifecycleOwner, {
-            binding.searchProgress.visibility = View.INVISIBLE
-            binding.searchButton.visibility = View.VISIBLE
-            if (!it.isNullOrEmpty()) {
-                binding.recyclerViewSearchItem.visibility = View.VISIBLE
-                binding.textNoResult.visibility = View.GONE
-                searchResultsAdapter.submitList(it)
-            } else {
-                binding.recyclerViewSearchItem.visibility = View.GONE
-                binding.textNoResult.visibility = View.VISIBLE
+            override fun onQueryTextSubmit(query: String): Boolean {
+                viewModel.getSearchWords(query).observe(viewLifecycleOwner, {
+                    searchResultsAdapter.submitList(it)
+                })
+                return true
             }
         })
+    }
 
-        binding.micButton.setOnClickListener { getSpeechInput() }
+    override fun onResume() {
+        super.onResume()
+        requireActivity().invalidateOptionsMenu()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_mic) {
+            getSpeechInput()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun getSpeechInput() {
@@ -125,8 +123,9 @@ class SearchFragment : Fragment() {
             10 -> {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                    binding.searchBox.setText(
-                        result?.get(0).toString().toLowerCase(Locale.getDefault())
+                    searchView?.setQuery(
+                        result?.get(0).toString().toLowerCase(Locale.getDefault()),
+                        true
                     )
                 }
             }

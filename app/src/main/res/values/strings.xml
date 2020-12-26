@@ -159,7 +159,9 @@
     <string name="your_booking_has_been_confirmed_ncheck_your_email_for_details">Your booking has been confirmed.\nCheck your email for details.</string>
     <string name="order_booked">Order Booked!</string>
     <string name="notification_description">Be notified when your order booked successfully.</string>
-    <string name="notification_name">Order Confirmation</string>
+    <string name="chat_notification_description">Be notified when received new message from Kirana Choice.</string>
+    <string name="order_notification_name">Order Confirmation</string>
+    <string name="chat_notification_name">Chat Notification</string>
     <string name="apply_now">Apply Now</string>
     <string name="remove">Remove</string>
     <string name="available_coupon_discount">Available coupon discount</string>
@@ -211,4 +213,5 @@
     <string name="canceled">Canceled</string>
     <string name="cancel_order">Cancel Order</string>
     <string name="order_cancelled">Order canceled</string>
+    <string name="type_your_message">Type Your Message</string>
 </resources>

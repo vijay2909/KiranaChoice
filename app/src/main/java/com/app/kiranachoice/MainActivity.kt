@@ -19,6 +19,7 @@ import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 
+
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -48,8 +49,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         )
         navHeader.lifecycleOwner = this
 
-        viewModel.user.observe(this, {
-            navHeader.user = it
+        viewModel.user.observe(this, { user ->
+            navHeader.user = user
         })
 
         binding.textAppVersion.text = getString(R.string.app_version).plus(" ${BuildConfig.VERSION_NAME}")
@@ -97,7 +98,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             when (destination.id) {
                 R.id.cartFragment, R.id.contactUsFragment,
                 R.id.myOrdersFragment, R.id.editProfileFragment,
-                R.id.addressFragment, R.id.paymentFragment -> {
+                R.id.addressFragment, R.id.paymentFragment, R.id.chatFragment ->{
                     binding.appBarMain.bottomNavView.visibility = View.GONE
                 }
                 else -> {
@@ -124,7 +125,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             .addOnFailureListener(this) { e -> Log.w(TAG, "getDynamicLink:onFailure", e) }*/
     }
-
 
     private fun setupActionBar() {
         setupActionBarWithNavController(navController, appBarConfiguration)

@@ -14,17 +14,19 @@ import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.MessagingService
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentUserDetailsBinding
+import com.app.kiranachoice.utils.UserPreferences
 
 class UserDetailsFragment : Fragment() {
 
     private var _bindingUserDetails: FragmentUserDetailsBinding? = null
     private val binding get() = _bindingUserDetails!!
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _bindingUserDetails = FragmentUserDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -48,7 +50,7 @@ class UserDetailsFragment : Fragment() {
                 binding.etEmail.error = null
                 setSubmitButtonVisibility(it.toString(), email.toString())
             } else {
-                binding.etEmail.error = ""
+                binding.etEmail.error = null
             }
         }
 
@@ -56,11 +58,12 @@ class UserDetailsFragment : Fragment() {
             binding.progressBar.root.visibility = View.VISIBLE
             val name = binding.etName.text.toString().trim()
             val email = binding.etEmail.text.toString().trim()
+            UserPreferences(requireContext()).setUserName(name)
             viewModel.saveUser(name, email, MessagingService.getToken(requireContext()))
         }
 
         viewModel.userAlreadyExist.observe(viewLifecycleOwner, {
-            if (it){
+            if (it) {
                 viewModel.eventUserAlreadyExistFinished()
                 Toast.makeText(
                     requireContext(),

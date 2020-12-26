@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.app.kiranachoice.MessagingService
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentLoginBinding
 import com.google.android.gms.auth.api.credentials.*
@@ -188,7 +189,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
                     binding.progressBar.root.visibility = View.VISIBLE
-                    viewModel.onAuthSuccess()
+                    viewModel.onAuthSuccess(MessagingService.getToken(requireContext())!!)
                 } else {
                     // Sign in failed, display a message and update the UI
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {

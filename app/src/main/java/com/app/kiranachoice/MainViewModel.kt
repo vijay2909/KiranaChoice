@@ -8,7 +8,6 @@ import com.app.kiranachoice.db.CartDatabase
 import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.models.AppliedCouponModel
 import com.app.kiranachoice.models.CouponModel
-import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.models.User
 import com.app.kiranachoice.repositories.CartRepo
 import com.app.kiranachoice.utils.*
@@ -22,7 +21,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -70,35 +68,11 @@ class MainViewModel(application: Application) : ViewModel() {
 
         allCartItems = cartRepo.allCartItems
 
-        viewModelScope.launch {
-            getAllProducts()
-        }
-
         getCoupons()
     }
 
     fun getAllCartItems() {
         allCartItems = cartRepo.allCartItems
-    }
-
-    private var fakeProductList = ArrayList<ProductModel>()
-
-    private suspend fun getAllProducts() {
-        withContext(Dispatchers.IO) {
-            dbRef?.getReference(PRODUCT_REFERENCE)
-                ?.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        fakeProductList.clear()
-                        snapshot.children.forEach { snap ->
-                            snap.getValue(ProductModel::class.java)
-                                ?.let { it -> fakeProductList.add(it) }
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {}
-
-                })
-        }
     }
 
     fun getUserDetails() {
@@ -171,13 +145,13 @@ class MainViewModel(application: Application) : ViewModel() {
     }
 
 
-    private var fakeList = ArrayList<ProductModel>()
-    private var _resultList = MutableLiveData<List<ProductModel>>()
+
+    /*private var _resultList = MutableLiveData<List<ProductModel>>()
     val resultList: LiveData<List<ProductModel>> get() = _resultList
 
     fun getResultFromProducts(userInput: String) {
         viewModelScope.launch(Dispatchers.Default) {
-            fakeList.clear()
+            val fakeList = ArrayList<ProductModel>()
             fakeProductList.forEach { productModel ->
                 for (item in productModel.searchableText) {
                     if (item.word?.contains(userInput)!!) {
@@ -188,7 +162,7 @@ class MainViewModel(application: Application) : ViewModel() {
             }
         }
         _resultList.value = fakeList
-    }
+    }*/
 
     private var _eventDeleteItem = MutableLiveData<Boolean>()
     val eventDeleteItem : LiveData<Boolean> get() = _eventDeleteItem

@@ -31,9 +31,6 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_homeFragment_to_productsFragment"
-            app:destination="@id/productsFragment" />
     </fragment>
 
     <fragment
@@ -48,7 +45,11 @@
         tools:layout="@layout/fragment_my_offers" >
         <action
             android:id="@+id/action_myOffersFragment_to_offerDetailFragment"
-            app:destination="@id/offerDetailFragment" />
+            app:destination="@id/offerDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/myAccountFragment"
@@ -153,11 +154,6 @@
         android:name="com.app.kiranachoice.views.products.ProductsFragment"
         android:label="{title}"
         tools:layout="@layout/fragment_products">
-        <argument
-            android:name="subCategoryModel"
-            app:argType="com.app.kiranachoice.models.SubCategoryModel"
-            app:nullable="true"
-            android:defaultValue="@null" />
         <action
             android:id="@+id/action_productsFragment_to_productDetailsFragment"
             app:destination="@id/productDetailsFragment"
@@ -169,10 +165,8 @@
             android:name="title"
             app:argType="string" />
         <argument
-            android:name="categoryModel"
-            app:argType="com.app.kiranachoice.models.Category1Model"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            android:name="key"
+            app:argType="string" />
     </fragment>
     <activity
         android:id="@+id/authActivity"
@@ -183,7 +177,15 @@
         android:id="@+id/searchFragment"
         android:name="com.app.kiranachoice.views.searchPage.SearchFragment"
         android:label="Search Products"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/actionShowProducts"
+            app:destination="@id/productsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.app.kiranachoice.views.cart.CartFragment"
@@ -219,6 +221,15 @@
             app:argType="com.app.kiranachoice.models.ProductModel"
             app:nullable="true"
             android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_productDetailsFragment_self"
+            app:destination="@id/productDetailsFragment"
+            app:popUpTo="@id/productDetailsFragment"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/addressFragment"

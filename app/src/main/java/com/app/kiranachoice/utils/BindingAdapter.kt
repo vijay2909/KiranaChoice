@@ -1,17 +1,27 @@
 package com.app.kiranachoice.utils
 
 import android.graphics.Paint
+import android.media.Image
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.R
 import com.app.kiranachoice.models.AddressModel
 import com.app.kiranachoice.models.ProductModel
+import com.app.kiranachoice.models.SearchWord
+import com.app.kiranachoice.recyclerView_adapters.SearchResultsAdapter
+import com.app.kiranachoice.recyclerView_adapters.SimilarProductsAdapter
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.textview.MaterialTextView
+import com.google.firebase.storage.FirebaseStorage
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @BindingAdapter("profileImage")
@@ -38,7 +48,11 @@ fun setImageUrl(view: ImageView, url: String?) {
     if (url != null) {
         Glide.with(view.context)
             .load(url)
-            .placeholder(R.drawable.placeholder_image)
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.loading_animation)
+                    .error(R.drawable.ic_placeholder)
+            )
             .into(view)
     }
 }
@@ -89,16 +103,56 @@ fun setAddress(view: MaterialTextView, addressModel: AddressModel) {
 }
 
 @BindingAdapter("totalProducts")
-fun setTotalProducts(view : TextView, size: String){
-    view.text = view.context.resources.getQuantityString(R.plurals.total_products, size.toInt(), size.toInt())
+fun setTotalProducts(view: TextView, size: String) {
+    view.text = view.context.resources.getQuantityString(
+        R.plurals.total_products,
+        size.toInt(),
+        size.toInt()
+    )
 }
 
 @BindingAdapter("unixToDateTime")
-fun setUnixToDateTime(view: TextView, unix : Long){
+fun setUnixToDateTime(view: TextView, unix: Long) {
     view.text = getDateTimeFromUnix(unix)
 }
 
 @BindingAdapter("unixToDate")
-fun setUnixToDate(view: TextView, unix: Long){
+fun setUnixToDate(view: TextView, unix: Long) {
     view.text = getDateFromUnix(unix)
+}
+
+@BindingAdapter("title")
+fun setTitle(view: TextView, title: String) {
+    view.text = title.split(' ').joinToString(" ") { it.capitalize() }
+}
+
+@BindingAdapter("searchWords")
+fun setWords(recyclerView: RecyclerView, words: List<SearchWord>?) {
+    val adapter = recyclerView.adapter as SearchResultsAdapter
+    recyclerView.addItemDecoration(
+        DividerItemDecoration(recyclerView.context, DividerItemDecoration.VERTICAL)
+    )
+    adapter.submitList(words)
+}
+
+@BindingAdapter("time")
+fun setTime(view: TextView, time: Long) {
+    val simpleDateFormat = SimpleDateFormat("hh:mm aaa", Locale.getDefault())
+    view.text = simpleDateFormat.format(Date(time))
+
+}
+
+@BindingAdapter("productListImage")
+fun setListImage(view: ImageView, url: String?) {
+    url?.let {
+        if (it.startsWith("gs://")) {
+            val storageReference =
+                FirebaseStorage.getInstance().getReferenceFromUrl(it)
+            storageReference.downloadUrl.addOnSuccessListener { u ->
+                Glide.with(view.context).load(u).into(view)
+            }
+        } else {
+            Glide.with(view.context).load(it).into(view)
+        }
+    }
 }

@@ -154,7 +154,6 @@ class PaymentFragment : Fragment() {
 
 
         val builder = NotificationCompat.Builder(requireContext(), App.CHANNEL_ORDER_BOOKED_ID)
-//        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         builder.setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(getString(R.string.order_booked))
             .setContentText("Thank you for order ${viewModel.user?.name?.substringBefore(" ")}")

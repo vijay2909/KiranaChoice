@@ -35,7 +35,7 @@
                 android:layout_marginStart="8dp"
                 android:contentDescription="@string/category_image"
                 android:scaleType="fitCenter"
-                android:src="@drawable/placeholder_image"
+                android:src="@drawable/loading_animation"
                 app:imageUrl="@{subCategoryModel.sub_category_image_url}" />
 
             <TextView

@@ -24,7 +24,6 @@ suspend fun addToCart(
     packagingSizeModel: PackagingSizeModel,
     quantity: String
 ): Boolean {
-    var addedSuccessfully = false
     val isAlreadyAdded = cartRepo.isAlreadyAdded(
         productModel.product_key.toString(),
         packagingSizeModel.packagingSize.toString()
@@ -41,9 +40,8 @@ suspend fun addToCart(
             quantity
         )
         cartRepo.insert(cartItem)
-        addedSuccessfully = true
     }
-    return addedSuccessfully
+    return !isAlreadyAdded
 }
 
 fun TextInputEditText.isNotNullOrEmpty(errorString: String): Boolean {

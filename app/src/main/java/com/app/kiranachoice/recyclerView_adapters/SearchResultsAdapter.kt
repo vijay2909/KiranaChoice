@@ -5,20 +5,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.app.kiranachoice.BR
 import com.app.kiranachoice.databinding.ItemSearchBinding
-import com.app.kiranachoice.models.ProductModel
+import com.app.kiranachoice.models.SearchWord
 
-class SearchResultsAdapter :
-    ListAdapter<ProductModel, SearchResultsAdapter.SearchResultViewHolder>(DiffCallbacks()) {
+class SearchResultsAdapter(private val onClickListener: OnClickListener) :
+    ListAdapter<SearchWord, SearchResultsAdapter.SearchResultViewHolder>(DiffCallbacks()) {
 
-    class DiffCallbacks : DiffUtil.ItemCallback<ProductModel>() {
-        override fun areItemsTheSame(oldItem: ProductModel, newItem: ProductModel): Boolean {
-            return oldItem.product_key == newItem.product_key
+    class DiffCallbacks : DiffUtil.ItemCallback<SearchWord>() {
+        override fun areItemsTheSame(oldItem: SearchWord, newItem: SearchWord): Boolean {
+            return oldItem === newItem
         }
 
-        override fun areContentsTheSame(oldItem: ProductModel, newItem: ProductModel): Boolean {
-            return oldItem == newItem
+        override fun areContentsTheSame(oldItem: SearchWord, newItem: SearchWord): Boolean {
+            return oldItem.productName == newItem.productName
         }
 
     }
@@ -29,20 +28,24 @@ class SearchResultsAdapter :
         )
     }
 
-    override fun submitList(list: List<ProductModel>?) {
-        super.submitList(list?.let { ArrayList(it) })
-    }
-
     override fun onBindViewHolder(holder: SearchResultViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val searchWord = getItem(position)
+        holder.itemView.setOnClickListener {
+            onClickListener.onClick(searchWord)
+        }
+        holder.bind(searchWord)
     }
 
     class SearchResultViewHolder(private val binding: ItemSearchBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(value: ProductModel) {
-            binding.setVariable(BR.productModel, value)
+        fun bind(value: SearchWord) {
+            binding.searchWord = value
             binding.executePendingBindings()
         }
+    }
+
+    class OnClickListener(val clickListener: (searchWord: SearchWord) -> Unit) {
+        fun onClick(searchWord: SearchWord) = clickListener(searchWord)
     }
 }

@@ -12,7 +12,6 @@ const val OFFER_REFERENCE = "Offer"
 const val SECOND_CATEGORY_REFERENCE = "Category2"
 const val SUB_CATEGORY_REFERENCE = "Sub Categories"
 const val PRODUCT_REFERENCE = "Products"
-const val SEARCHABLE_PRODUCT_REFERENCE = "Searchable Products"
 
 const val USER_REFERENCE = "Users"
 const val USER_CART_ITEMS_REFERENCE = "Cart Items"
@@ -51,3 +50,8 @@ const val SHIPPED = "Shipped"
 const val ON_THE_WAY = "On the way"
 const val DELIVERED = "Delivered"
 const val CANCELED = "Canceled"
+
+const val USER = "User"
+const val ADMIN = "Admin"
+
+const val CHAT_REFERENCE = "Chat"

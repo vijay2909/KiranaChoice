@@ -18,7 +18,6 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:onClick="@{() -> clickListener.onItemClick(productModel)}"
         android:translationZ="2dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="4dp">
@@ -28,79 +27,91 @@
             android:layout_height="match_parent"
             android:paddingTop="16dp">
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:contentDescription="@string/product_image"
-                android:scaleType="fitCenter"
-                android:src="@drawable/placeholder_image"
-                app:imageUrl="@{productModel.productImageUrl}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textProductName"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/mainLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="@{productModel.productTitle}"
-                android:textSize="12sp"
+                android:onClick="@{() -> clickListener.onItemClick(productModel)}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imageView"
-                tools:text="Gustora Elbow Durum Wheat Semolina Pasta" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/textProductPrice"
-                style="@style/TextAppearance.MaterialComponents.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:text="@{@string/rupee_with_text(productModel.productPackagingSize.get(0).price)}"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textProductName"
-                tools:text="₹90.00" />
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/product_image"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/loading_animation"
+                    app:imageUrl="@{productModel.productImageUrl}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/textProductMRP"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:textColor="@color/red"
-                android:textSize="12sp"
-                app:layout_constraintStart_toEndOf="@id/textProductPrice"
-                app:layout_constraintTop_toTopOf="@id/textProductPrice"
-                app:productMRP="@{productModel.productPackagingSize.get(0).mrp}"
-                tools:text="₹149.00" />
+                <TextView
+                    android:id="@+id/textProductName"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:text="@{productModel.productTitle}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/imageView"
+                    tools:text="Gustora Elbow Durum Wheat Semolina Pasta" />
 
-            <Spinner
-                android:id="@+id/spinnerPackaging"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/curved_border"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:paddingStart="8dp"
-                android:paddingTop="4dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="4dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textProductPrice"
-                app:sizes="@{productModel}" />
+                <TextView
+                    android:id="@+id/textProductPrice"
+                    style="@style/TextAppearance.MaterialComponents.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:text="@{@string/rupee_with_text(productModel.productPackagingSize.get(0).price)}"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textProductName"
+                    tools:text="₹90.00" />
+
+                <TextView
+                    android:id="@+id/textProductMRP"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:textColor="@color/red"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@id/textProductPrice"
+                    app:layout_constraintTop_toTopOf="@id/textProductPrice"
+                    app:productMRP="@{productModel.productPackagingSize.get(0).mrp}"
+                    tools:text="₹149.00" />
+
+                <Spinner
+                    android:id="@+id/spinnerPackaging"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/curved_border"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textProductPrice"
+                    app:sizes="@{productModel}" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <FrameLayout
                 android:id="@+id/addToCartLayout"
@@ -108,10 +119,10 @@
                 android:layout_height="35dp"
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/spinnerPackaging" >
+                app:layout_constraintTop_toBottomOf="@id/mainLayout">
 
                 <Button
                     android:id="@+id/btnAddToCart"
@@ -127,8 +138,8 @@
                     android:id="@+id/quantityLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
 
                     <ImageButton
                         android:id="@+id/btnDecrease"

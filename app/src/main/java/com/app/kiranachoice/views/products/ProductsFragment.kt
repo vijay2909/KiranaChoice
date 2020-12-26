@@ -35,7 +35,7 @@ class ProductsFragment : Fragment(),
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val productViewModelFactory = ProductViewModelFactory(requireActivity().application)
         viewModel =
             ViewModelProvider(this, productViewModelFactory).get(ProductsViewModel::class.java)
@@ -82,8 +82,9 @@ class ProductsFragment : Fragment(),
 
     override fun onResume() {
         super.onResume()
-        if (args.subCategoryModel != null) viewModel.getProductList(args.subCategoryModel, null)
-        else viewModel.getProductList(null, args.categoryModel)
+//        if (args.subCategoryModel != null) viewModel.getProductList(args.subCategoryModel, null)
+//        else viewModel.getProductList(null, args.categoryModel)
+        viewModel.getProductList(args.key)
     }
 
     override fun onDestroyView() {

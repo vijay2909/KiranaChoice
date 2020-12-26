@@ -1,7 +1,10 @@
 package com.app.kiranachoice.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 
 @Dao
 interface CartDao {
@@ -20,4 +23,13 @@ interface CartDao {
 
     @Query("DELETE FROM cart_item_table WHERE productKey = :key AND packagingSize = :packagingSize")
     suspend fun delete(key: String, packagingSize: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertProducts(searchItems: List<SearchItem>)
+
+    @Query("SELECT * FROM searchitem")
+    fun getAllSearchWords() : LiveData<List<SearchItem>>
+
+    @Query("SELECT * FROM searchitem  WHERE productName LIKE :query")
+    fun getSearchWords(query: String): LiveData<List<SearchItem>>
 }

@@ -18,6 +18,7 @@ import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentEditProfileBinding
 import com.app.kiranachoice.MainViewModelFactory
+import com.app.kiranachoice.utils.UserPreferences
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -39,16 +40,19 @@ class EditProfileFragment : Fragment(), View.OnClickListener {
 
     private lateinit var mAuth : FirebaseAuth
 
+    private lateinit var userPreferences: UserPreferences
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(requireActivity(), mainViewModelFactory).get(MainViewModel::class.java)
         _bindingEdit = FragmentEditProfileBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
+        binding.lifecycleOwner = this
         binding.mainViewModel = viewModel
         mAuth = FirebaseAuth.getInstance()
+        userPreferences = UserPreferences(requireContext())
         return binding.root
     }
 
@@ -135,14 +139,17 @@ class EditProfileFragment : Fragment(), View.OnClickListener {
         }
     }
 
+
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.editUserImage.id -> pickFromGallery()
             binding.btnUpdateDetails.id -> {
                 binding.textPleaseWait.visibility = View.VISIBLE
                 binding.btnUpdateDetails.visibility = View.GONE
-                viewModel.userName = binding.etUserName.text.toString().trim()
+                val name = binding.etUserName.text.toString().trim()
+                viewModel.userName = name
                 viewModel.email = binding.etEmail.text.toString().trim()
+                userPreferences.setUserName(name)
                 viewModel.saveData()
             }
         }

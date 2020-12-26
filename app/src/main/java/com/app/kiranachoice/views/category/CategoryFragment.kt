@@ -68,7 +68,7 @@ class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener
     override fun onSubCategoryItemClicked(subCategoryModel: SubCategoryModel) {
         navController.navigate(
             CategoryFragmentDirections.actionCategoryFragmentToProductsFragment(
-                subCategoryModel, subCategoryModel.sub_category_name.toString()
+                subCategoryModel.sub_category_name.toString(), subCategoryModel.sub_category_Key!!
             )
         )
     }

@@ -18,12 +18,13 @@ import com.google.android.play.core.appupdate.testing.FakeAppUpdateManager
 import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.ActivityResult
 import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.google.android.play.core.tasks.Task
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import io.grpc.android.BuildConfig
 
-private const val REQUEST_CODE = 1
+private const val REQUEST_CODE = 123
 
 class SplashActivity : AppCompatActivity() {
 
@@ -40,7 +41,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun checkForUpdate() {
-        val appVersion: String = getAppVersion(this) // 1.0
+        val appVersion: String = getAppVersion(this) // 1.1.0
 
         val remoteConfig = FirebaseRemoteConfig.getInstance()
 
@@ -49,13 +50,13 @@ class SplashActivity : AppCompatActivity() {
 
         if (BuildConfig.DEBUG) {
             appUpdateManager = FakeAppUpdateManager(this)
-            (appUpdateManager as FakeAppUpdateManager).setUpdateAvailable(3)
+            (appUpdateManager as FakeAppUpdateManager).setUpdateAvailable(4)
         } else {
             appUpdateManager = AppUpdateManagerFactory.create(baseContext)
         }
-        val appUpdateInfo = appUpdateManager.appUpdateInfo
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
 
-        appUpdateInfo.addOnSuccessListener {
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
 
             if (!TextUtils.isEmpty(minVersion) && !TextUtils.isEmpty(appVersion) && checkMandateVersionApplicable(
                     getAppVersionWithoutAlphaNumeric(minVersion),
@@ -63,8 +64,7 @@ class SplashActivity : AppCompatActivity() {
                 )
             ) {
 //           [[ mandatoryUpdate ]]
-//            onUpdateNeeded(true)
-                appUpdateTypeSupported = AppUpdateType.IMMEDIATE
+                appUpdateTypeSupported = IMMEDIATE
                 handleImmediateUpdate(appUpdateManager, appUpdateInfo)
             } else if (!TextUtils.isEmpty(currentVersion) && !TextUtils.isEmpty(appVersion) && !TextUtils.equals(
                     currentVersion,
@@ -72,7 +72,6 @@ class SplashActivity : AppCompatActivity() {
                 )
             ) {
                 // update need not mandatory
-//            onUpdateNeeded(false)
                 appUpdateTypeSupported = AppUpdateType.FLEXIBLE
                 handleFlexibleUpdate(appUpdateManager, appUpdateInfo)
             } else {
@@ -107,24 +106,27 @@ class SplashActivity : AppCompatActivity() {
     }
 
 
-    private fun handleImmediateUpdate(manager: AppUpdateManager, info: Task<AppUpdateInfo>) {
+    private fun handleImmediateUpdate(
+        appUpdateManager: AppUpdateManager,
+        appUpdateInfo: AppUpdateInfo
+    ) {
         //1
-        if ((info.result.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE ||
+        if ((appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE ||
                     //2
-                    info.result.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) &&
+                    appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) &&
             //3
-            info.result.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE)
         ) {
             //4
-            manager.startUpdateFlowForResult(
-                info.result,
-                AppUpdateType.IMMEDIATE,
+            appUpdateManager.startUpdateFlowForResult(
+                appUpdateInfo,
+                IMMEDIATE,
                 this,
                 REQUEST_CODE
             )
 
             if (BuildConfig.DEBUG) {
-                val fakeAppUpdate = manager as FakeAppUpdateManager
+                val fakeAppUpdate = appUpdateManager as FakeAppUpdateManager
                 if (fakeAppUpdate.isImmediateFlowVisible) {
                     fakeAppUpdate.userAcceptsUpdate()
                     fakeAppUpdate.downloadStarts()
@@ -135,16 +137,16 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleFlexibleUpdate(manager: AppUpdateManager, info: Task<AppUpdateInfo>) {
-        if ((info.result.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE ||
-                    info.result.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) &&
-            info.result.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+    private fun handleFlexibleUpdate(manager: AppUpdateManager, appUpdateInfo: AppUpdateInfo) {
+        if ((appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE ||
+                    appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) &&
+            appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
         ) {
-            setUpdateAction(manager, info)
+            setUpdateAction(manager, appUpdateInfo)
         }
     }
 
-    private fun setUpdateAction(manager: AppUpdateManager, info: Task<AppUpdateInfo>) {
+    private fun setUpdateAction(appUpdateManager: AppUpdateManager, appUpdateInfo: AppUpdateInfo) {
 
         updateListener = InstallStateUpdatedListener {
             if (it.installStatus() == InstallStatus.DOWNLOADED) {
@@ -154,17 +156,17 @@ class SplashActivity : AppCompatActivity() {
             }
         }
 
-        manager.registerListener(updateListener)
+        appUpdateManager.registerListener(updateListener)
 
-        manager.startUpdateFlowForResult(
-            info.result,
+        appUpdateManager.startUpdateFlowForResult(
+            appUpdateInfo,
             AppUpdateType.FLEXIBLE,
             this,
             REQUEST_CODE
         )
 
         if (BuildConfig.DEBUG) {
-            val fakeAppUpdate = manager as FakeAppUpdateManager
+            val fakeAppUpdate = appUpdateManager as FakeAppUpdateManager
             if (fakeAppUpdate.isConfirmationDialogVisible) {
                 fakeAppUpdate.userAcceptsUpdate()
                 fakeAppUpdate.downloadStarts()
@@ -177,6 +179,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun popupSnackBarForCompleteUpdate() {
+        appUpdateManager.unregisterListener(updateListener)
         Snackbar.make(
             findViewById(R.id.rootLayout),
             "An update has just been downloaded.",
@@ -194,7 +197,7 @@ class SplashActivity : AppCompatActivity() {
             when (resultCode) {
                 //2
                 Activity.RESULT_OK -> {
-                    if (appUpdateTypeSupported == AppUpdateType.IMMEDIATE) {
+                    if (appUpdateTypeSupported == IMMEDIATE) {
                         Toast.makeText(baseContext, R.string.toast_updated, Toast.LENGTH_SHORT)
                             .show()
                     } else {
@@ -223,6 +226,17 @@ class SplashActivity : AppCompatActivity() {
             // notify the user to complete the update.
             if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
                 popupSnackBarForCompleteUpdate()
+            }
+            if (appUpdateInfo.updateAvailability()
+                == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+            ) {
+                // If an in-app update is already running, resume the update.
+                appUpdateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    IMMEDIATE,
+                    this,
+                    REQUEST_CODE
+                )
             }
         }
     }

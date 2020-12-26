@@ -8,10 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.app.kiranachoice.db.CartDao
 import com.app.kiranachoice.db.CartDatabase
 import com.app.kiranachoice.db.CartItem
-import com.app.kiranachoice.models.Category1Model
 import com.app.kiranachoice.models.PackagingSizeModel
 import com.app.kiranachoice.models.ProductModel
-import com.app.kiranachoice.models.SubCategoryModel
 import com.app.kiranachoice.repositories.CartRepo
 import com.app.kiranachoice.utils.PRODUCT_REFERENCE
 import com.app.kiranachoice.utils.addToCart
@@ -27,7 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class ProductsViewModel(application: Application) : ViewModel() {
-    private var dbRef: FirebaseDatabase? = null
+    private var dbRef: FirebaseDatabase = FirebaseDatabase.getInstance()
     private var mAuth: FirebaseAuth? = null
     private var dbFire: FirebaseFirestore? = null
 
@@ -38,7 +36,6 @@ class ProductsViewModel(application: Application) : ViewModel() {
     val allCartItems: LiveData<List<CartItem>>
 
     init {
-        dbRef = FirebaseDatabase.getInstance()
         mAuth = FirebaseAuth.getInstance()
         dbFire = FirebaseFirestore.getInstance()
 
@@ -53,50 +50,26 @@ class ProductsViewModel(application: Application) : ViewModel() {
     private var _productsList = MutableLiveData<List<ProductModel>>()
     val productsList: LiveData<List<ProductModel>> get() = _productsList
 
-    fun getProductList(subCategoryModel: SubCategoryModel?, categoryModel : Category1Model?) {
-        subCategoryModel?.let {
-            dbRef?.getReference(PRODUCT_REFERENCE)
-                ?.orderByChild("sub_category_key")?.equalTo(it.sub_category_Key)
-                ?.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        fakeProductsList.clear()
-                        snapshot.children.forEach {
-                            val productModel = it.getValue(ProductModel::class.java)
-                            if (productModel != null) {
-                                fakeProductsList.add(productModel)
-                            }
+
+    fun getProductList(subCategoryKey: String) {
+        dbRef.getReference(PRODUCT_REFERENCE)
+            .orderByChild("sub_category_key").equalTo(subCategoryKey)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    fakeProductsList.clear()
+                    snapshot.children.forEach {
+                        val productModel = it.getValue(ProductModel::class.java)
+                        if (productModel != null) {
+                            fakeProductsList.add(productModel)
                         }
-                        _productsList.postValue(fakeProductsList)
                     }
+                    _productsList.postValue(fakeProductsList)
+                }
 
-                    override fun onCancelled(error: DatabaseError) {}
+                override fun onCancelled(error: DatabaseError) {}
 
-                })
-        }
-        categoryModel?.let {
-            dbRef?.getReference(PRODUCT_REFERENCE)
-                ?.orderByChild("sub_category_key")?.equalTo(it.key)
-                ?.addListenerForSingleValueEvent(object : ValueEventListener {
+            })
 
-                    override fun onDataChange(snapshot: DataSnapshot) {
-
-                        fakeProductsList.clear()
-
-                        snapshot.children.forEach {
-                            val productModel = it.getValue(ProductModel::class.java)
-                            if (productModel != null) {
-                                fakeProductsList.add(productModel)
-                            }
-                        }
-
-                        _productsList.postValue(fakeProductsList)
-
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {}
-
-                })
-        }
     }
 
     private var _navigateToAuthActivity = MutableLiveData<Boolean>()
@@ -112,18 +85,19 @@ class ProductsViewModel(application: Application) : ViewModel() {
         productModel: ProductModel,
         packagingSizeModel: PackagingSizeModel,
         quantity: String
-    ) : Boolean {
+    ): Boolean {
         if (mAuth?.currentUser == null) {
             _navigateToAuthActivity.value = true
             return false
         } else {
             var added = false
             runBlocking {
-                val result = async { addToCart(cartRepo, productModel, packagingSizeModel, quantity) }
-                if (result.await()){
+                val result =
+                    async { addToCart(cartRepo, productModel, packagingSizeModel, quantity) }
+                if (result.await()) {
                     _productAdded.postValue(true)
                     added = true
-                } else{
+                } else {
                     _alreadyAddedMsg.postValue("Already added in cart.")
                 }
             }
@@ -132,10 +106,6 @@ class ProductsViewModel(application: Application) : ViewModel() {
         }
     }
 
-
-    companion object {
-        private const val TAG = "ProductsViewModel"
-    }
 
     fun authActivityNavigated() {
         _navigateToAuthActivity.value = false

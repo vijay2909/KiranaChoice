@@ -22,8 +22,6 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -172,12 +170,7 @@ class PaymentViewModel(val application: Application) : ViewModel() {
     }
 
     private fun sendNotificationToAdmin() {
-        val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(SendNotificationAPI.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val api: SendNotificationAPI = retrofit.create(SendNotificationAPI::class.java)
+        val api = SendNotificationAPI.getInstance()
 
         val payload = buildNotificationPayload()
 
@@ -190,7 +183,7 @@ class PaymentViewModel(val application: Application) : ViewModel() {
 
     }
 
-    private fun buildNotificationPayload(): JsonObject? {
+    private fun buildNotificationPayload(): JsonObject {
         // compose notification json payload
         val payload = JsonObject()
         payload.addProperty("to", "/topics/" + "orders")

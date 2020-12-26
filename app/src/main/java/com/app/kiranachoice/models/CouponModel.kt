@@ -14,7 +14,7 @@ data class CouponModel(
     var couponDescription: String? = null,
     var upToPrice: String? = null,
     var discountRate: String? = null,
-    var couponExpiryDate: String? = null,
+    var couponExpiryDate: Long? = null,
     var termsList: List<String>? = null,
     var isActive: Boolean = true
 )

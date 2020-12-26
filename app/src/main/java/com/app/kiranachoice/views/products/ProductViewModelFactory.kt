@@ -10,6 +10,8 @@ class ProductViewModelFactory(private val application: Application) : ViewModelP
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProductsViewModel::class.java)) {
             return ProductsViewModel(application) as T
+        } else if (modelClass.isAssignableFrom(ProductDetailsViewModel::class.java)) {
+            return ProductDetailsViewModel(application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

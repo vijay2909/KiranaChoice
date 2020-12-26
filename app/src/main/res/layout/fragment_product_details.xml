@@ -18,6 +18,7 @@
         <variable
             name="productModel"
             type="com.app.kiranachoice.models.ProductModel" />
+
     </data>
 
     <ScrollView
@@ -56,7 +57,7 @@
                         android:layout_marginBottom="16dp"
                         android:contentDescription="@string/product_image"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/placeholder_image"
+                        tools:src="@drawable/loading_animation"
                         app:imageUrl="@{productModel.productImageUrl}"
                         app:layout_constraintBottom_toTopOf="@+id/textView4"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -69,6 +70,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
+                        android:padding="8dp"
                         android:background="?attr/selectableItemBackground"
                         android:src="@drawable/ic_share"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -112,6 +114,7 @@
                 android:layout_marginTop="8dp"
                 android:clipToPadding="false"
                 android:orientation="horizontal"
+                tools:listitem="@layout/item_packaging_size_card"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/textView5"
@@ -146,6 +149,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
+                    tools:listitem="@layout/item_about_product"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
             </com.google.android.material.card.MaterialCardView>
 
@@ -167,6 +171,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                tools:listitem="@layout/item_horizontol_product_item"
                 android:orientation="horizontal"
                 android:visibility="@{isSimilarProductsListEmpty ? View.GONE : View.VISIBLE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

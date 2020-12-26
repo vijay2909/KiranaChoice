@@ -4,29 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
-            name="productModel"
-            type="com.app.kiranachoice.models.ProductModel" />
+            name="searchWord"
+            type="com.app.kiranachoice.models.SearchWord" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <TextView
+        style="@style/TextAppearance.MaterialComponents.Body1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            style="@style/TextAppearance.MaterialComponents.Body1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="@{productModel.productTitle}"
-            android:textSize="16sp"
-            android:drawablePadding="8dp"
-            app:drawableEndCompat="@drawable/ic_redo"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="This is a long test" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="wrap_content"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        app:title="@{searchWord.productName}"
+        android:textSize="16sp"
+        app:drawableEndCompat="@drawable/ic_redo"
+        tools:text="This is a long test" />
 </layout>

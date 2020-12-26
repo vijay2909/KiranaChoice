@@ -35,7 +35,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:scaleType="centerInside"
-            android:src="@drawable/placeholder_image"
+            android:src="@drawable/loading_animation"
             app:imageUrl="@{product.productImage}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
