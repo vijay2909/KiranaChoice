@@ -4,50 +4,70 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.app.kiranachoice.MainViewModel
-import com.app.kiranachoice.MainViewModelFactory
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentCartBinding
-import com.app.kiranachoice.db.CartItem
-import com.app.kiranachoice.models.CouponModel
+import com.app.kiranachoice.data.db.CartDatabase
+import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.listeners.CartListener
+import com.app.kiranachoice.data.CouponModel
 import com.app.kiranachoice.recyclerView_adapters.CartItemAdapter
 import com.app.kiranachoice.recyclerView_adapters.CouponsAdapter
+import com.app.kiranachoice.repositories.DataRepository
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 
-class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.CouponApplyListener {
 
+class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListener {
 
     private var _bindingCart: FragmentCartBinding? = null
     private val binding get() = _bindingCart!!
+
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
-    private lateinit var viewModel: MainViewModel
     private lateinit var cartItemAdapter: CartItemAdapter
 
-    private var couponPosition : Int = -1
+    private var couponPosition: Int = -1
+
+    private lateinit var viewModel: CartViewModel
+
+    private lateinit var dialog: AlertDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
-        viewModel = ViewModelProvider(requireActivity(), mainViewModelFactory)
-            .get(MainViewModel::class.java)
-
+    ): View {
         _bindingCart = FragmentCartBinding.inflate(inflater, container, false)
 
-        binding.mainViewModel = viewModel
+        // Initialize cart adapter
+        cartItemAdapter = CartItemAdapter(this)
+        binding.recyclerViewCartList.apply {
+            adapter = cartItemAdapter
+            addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL
+                )
+            )
+        }
+
+        // initialize viewModel
+        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
+        val cartViewModelFactory = CartViewModelFactory(DataRepository(localDatabase.databaseDao))
+        viewModel = ViewModelProvider(this, cartViewModelFactory).get(CartViewModel::class.java)
+
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+
         binding.showCoupon = false
-        binding.lifecycleOwner = viewLifecycleOwner
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet.couponBottomSheet)
 
@@ -57,6 +77,7 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         binding.btnCouponApply.setOnClickListener {
             if (binding.btnCouponApply.text == getString(R.string.apply_now))
@@ -75,54 +96,40 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
-        cartItemAdapter = CartItemAdapter(this)
-        binding.recyclerViewCartList.apply {
-            adapter = cartItemAdapter
-            setHasFixedSize(true)
-            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-        }
-
-
-        viewModel.allCartItems.observe(viewLifecycleOwner, {
-            it?.let {
-                binding.isListEmpty = it.isEmpty()
-                setupText(it.count())
-                cartItemAdapter.submitList(it)
-                viewModel.getTotalPayableAmount(it) // calculate total amount
+        viewModel.allCartItems.observe(viewLifecycleOwner, { list ->
+            list?.let { cartItems ->
+                binding.isListEmpty = cartItems.isEmpty()
+                setupText(cartItems.count())
+                cartItemAdapter.submitList(cartItems)
             }
         })
 
 
         binding.btnPlaceOrder.setOnClickListener {
-            view.findNavController().navigate(CartFragmentDirections.actionCartFragmentToAddressFragment(viewModel.totalAmount.value.toString(), viewModel.couponCode, viewModel.couponDescription.value))
+//            view.findNavController().navigate(CartFragmentDirections.actionCartFragmentToAddressFragment(viewModel.totalAmount.value.toString(), viewModel.couponCode, viewModel.couponDescription.value))
         }
 
         val couponsAdapter = CouponsAdapter(this)
         binding.bottomSheet.recyclerViewCouponList.adapter = couponsAdapter
 
-        viewModel.couponList.observe(viewLifecycleOwner, {
+        viewModel.couponsList.observe(viewLifecycleOwner, {
             couponsAdapter.list = it
         })
 
-        viewModel.eventDeleteItem.observe(viewLifecycleOwner, {
-            if (it) {
-                viewModel.eventDeleteItemFinished()
-                view.findNavController().navigate(R.id.action_cartFragment_self)
-            }
-        })
 
-        viewModel.snackBarForAlreadyAppliedCoupon.observe(viewLifecycleOwner, {
-            if (it) {
-                viewModel.snackBarEventFinished()
-                Toast.makeText(requireContext(), "Already applied! you can use the coupon once in a month.", Toast.LENGTH_LONG).show()
-            }
-        })
+         viewModel.toastForAlreadyAppliedCoupon.observe(viewLifecycleOwner, {
+             if (it) {
+                 Toast.makeText(requireContext(), "Already applied! you can use the coupon once in a month.", Toast.LENGTH_LONG).show()
+             }
+         })
+
 
         viewModel.showCoupon.observe(viewLifecycleOwner, {
             if (it) {
                 binding.showCoupon = true
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                viewModel.showCouponFinished()
+            }else{
+                binding.showCoupon = false
             }
         })
     }
@@ -130,25 +137,8 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
     override fun onStart() {
         super.onStart()
         (activity as AppCompatActivity).supportActionBar?.show()
-        viewModel.getAllCartItems()
     }
 
-    override fun onPause() {
-        super.onPause()
-        // update cart items details [[ e.g. quantity of product ]]
-        updateCartItemsDetails()
-    }
-
-
-    private fun updateCartItemsDetails() {
-        val totalView = binding.recyclerViewCartList.childCount
-        for (index in 0 until totalView) {
-            val v = binding.recyclerViewCartList.layoutManager?.findViewByPosition(index)
-            val productName: TextView? = v?.findViewById(R.id.productName)
-            val quantity: TextView? = v?.findViewById(R.id.userQuantity)
-            viewModel.updateProduct(productName?.text.toString(), quantity?.text.toString())
-        }
-    }
 
     private fun setupText(totalProducts: Int) {
         val itemFound =
@@ -163,24 +153,36 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
 
 
     override fun removeCartItem(cartItem: CartItem) {
-        viewModel.removeCartItem(cartItem)
+        // show delete confirmation dialog before remove product from cart
+        if (!this::dialog.isInitialized) {
+            dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Delete Item")
+                .setMessage("Are you sure to remove product from cart?")
+                .setPositiveButton(
+                    "Yes"
+                ) { dialog, _ ->
+                    viewModel.removeCartItem(cartItem)
+                    dialog.dismiss()
+                }
+                .setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+        }
+        dialog.show()
     }
 
 
-    override fun onQuantityChange(
-        cartItem: CartItem,
-        amountPlus: Int?,
-        amountMinus: Int?,
-        mrpAndPriceDifference: Int
-    ) {
-        if (amountPlus != null) viewModel.setTotalAmount(amountPlus, null, mrpAndPriceDifference)
-        else viewModel.setTotalAmount(null, amountMinus, mrpAndPriceDifference)
+    override fun onQuantityChange(cartItem: CartItem, quantity: Int) {
+        viewModel.updateQuantity(cartItem, quantity)
     }
+
 
     override fun onCouponApplied(couponModel: CouponModel, position: Int) {
         couponPosition = position
         if (couponModel.isActive) {
-            if (couponModel.upToPrice.toString().toDouble() <= viewModel.totalAmount.value.toString().toDouble()
+            if (couponModel.upToPrice.toString()
+                    .toDouble() <= viewModel.totalAmount.value.toString().toDouble()
             ) {
                 viewModel.couponApplied(couponModel)
             } else {
@@ -195,4 +197,15 @@ class CartFragment : Fragment(), CartItemAdapter.CartListener, CouponsAdapter.Co
         }
     }
 
+}
+
+
+class CartViewModelFactory(private val dataRepository: DataRepository) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(CartViewModel::class.java)) {
+            return CartViewModel(dataRepository = dataRepository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel")
+    }
 }

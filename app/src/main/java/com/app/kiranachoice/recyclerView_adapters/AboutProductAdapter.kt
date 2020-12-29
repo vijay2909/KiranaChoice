@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemAboutProductBinding
-import com.app.kiranachoice.models.AboutProductModel
+import com.app.kiranachoice.data.AboutProductModel
 
 
 class AboutProductAdapter :

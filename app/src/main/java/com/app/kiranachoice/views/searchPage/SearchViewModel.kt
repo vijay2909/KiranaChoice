@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.kiranachoice.db.CartDatabase
-import com.app.kiranachoice.models.SearchWord
+import com.app.kiranachoice.data.db.CartDatabase
+import com.app.kiranachoice.data.SearchWord
 import com.app.kiranachoice.repositories.SearchRepository
 import kotlinx.coroutines.launch
 import java.io.IOException

@@ -4,17 +4,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.ItemHorizontolProductItemBinding
-import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.listeners.ProductClickListener
-import com.app.kiranachoice.models.ProductModel
 import com.google.android.material.snackbar.Snackbar
 
 
 class HorizontalProductsAdapter(
-    private val list : List<ProductModel>,
+    private val list : List<Product>,
     private val cartItem : List<CartItem>,
-    private val listener: ProductClickListener?
+    private val listener: ProductClickListener,
 ) :
     RecyclerView.Adapter<HorizontalProductsAdapter.HorizontalProductsViewHolder>() {
 
@@ -35,11 +35,12 @@ class HorizontalProductsAdapter(
     }
 
     override fun onBindViewHolder(holder: HorizontalProductsViewHolder, position: Int) {
-        holder.bind(list[position])
+        val productModel = list[position]
+        holder.bind(productModel)
 
         if (!cartItem.isNullOrEmpty() ){
             for (cartItem in cartItem) {
-                if (cartItem.productKey == list[position].product_key){
+                if (cartItem.productKey == productModel.product_key){
                     holder.binding.btnAddToCart.visibility = View.GONE
                     holder.binding.quantityLayout.visibility = View.VISIBLE
                     holder.binding.userQuantity.text = cartItem.quantity
@@ -50,12 +51,16 @@ class HorizontalProductsAdapter(
 
         holder.binding.btnIncrease.setOnClickListener {
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
-            if (quantity < 5) ++quantity else Snackbar.make(
+            if (quantity < 5) {
+                ++quantity
+                val qty = quantity.toString()
+                holder.binding.userQuantity.text = qty
+                listener.onQuantityChanged(productModel.product_key, quantity = qty)
+            } else Snackbar.make(
                 holder.binding.root,
                 "You can get maximum 5 quantity.",
                 Snackbar.LENGTH_SHORT
             ).show()
-            holder.binding.userQuantity.text = quantity.toString()
         }
 
         holder.binding.btnDecrease.setOnClickListener {
@@ -64,8 +69,11 @@ class HorizontalProductsAdapter(
             if (quantity == 0) {
                 holder.binding.btnAddToCart.visibility = View.VISIBLE
                 holder.binding.quantityLayout.visibility = View.GONE
+                listener.onRemoveProduct(productModel.product_key)
             } else {
-                holder.binding.userQuantity.text = quantity.toString()
+                val qty = quantity.toString()
+                holder.binding.userQuantity.text = qty
+                listener.onQuantityChanged(productModel.product_key, qty)
             }
         }
 
@@ -79,10 +87,10 @@ class HorizontalProductsAdapter(
 
     inner class HorizontalProductsViewHolder(val binding: ItemHorizontolProductItemBinding, val listener: ProductClickListener?) :
         RecyclerView.ViewHolder(binding.root) {
-        private var model: ProductModel? = null
-        fun bind(productModel: ProductModel) {
-            this.model = productModel
-            binding.productModel = productModel
+        private var model: Product? = null
+        fun bind(product: Product) {
+            this.model = product
+            binding.product = product
             binding.executePendingBindings()
         }
 

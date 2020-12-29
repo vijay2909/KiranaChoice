@@ -9,14 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.app.kiranachoice.KiranaChoiceMapActivity
 import com.app.kiranachoice.MainViewModel
-import com.app.kiranachoice.MainViewModelFactory
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentMyAccountBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -27,7 +26,6 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
 
     private var _bindingAccount: FragmentMyAccountBinding? = null
     private val binding get() = _bindingAccount!!
-    private lateinit var viewModel: MainViewModel
     private lateinit var navController: NavController
     private lateinit var mAuth: FirebaseAuth
 
@@ -35,18 +33,15 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            mainViewModelFactory
-        ).get(MainViewModel::class.java)
+    ): View {
         _bindingAccount = FragmentMyAccountBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
+        binding.lifecycleOwner = this
         mAuth = FirebaseAuth.getInstance()
         return binding.root
     }
 
+
+    private val viewModel : MainViewModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
@@ -64,6 +59,7 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
         })
     }
 
+
     override fun onStart() {
         super.onStart()
         if (mAuth.currentUser == null) {
@@ -73,11 +69,7 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.getUserDetails()
-    }
-
+    
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.textEditProfile.id -> navController.navigate(R.id.action_myAccountFragment_to_editProfileFragment)

@@ -26,7 +26,7 @@ import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.DialogAddAddressBinding
 import com.app.kiranachoice.databinding.FragmentAddressBinding
-import com.app.kiranachoice.models.AddressModel
+import com.app.kiranachoice.data.AddressModel
 import com.app.kiranachoice.recyclerView_adapters.AddressAdapter
 import com.app.kiranachoice.utils.isNotNullOrEmpty
 import com.google.android.gms.location.*
@@ -53,7 +53,7 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewModel = ViewModelProvider(this).get(AddressViewModel::class.java)
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         _bindingAddress = FragmentAddressBinding.inflate(inflater, container, false)

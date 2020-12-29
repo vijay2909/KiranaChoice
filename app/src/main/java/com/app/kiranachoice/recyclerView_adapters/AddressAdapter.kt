@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemAddressLayoutBinding
-import com.app.kiranachoice.models.AddressModel
+import com.app.kiranachoice.data.AddressModel
 
 private var lastCheckedPosition = 0
 

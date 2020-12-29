@@ -10,10 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.DialogCancelOrderConfirmationBinding
 import com.app.kiranachoice.databinding.FragmentOrderDetailsBinding
-import com.app.kiranachoice.models.Product
 import com.app.kiranachoice.recyclerView_adapters.ProductDetailAdapter
 
 

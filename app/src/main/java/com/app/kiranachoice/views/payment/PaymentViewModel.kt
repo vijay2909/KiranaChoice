@@ -2,13 +2,13 @@ package com.app.kiranachoice.views.payment
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.app.kiranachoice.db.CartDatabase
-import com.app.kiranachoice.db.CartItem
-import com.app.kiranachoice.models.*
+import com.app.kiranachoice.data.db.CartDatabase
+import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.data.*
 import com.app.kiranachoice.network.DateTimeApi
 import com.app.kiranachoice.network.RetrofitClient
 import com.app.kiranachoice.network.SendNotificationAPI
-import com.app.kiranachoice.repositories.CartRepo
+import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -33,7 +33,7 @@ class PaymentViewModel(val application: Application) : ViewModel() {
     private val dbRef: FirebaseDatabase
 
     private val dataBase = CartDatabase.getInstance(application)
-    private val repository = CartRepo(dataBase.cartDao)
+    private val repository = DataRepository(dataBase.databaseDao)
 
     val allProducts: LiveData<List<CartItem>>
 
@@ -237,7 +237,7 @@ class PaymentViewModel(val application: Application) : ViewModel() {
     fun removeCartItems() {
         viewModelScope.launch(Dispatchers.IO) {
             cartItems?.forEach { cartItem ->
-                repository.delete(cartItem.productKey, cartItem.packagingSize)
+                repository.delete(cartItem.productKey)
             }
         }
     }

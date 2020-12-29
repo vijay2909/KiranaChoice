@@ -17,8 +17,9 @@ class App : Application(){
 
     override fun onCreate() {
         super.onCreate()
+       /* val name = UserPreferences(this).getUserName()
 
-        FirebaseMessaging.getInstance().subscribeToTopic("user_${UserPreferences(this).getUserName()}")
+        FirebaseMessaging.getInstance().subscribeToTopic("user_$name")*/
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 

@@ -3,8 +3,8 @@ package com.app.kiranachoice.views.my_orders
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.kiranachoice.models.BookItemOrderModel
-import com.app.kiranachoice.models.Product
+import com.app.kiranachoice.data.BookItemOrderModel
+import com.app.kiranachoice.data.Product
 import com.app.kiranachoice.utils.CANCELED
 import com.app.kiranachoice.utils.USER_MY_ORDERS_REFERENCE
 import com.app.kiranachoice.utils.USER_REFERENCE

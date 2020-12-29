@@ -10,7 +10,7 @@
 
         <variable
             name="model"
-            type="com.app.kiranachoice.models.OfferModel" />
+            type="com.app.kiranachoice.data.OfferModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

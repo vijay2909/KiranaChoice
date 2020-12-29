@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="bannerImageModel"
-            type="com.app.kiranachoice.models.BannerImageModel" />
+            name="banner"
+            type="com.app.kiranachoice.data.domain.Banner" />
     </data>
 
     <ImageView
@@ -16,7 +16,7 @@
         android:layout_gravity="center"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        app:imageUrl="@{bannerImageModel.imageUrl}"
+        app:imageUrl="@{banner.imageUrl}"
         tools:ignore="ContentDescription"
-        tools:src="@drawable/placeholder_image" />
+        tools:src="@drawable/ic_placeholder" />
 </layout>

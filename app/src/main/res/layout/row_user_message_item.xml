@@ -9,7 +9,7 @@
 
         <variable
             name="chat"
-            type="com.app.kiranachoice.models.Chat" />
+            type="com.app.kiranachoice.data.Chat" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

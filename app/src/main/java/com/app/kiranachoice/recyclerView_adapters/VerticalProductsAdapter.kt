@@ -4,14 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.ItemVerticalProductListBinding
-import com.app.kiranachoice.db.CartItem
-import com.app.kiranachoice.models.ProductModel
 import com.google.android.material.snackbar.Snackbar
 
 
 class VerticalProductsAdapter(
-    private val list : List<ProductModel>,
+    private val list : List<Product>,
     private val cartItem: List<CartItem>,
     private val listener: ProductListener
 ) :
@@ -77,12 +77,12 @@ class VerticalProductsAdapter(
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private var model: ProductModel? = null
+        private var model: Product? = null
 
-        fun bind(productModel: ProductModel) {
-            this.model = productModel
+        fun bind(product: Product) {
+            this.model = product
             binding.clickListener = listener
-            binding.productModel = productModel
+            binding.product = product
             binding.executePendingBindings()
         }
 
@@ -107,13 +107,13 @@ class VerticalProductsAdapter(
 
     interface ProductListener {
         fun onAddToCartButtonClick(
-            productModel: ProductModel,
+            product: Product,
             packagingSize: Int,
             quantity: String,
             position: Int
         )
 
-        fun onItemRemoved(productModel: ProductModel)
-        fun onItemClick(productModel: ProductModel)
+        fun onItemRemoved(product: Product)
+        fun onItemClick(product: Product)
     }
 }

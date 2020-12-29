@@ -1,14 +1,12 @@
 package com.app.kiranachoice.views.home
 
-import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -19,15 +17,17 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.app.kiranachoice.R
+import com.app.kiranachoice.data.db.CartDatabase
+import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.data.domain.Banner
+import com.app.kiranachoice.data.domain.Category
+import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.FragmentHomeBinding
-import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.listeners.ProductClickListener
-import com.app.kiranachoice.models.BannerImageModel
-import com.app.kiranachoice.models.Category1Model
-import com.app.kiranachoice.models.ProductModel
 import com.app.kiranachoice.recyclerView_adapters.Category1Adapter
 import com.app.kiranachoice.recyclerView_adapters.HorizontalProductsAdapter
 import com.app.kiranachoice.recyclerView_adapters.SmallBannerCategoryAdapter
+import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.BEST_OFFER_PRODUCT
 import com.app.kiranachoice.utils.BEST_SELLING_PRODUCT
 import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
@@ -53,23 +53,33 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 //    private lateinit var handler2: Handler
     private lateinit var callbackTopBanner: ViewPager2.OnPageChangeCallback
 //    private lateinit var callbackMiddleBanner: ViewPager2.OnPageChangeCallback
-    private lateinit var homeTopBannerImageList: List<BannerImageModel>
-    private lateinit var homeMiddleBannerImageList: List<BannerImageModel>
+    private lateinit var homeTopBannerImageList: List<Banner>
+    private lateinit var homeMiddleBannerImageList: List<Banner>
 
     private lateinit var bestOfferProductsAdapter: HorizontalProductsAdapter
     private lateinit var bestSellingProductsAdapter: HorizontalProductsAdapter
 
     private lateinit var cartItems : List<CartItem>
 
+    private var totalCartItem = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val factory = HomeViewModelFactory(requireActivity().application)
-        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+    ): View {
         (activity as AppCompatActivity).supportActionBar?.show()
         _bindingHome = FragmentHomeBinding.inflate(inflater, container, false)
+
+        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
+        val factory = HomeViewModelFactory(DataRepository(localDatabase.databaseDao))
+        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+
         homeTopBannerImageList = ArrayList()
         homeMiddleBannerImageList = ArrayList()
         viewPager1 = binding.homeBanner1
@@ -95,39 +105,45 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
                 deepLink?.let {
                     val productId = deepLink.toString().substringAfter("=")
-                    viewModel.getProductDetails(productId)
+                    viewModel.getProduct(productId).observe(viewLifecycleOwner, {
+                        it?.let {
+                            navController.navigate(
+                                HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
+                                    it[0].productTitle,
+                                    it[0]
+                                )
+                            )
+                            // todo product should null ?
+                        }
+                    })
                 }
-
             }
+
 
         viewModel.cartItems.observe(viewLifecycleOwner, {
+            totalCartItem = it.count()
             cartItems = it
+            requireActivity().invalidateOptionsMenu()
         })
+
 
         navController = Navigation.findNavController(view)
-
-        viewModel.product.observe(viewLifecycleOwner, {
-            it?.let {
-                navController.navigate(
-                    HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
-                        it.productTitle.toString(),
-                        it
-                    )
-                )
-                viewModel.productShouldBeNull()
-            }
-        })
-
 
         // Home Top Banner [[START]] >>>>>>>>>>>>>
         val banner1Adapter = HomeTopBannerAdapter()
         binding.homeBanner1.adapter = banner1Adapter
         TabLayoutMediator(binding.tabLayout, binding.homeBanner1) { _, _ -> }.attach()
-        viewModel.bannersList.observe(viewLifecycleOwner, {
+        viewModel.banners.observe(viewLifecycleOwner, {
             homeTopBannerImageList = it
             banner1Adapter.list = it
         })
         // Home Top Banner [[END]]>>>>>>>>>>>>>
+
+        viewModel.eventNetworkError.observe(viewLifecycleOwner, {
+            if (it){
+                Toast.makeText(requireContext(), "Network Error", Toast.LENGTH_LONG).show()
+            }
+        })
 
 
         // Category [[ START ]] >>>>>>>>>>>>>>>
@@ -136,7 +152,8 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             setHasFixedSize(true)
             adapter = category1Adapter
         }
-        viewModel.categoryList.observe(viewLifecycleOwner, {
+
+        viewModel.categories.observe(viewLifecycleOwner, {
             category1Adapter.list = it
             binding.shimmerLayout.rootLayout.stopShimmer()
             binding.shimmerLayout.root.visibility = View.GONE
@@ -146,7 +163,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
 
         // Best Offer Products [[ START ]] >>>>>>>>>>>>>>
-        viewModel.bestOfferProductList.observe(viewLifecycleOwner, {
+        viewModel.bestOfferProducts.observe(viewLifecycleOwner, {
             binding.bestOfferProductsAvailable = it.isNotEmpty()
             bestOfferProductsAdapter = HorizontalProductsAdapter(it, cartItems,this)
             binding.recyclerViewBestOffers.apply {
@@ -160,15 +177,15 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         val smallBannerCategoryAdapter = SmallBannerCategoryAdapter(this)
         binding.recyclerViewCategory2.adapter = smallBannerCategoryAdapter
 
-        viewModel.category2.observe(viewLifecycleOwner, {
+        /*viewModel.category2.observe(viewLifecycleOwner, {
             binding.recyclerViewCategory2.setHasFixedSize(true)
             smallBannerCategoryAdapter.list = it
-        })
+        })*/
 
 
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
 
-        viewModel.bestSellingProductList.observe(viewLifecycleOwner, {
+        viewModel.bestSellingProducts.observe(viewLifecycleOwner, {
             binding.bestSellingProductAvailable = it.isNotEmpty()
             bestSellingProductsAdapter = HorizontalProductsAdapter(it, cartItems,this)
             binding.recyclerViewBestSelling.apply {
@@ -269,6 +286,36 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             else viewPager2.currentItem.plus(1)
     }*/
 
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main, menu)
+
+        val menuItem = menu.findItem(R.id.cartFragment)
+
+        val actionView = menuItem.actionView
+
+        val cartBadgeTextView = actionView.findViewById<TextView>(R.id.cart_badge_text_view)
+
+        if (totalCartItem == 0) {
+            cartBadgeTextView.visibility = View.GONE
+        } else {
+            cartBadgeTextView.text = totalCartItem.toString()
+            cartBadgeTextView.visibility = View.VISIBLE
+        }
+
+        actionView.setOnClickListener { onOptionsItemSelected(menuItem) }
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.cartFragment){
+            navController.navigate(R.id.action_homeFragment_to_cartFragment)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onResume() {
         super.onResume()
         binding.shimmerLayout.rootLayout.startShimmer()
@@ -292,28 +339,28 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         _bindingHome = null
     }
 
-    override fun onCategoryItemClick(categoryModel: Category1Model) {
+    override fun onCategoryItemClick(category: Category) {
         navController.navigate(
             HomeFragmentDirections.actionNavHomeToCategoryFragment(
-                categoryModel,
-                categoryModel.category_name.toString()
+                category,
+                category.category_name
             )
         )
     }
 
     override fun addItemToCart(
-        productModel: ProductModel,
-        packagingSize: Int,
+        product: Product,
+        packagingSize: Int, // spinner adapter position
         quantity: String,
         position: Int
     ) {
         if (mAuth.currentUser != null) {
-            val packagingSizeModel = if (productModel.productPackagingSize.size > 1) {
-                productModel.productPackagingSize[packagingSize]
+            val packagingSizeModel = if (product.productPackagingSize.size > 1) {
+                product.productPackagingSize[packagingSize]
             } else {
-                productModel.productPackagingSize[0]
+                product.productPackagingSize[0]
             }
-            when (viewModel.addItemToCart(productModel, packagingSizeModel, quantity)) {
+            when (viewModel.addItemToCart(product, packagingSizeModel, quantity)) {
                 BEST_OFFER_PRODUCT -> {
                     bestOfferProductsAdapter.addToCartClickedItemPosition = position
                     bestOfferProductsAdapter.notifyItemChanged(position)
@@ -329,22 +376,30 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
     }
 
-    override fun onItemClick(productModel: ProductModel) {
+    override fun onItemClick(product: Product) {
         navController.navigate(
             HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
-                productModel.productTitle.toString(),
-                productModel
+                product.productTitle,
+                product
             )
         )
+    }
+
+    override fun onRemoveProduct(productKey: String) {
+        viewModel.removeProductFromCart(productKey)
+    }
+
+    override fun onQuantityChanged(productKey: String, quantity: String) {
+        viewModel.updateQuantity(productKey, quantity)
     }
 
 }
 
 @Suppress("UNCHECKED_CAST")
-class HomeViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+class HomeViewModelFactory(private val dataRepository: DataRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(application) as T
+            return HomeViewModel(dataRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

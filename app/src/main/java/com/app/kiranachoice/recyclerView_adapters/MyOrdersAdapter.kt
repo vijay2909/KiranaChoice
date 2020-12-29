@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemMyOrderItemBinding
-import com.app.kiranachoice.models.BookItemOrderModel
+import com.app.kiranachoice.data.BookItemOrderModel
 
 class MyOrdersAdapter(private val listener : OrderClickListener) : RecyclerView.Adapter<MyOrdersAdapter.OrdersViewHolder>() {
 

@@ -1,4 +1,4 @@
-package com.app.kiranachoice.models
+package com.app.kiranachoice.data
 
 data class User(
     var sequence: Long? = null,

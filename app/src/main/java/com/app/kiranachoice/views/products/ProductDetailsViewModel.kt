@@ -1,36 +1,28 @@
 package com.app.kiranachoice.views.products
 
-import android.app.Application
-import androidx.lifecycle.*
-import com.app.kiranachoice.db.CartDatabase
-import com.app.kiranachoice.models.PackagingSizeModel
-import com.app.kiranachoice.models.ProductModel
-import com.app.kiranachoice.repositories.CartRepo
-import com.app.kiranachoice.utils.*
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.app.kiranachoice.data.PackagingSizeModel
+import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.repositories.DataRepository
+import com.app.kiranachoice.utils.addToCart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class ProductDetailsViewModel(application: Application) : ViewModel() {
-    private val database = CartDatabase.getInstance(application)
-    private val cartRepo = CartRepo(database.cartDao)
+class ProductDetailsViewModel(private val dataRepository: DataRepository) : ViewModel() {
 
-    val cartItems = cartRepo.allCartItems
+    val cartItems = dataRepository.allCartItems
 
-    private var dbRef: FirebaseDatabase = FirebaseDatabase.getInstance()
-
-
-    private val fakeProductsList = ArrayList<ProductModel>()
-    private var _productsList = MutableLiveData<List<ProductModel>>()
-    val productsList: LiveData<List<ProductModel>> get() = _productsList
-
-    fun getProductList(subCategoryName: String) {
-        dbRef.getReference(PRODUCT_REFERENCE)
+    fun getProductList(subCategoryName: String): LiveData<List<Product>> {
+        val result = MutableLiveData<List<Product>>()
+        viewModelScope.launch {
+            result.postValue(dataRepository.getProductsByCategoryName(subCategoryName))
+        }
+        return result
+        /*dbRef.getReference(PRODUCT_REFERENCE)
             .orderByChild("sub_category_name").equalTo(subCategoryName)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -41,20 +33,21 @@ class ProductDetailsViewModel(application: Application) : ViewModel() {
                             fakeProductsList.add(productModel)
                         }
                     }
-                    _productsList.postValue(fakeProductsList)
+                    _productsList.postValue(fakeProductsList.asProductDatabaseModel())
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
 
-            })
+            })*/
     }
 
+
     fun addItemToCart(
-        productModel: ProductModel,
+        product: Product,
         packagingSizeModel: PackagingSizeModel,
         quantity: String
     ) = runBlocking {
-        val result = async { addToCart(cartRepo, productModel, packagingSizeModel, quantity) }
+        val result = async { addToCart(dataRepository, product, packagingSizeModel, quantity) }
         result.await()
     }
 

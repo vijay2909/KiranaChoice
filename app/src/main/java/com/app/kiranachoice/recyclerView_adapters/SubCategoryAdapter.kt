@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.BR
 import com.app.kiranachoice.databinding.ItemSubCategoryBinding
-import com.app.kiranachoice.models.SubCategoryModel
+import com.app.kiranachoice.data.SubCategoryModel
 
 class SubCategoryAdapter(
     private val list: List<SubCategoryModel>,

@@ -12,12 +12,12 @@ import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.app.kiranachoice.MainViewModel
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentEditProfileBinding
-import com.app.kiranachoice.MainViewModelFactory
 import com.app.kiranachoice.utils.UserPreferences
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.bumptech.glide.Glide
@@ -35,7 +35,6 @@ class EditProfileFragment : Fragment(), View.OnClickListener {
     private var _bindingEdit: FragmentEditProfileBinding? = null
     private val binding get() = _bindingEdit!!
 
-    private lateinit var viewModel: MainViewModel
     private var imageUri: Uri? = null
 
     private lateinit var mAuth : FirebaseAuth
@@ -46,19 +45,21 @@ class EditProfileFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val mainViewModelFactory = MainViewModelFactory(requireActivity().application)
-        viewModel = ViewModelProvider(requireActivity(), mainViewModelFactory).get(MainViewModel::class.java)
         _bindingEdit = FragmentEditProfileBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = this
-        binding.mainViewModel = viewModel
+
         mAuth = FirebaseAuth.getInstance()
         userPreferences = UserPreferences(requireContext())
         return binding.root
     }
 
 
+    private val viewModel : MainViewModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.lifecycleOwner = this
+        binding.mainViewModel = viewModel
+
         binding.apply {
             editUserImage.setOnClickListener(this@EditProfileFragment)
             btnUpdateDetails.setOnClickListener(this@EditProfileFragment)

@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemBannerLayoutBinding
-import com.app.kiranachoice.models.BannerImageModel
+import com.app.kiranachoice.data.BannerImageModel
 
 class BigBannersAdapter(private val list: List<BannerImageModel>?) :
     RecyclerView.Adapter<BigBannersAdapter.BannerViewHolder>() {

@@ -17,11 +17,14 @@ class MessagingService : FirebaseMessagingService() {
     private lateinit var dbFire: CollectionReference
     private lateinit var mAuth: FirebaseAuth
 
+    private lateinit var notificationManager : NotificationManager
+
     override fun onCreate() {
         super.onCreate()
 
         dbFire = FirebaseFirestore.getInstance().collection(USER_REFERENCE)
         mAuth = FirebaseAuth.getInstance()
+        notificationManager  = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     }
 
     override fun onNewToken(token: String) {
@@ -49,7 +52,6 @@ class MessagingService : FirebaseMessagingService() {
                 .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
                 .setAutoCancel(true)
 
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.notify(1, notification.build())
         }
     }

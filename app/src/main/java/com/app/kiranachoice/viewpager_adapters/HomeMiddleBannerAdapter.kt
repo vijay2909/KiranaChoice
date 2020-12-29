@@ -3,12 +3,12 @@ package com.app.kiranachoice.viewpager_adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.kiranachoice.data.domain.Banner
 import com.app.kiranachoice.databinding.SlidingImageLayoutBinding
-import com.app.kiranachoice.models.BannerImageModel
 
 class HomeMiddleBannerAdapter : RecyclerView.Adapter<HomeMiddleBannerAdapter.MiddleBannerViewHolder>() {
 
-    var list = listOf<BannerImageModel>()
+    var list = listOf<Banner>()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -28,8 +28,8 @@ class HomeMiddleBannerAdapter : RecyclerView.Adapter<HomeMiddleBannerAdapter.Mid
 
     class MiddleBannerViewHolder(val binding: SlidingImageLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(bannerImageModel: BannerImageModel) {
-            binding.bannerImageModel = bannerImageModel
+        fun bind(banner: Banner) {
+            binding.banner = banner
             binding.executePendingBindings()
         }
     }

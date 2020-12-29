@@ -1,4 +1,4 @@
-package com.app.kiranachoice.models
+package com.app.kiranachoice.data
 
 import com.app.kiranachoice.utils.AWAITING_PICKUP
 import java.io.Serializable

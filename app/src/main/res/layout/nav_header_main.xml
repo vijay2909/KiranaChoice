@@ -9,7 +9,7 @@
 
         <variable
             name="user"
-            type="com.app.kiranachoice.models.User" />
+            type="com.app.kiranachoice.data.User" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

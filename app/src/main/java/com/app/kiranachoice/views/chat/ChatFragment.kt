@@ -12,7 +12,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.kiranachoice.databinding.FragmentChatBinding
-import com.app.kiranachoice.models.Chat
+import com.app.kiranachoice.data.Chat
 import com.app.kiranachoice.network.SendNotificationAPI
 import com.app.kiranachoice.recyclerView_adapters.ChatAdapter
 import com.app.kiranachoice.utils.ADMIN

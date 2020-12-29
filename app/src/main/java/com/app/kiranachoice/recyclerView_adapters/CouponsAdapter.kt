@@ -10,7 +10,7 @@ import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.RawCouponItemBinding
-import com.app.kiranachoice.models.CouponModel
+import com.app.kiranachoice.data.CouponModel
 import com.google.android.material.textview.MaterialTextView
 
 private var currentPosition = -1

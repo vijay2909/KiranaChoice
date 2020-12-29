@@ -1,17 +1,16 @@
 package com.app.kiranachoice.views.products
 
-import android.app.Application
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.app.kiranachoice.repositories.DataRepository
 
 @Suppress("UNCHECKED_CAST")
-class ProductViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+class ProductViewModelFactory(private val dataRepository: DataRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProductsViewModel::class.java)) {
-            return ProductsViewModel(application) as T
+            return ProductsViewModel(dataRepository) as T
         } else if (modelClass.isAssignableFrom(ProductDetailsViewModel::class.java)) {
-            return ProductDetailsViewModel(application) as T
+            return ProductDetailsViewModel(dataRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

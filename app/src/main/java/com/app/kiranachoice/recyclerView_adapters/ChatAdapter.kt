@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.RowAdminMessageItemBinding
 import com.app.kiranachoice.databinding.RowUserMessageItemBinding
-import com.app.kiranachoice.models.Chat
+import com.app.kiranachoice.data.Chat
 import com.app.kiranachoice.utils.USER
 
 class ChatAdapter : ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback) {

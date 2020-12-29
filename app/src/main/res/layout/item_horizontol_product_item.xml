@@ -5,13 +5,15 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="clickListener"
             type="com.app.kiranachoice.listeners.ProductClickListener" />
 
         <variable
-            name="productModel"
-            type="com.app.kiranachoice.models.ProductModel" />
+            name="product"
+            type="com.app.kiranachoice.data.domain.Product" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -31,7 +33,7 @@
                 android:id="@+id/mainLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{() -> clickListener.onItemClick(productModel)}"
+                android:onClick="@{() -> clickListener.onItemClick(product)}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -45,7 +47,7 @@
                     android:contentDescription="@string/product_image"
                     android:scaleType="fitCenter"
                     android:src="@drawable/loading_animation"
-                    app:imageUrl="@{productModel.productImageUrl}"
+                    app:imageUrl="@{product.productImageUrl}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -60,7 +62,7 @@
                     android:layout_marginEnd="8dp"
                     android:ellipsize="end"
                     android:maxLines="3"
-                    android:text="@{productModel.productTitle}"
+                    android:text="@{product.productTitle}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -74,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:text="@{@string/rupee_with_text(productModel.productPackagingSize.get(0).price)}"
+                    android:text="@{@string/rupee_with_text(product.productPackagingSize.get(0).price)}"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
@@ -89,9 +91,10 @@
                     android:layout_marginStart="24dp"
                     android:textColor="@color/red"
                     android:textSize="12sp"
+                    android:visibility="@{product.productPackagingSize.get(0).mrp.equals(product.productPackagingSize.get(0).price) ? View.INVISIBLE : View.VISIBLE}"
                     app:layout_constraintStart_toEndOf="@id/textProductPrice"
                     app:layout_constraintTop_toTopOf="@id/textProductPrice"
-                    app:productMRP="@{productModel.productPackagingSize.get(0).mrp}"
+                    app:productMRP="@{product.productPackagingSize.get(0).mrp}"
                     tools:text="₹149.00" />
 
                 <Spinner
@@ -109,7 +112,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textProductPrice"
-                    app:sizes="@{productModel}" />
+                    app:sizes="@{product}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -124,15 +127,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/mainLayout">
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddToCart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/curved_less_button_background"
+                    android:background="@drawable/gradient_background"
                     android:text="@string/add_to_cart"
-                    android:textAllCaps="false" />
-
-                <!--android:onClick="@{() -> clickListener.onAddToCartClick(productModel)}"-->
+                    android:textAllCaps="false"
+                    app:backgroundTint="@null" />
 
                 <LinearLayout
                     android:id="@+id/quantityLayout"
@@ -144,10 +146,10 @@
                     <ImageButton
                         android:id="@+id/btnDecrease"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
                         android:background="?attr/selectableItemBackground"
                         android:contentDescription="@string/quantity_decrease_button"
-                        android:src="@drawable/ic_minus_box" />
+                        android:src="@drawable/ic_minus_box_32" />
 
                     <TextView
                         android:id="@+id/userQuantity"
@@ -165,7 +167,7 @@
                         android:layout_height="wrap_content"
                         android:background="?attr/selectableItemBackground"
                         android:contentDescription="@string/quantity_increase_button"
-                        android:src="@drawable/ic_add_box" />
+                        android:src="@drawable/ic_add_box_32" />
                 </LinearLayout>
             </FrameLayout>
 

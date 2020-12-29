@@ -3,7 +3,7 @@ package com.app.kiranachoice.views.my_offers
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.app.kiranachoice.models.OfferModel
+import com.app.kiranachoice.data.OfferModel
 import com.app.kiranachoice.utils.OFFER_REFERENCE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

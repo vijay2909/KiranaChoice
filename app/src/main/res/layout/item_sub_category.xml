@@ -11,7 +11,7 @@
 
         <variable
             name="subCategoryModel"
-            type="com.app.kiranachoice.models.SubCategoryModel" />
+            type="com.app.kiranachoice.data.SubCategoryModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

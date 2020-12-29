@@ -7,7 +7,7 @@
 
         <variable
             name="couponModel"
-            type="com.app.kiranachoice.models.CouponModel" />
+            type="com.app.kiranachoice.data.CouponModel" />
 
     </data>
 

@@ -3,15 +3,15 @@ package com.app.kiranachoice.recyclerView_adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.app.kiranachoice.BR
+import com.app.kiranachoice.data.CategoryModel
+import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.databinding.ItemCategory1LayoutBinding
-import com.app.kiranachoice.models.Category1Model
 
 
 class Category1Adapter(private val listener: CategoryClickListener) :
     RecyclerView.Adapter<Category1Adapter.CategoryViewHolder>() {
 
-    var list = listOf<Category1Model>()
+    var list = listOf<Category>()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -36,13 +36,13 @@ class Category1Adapter(private val listener: CategoryClickListener) :
 
     class CategoryViewHolder(private val binding: ItemCategory1LayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(categoryModel: Category1Model) {
-            binding.setVariable(BR.categoryModel, categoryModel)
+        fun bind(category: Category) {
+            binding.category = category
             binding.executePendingBindings()
         }
     }
 
     interface CategoryClickListener {
-        fun onCategoryItemClick(categoryModel: Category1Model)
+        fun onCategoryItemClick(category: Category)
     }
 }

@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.app.kiranachoice.databinding.FragmentMyOffersBinding
-import com.app.kiranachoice.models.OfferModel
+import com.app.kiranachoice.data.OfferModel
 import com.app.kiranachoice.recyclerView_adapters.OffersAdapter
 
 class MyOffersFragment : Fragment(), OffersAdapter.OfferClickListener {

@@ -18,8 +18,8 @@
             type="Boolean" />
 
         <variable
-            name="mainViewModel"
-            type="com.app.kiranachoice.MainViewModel" />
+            name="viewModel"
+            type="com.app.kiranachoice.views.cart.CartViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -41,7 +41,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -59,7 +59,7 @@
                         android:id="@+id/price_details_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="8dp"
                         android:background="@android:color/white"
                         android:orientation="vertical"
                         android:visibility="@{isListEmpty == true ? View.GONE : View.VISIBLE }"
@@ -69,7 +69,7 @@
 
                         <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"
+                            android:layout_height="40dp"
                             android:layout_marginStart="16dp"
                             android:gravity="center_vertical"
                             android:text="@string/price_details"
@@ -84,7 +84,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingStart="16dp"
-                            android:paddingEnd="16dp">
+                            android:paddingTop="8dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="8dp">
 
                             <TextView
                                 android:id="@+id/text_product_item"
@@ -102,7 +104,7 @@
                                 android:layout_alignParentEnd="true"
                                 android:textColor="@android:color/black"
                                 android:textSize="16sp"
-                                app:priceFormatted="@{mainViewModel.productTotalAmount}"
+                                app:priceFormatted="@{viewModel.subTotalAmount}"
                                 tools:ignore="RelativeOverlap"
                                 tools:text="₹99" />
 
@@ -123,9 +125,9 @@
                                 android:layout_below="@id/text_product_item_price"
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginTop="8dp"
-                                android:textColor="@{mainViewModel.deliveryFee == ConstantsKt.DELIVERY_FREE ? @color/colorPrimaryDark : @color/black }"
+                                android:textColor="@{viewModel.deliveryFee == ConstantsKt.DELIVERY_FREE ? @color/colorPrimaryDark : @color/black }"
                                 android:textSize="16sp"
-                                app:priceFormatted="@{mainViewModel.deliveryFee}"
+                                app:priceFormatted="@{viewModel.deliveryFee}"
                                 tools:text="₹40" />
                         </RelativeLayout>
 
@@ -154,11 +156,12 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
-                                android:text="@{mainViewModel.couponDescription}"
+                                android:text="@{viewModel.couponDescription}"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
                                 android:textColor="@android:color/holo_red_dark"
                                 android:textStyle="bold"
                                 tools:text="1 kg. sugar free" />
+
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -194,7 +197,7 @@
                                 android:textColor="@android:color/black"
                                 android:textSize="18sp"
                                 android:textStyle="bold"
-                                app:priceFormatted="@{mainViewModel.totalAmount}"
+                                app:priceFormatted="@{viewModel.totalAmount}"
                                 tools:text="₹139" />
                         </RelativeLayout>
 
@@ -273,7 +276,7 @@
                     android:layout_toStartOf="@id/btnPlaceOrder"
                     android:textColor="@android:color/black"
                     android:textSize="25sp"
-                    app:priceFormatted="@{mainViewModel.totalAmount}"
+                    app:priceFormatted="@{viewModel.totalAmount}"
                     tools:text="₹73,990" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -286,7 +289,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_toStartOf="@id/btnPlaceOrder"
                     android:textColor="@color/colorPrimaryDark"
-                    app:text="@{@string/saved_amount(mainViewModel.savedAmount)}"
+                    app:text="@{@string/saved_amount(viewModel.savedAmount)}"
                     tools:text="Saved ₹990.0" />
 
                 <com.google.android.material.button.MaterialButton

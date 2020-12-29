@@ -4,9 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemTermBinding
-import com.app.kiranachoice.databinding.RecyclerViewOfferCardBinding
-import com.app.kiranachoice.models.OfferModel
-import com.app.kiranachoice.models.Terms
+import com.app.kiranachoice.data.Terms
 
 class TermsAdapter : RecyclerView.Adapter<TermsAdapter.TermsViewHolder>() {
 

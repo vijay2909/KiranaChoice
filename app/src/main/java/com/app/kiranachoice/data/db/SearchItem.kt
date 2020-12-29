@@ -1,8 +1,8 @@
-package com.app.kiranachoice.db
+package com.app.kiranachoice.data.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.app.kiranachoice.models.SearchWord
+import com.app.kiranachoice.data.SearchWord
 
 @Entity
 data class SearchItem(

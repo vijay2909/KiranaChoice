@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.app.kiranachoice.databinding.FragmentMyOrdersBinding
-import com.app.kiranachoice.models.BookItemOrderModel
+import com.app.kiranachoice.data.BookItemOrderModel
 import com.app.kiranachoice.recyclerView_adapters.MyOrdersAdapter
 
 class MyOrdersFragment : Fragment(), MyOrdersAdapter.OrderClickListener {

@@ -1,16 +1,13 @@
 package com.app.kiranachoice.views.products
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.kiranachoice.db.CartDao
-import com.app.kiranachoice.db.CartDatabase
-import com.app.kiranachoice.db.CartItem
-import com.app.kiranachoice.models.PackagingSizeModel
-import com.app.kiranachoice.models.ProductModel
-import com.app.kiranachoice.repositories.CartRepo
+import com.app.kiranachoice.data.PackagingSizeModel
+import com.app.kiranachoice.data.ProductModel
+import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.PRODUCT_REFERENCE
 import com.app.kiranachoice.utils.addToCart
 import com.google.firebase.auth.FirebaseAuth
@@ -19,31 +16,21 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class ProductsViewModel(application: Application) : ViewModel() {
+class ProductsViewModel(private val dataRepository: DataRepository) : ViewModel() {
     private var dbRef: FirebaseDatabase = FirebaseDatabase.getInstance()
     private var mAuth: FirebaseAuth? = null
     private var dbFire: FirebaseFirestore? = null
 
-    private val database: CartDatabase
-    private val cartDao: CartDao
-    private val cartRepo: CartRepo
 
-    val allCartItems: LiveData<List<CartItem>>
+    val allCartItems = dataRepository.allCartItems
 
     init {
         mAuth = FirebaseAuth.getInstance()
         dbFire = FirebaseFirestore.getInstance()
-
-        database = CartDatabase.getInstance(application)
-        cartDao = database.cartDao
-        cartRepo = CartRepo(cartDao)
-
-        allCartItems = cartRepo.allCartItems
     }
 
     private val fakeProductsList = ArrayList<ProductModel>()
@@ -51,8 +38,14 @@ class ProductsViewModel(application: Application) : ViewModel() {
     val productsList: LiveData<List<ProductModel>> get() = _productsList
 
 
-    fun getProductList(subCategoryKey: String) {
-        dbRef.getReference(PRODUCT_REFERENCE)
+    fun getProductList(subCategoryKey: String): LiveData<List<Product>> {
+        val result = MutableLiveData<List<Product>>()
+        viewModelScope.launch {
+            result.postValue(dataRepository.getProductsByCategoryKey(subCategoryKey))
+        }
+        return result
+
+        /*dbRef.getReference(PRODUCT_REFERENCE)
             .orderByChild("sub_category_key").equalTo(subCategoryKey)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -68,7 +61,7 @@ class ProductsViewModel(application: Application) : ViewModel() {
 
                 override fun onCancelled(error: DatabaseError) {}
 
-            })
+            })*/
 
     }
 
@@ -82,7 +75,7 @@ class ProductsViewModel(application: Application) : ViewModel() {
     val alreadyAddedMsg: LiveData<String> get() = _alreadyAddedMsg
 
     fun addItemToCart(
-        productModel: ProductModel,
+        product: Product,
         packagingSizeModel: PackagingSizeModel,
         quantity: String
     ): Boolean {
@@ -93,7 +86,7 @@ class ProductsViewModel(application: Application) : ViewModel() {
             var added = false
             runBlocking {
                 val result =
-                    async { addToCart(cartRepo, productModel, packagingSizeModel, quantity) }
+                    async { addToCart(dataRepository, product, packagingSizeModel, quantity) }
                 if (result.await()) {
                     _productAdded.postValue(true)
                     added = true
@@ -115,8 +108,7 @@ class ProductsViewModel(application: Application) : ViewModel() {
         _productAdded.value = false
     }
 
-    fun deleteCartItem(productModel: ProductModel) = viewModelScope.launch(Dispatchers.IO) {
-        cartRepo.delete(productModel.product_key.toString(), null)
-        cartRepo.allCartItems
+    fun deleteCartItem(product: Product) = viewModelScope.launch {
+        dataRepository.delete(product.product_key)
     }
 }

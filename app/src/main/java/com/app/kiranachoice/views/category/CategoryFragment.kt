@@ -11,7 +11,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.recyclerView_adapters.SubCategoryAdapter
 import com.app.kiranachoice.databinding.FragmentCategoryBinding
-import com.app.kiranachoice.models.SubCategoryModel
+import com.app.kiranachoice.data.SubCategoryModel
 
 
 class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener {
@@ -24,7 +24,7 @@ class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _bindingCategory = FragmentCategoryBinding.inflate(inflater, container, false)
         return binding.root
     }

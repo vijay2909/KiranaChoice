@@ -3,12 +3,12 @@ package com.app.kiranachoice.repositories
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.app.kiranachoice.db.CartDatabase
-import com.app.kiranachoice.db.asDomainModel
-import com.app.kiranachoice.models.ProductModel
-import com.app.kiranachoice.models.ProductsList
-import com.app.kiranachoice.models.SearchWord
-import com.app.kiranachoice.models.asDatabaseModel
+import com.app.kiranachoice.data.db.CartDatabase
+import com.app.kiranachoice.data.db.asDomainModel
+import com.app.kiranachoice.data.ProductModel
+import com.app.kiranachoice.data.ProductsList
+import com.app.kiranachoice.data.SearchWord
+import com.app.kiranachoice.data.asDatabaseModel
 import com.app.kiranachoice.utils.PRODUCT_REFERENCE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -37,7 +37,7 @@ class SearchRepository(private val database: CartDatabase) {
                     }
                     runBlocking {
                         withContext(Dispatchers.IO) {
-                            database.cartDao.insertProducts(ProductsList(productList).asDatabaseModel())
+                            database.databaseDao.insertSearchItems(ProductsList(productList).asDatabaseModel())
                         }
                     }
                 }
@@ -48,11 +48,11 @@ class SearchRepository(private val database: CartDatabase) {
     }
 
     fun getSearchWords(searchText: String): LiveData<List<SearchWord>> =
-        Transformations.map(database.cartDao.getSearchWords("%$searchText%")) {
+        Transformations.map(database.databaseDao.getSearchWords("%$searchText%")) {
             it.asDomainModel()
         }
 
-    val allSearchWords : LiveData<List<SearchWord>> = Transformations.map(database.cartDao.getAllSearchWords()){
+    val allSearchWords : LiveData<List<SearchWord>> = Transformations.map(database.databaseDao.getAllSearchWords()){
         it.asDomainModel()
     }
 

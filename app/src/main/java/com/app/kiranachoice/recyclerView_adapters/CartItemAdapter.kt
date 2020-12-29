@@ -2,19 +2,21 @@ package com.app.kiranachoice.recyclerView_adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.ItemCartProductBinding
-import com.app.kiranachoice.db.CartItem
+import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.listeners.CartListener
 import com.google.android.material.snackbar.Snackbar
 
-class CartItemAdapter(private val listener: CartListener) :
-    ListAdapter<CartItem, CartItemAdapter.CartItemViewHolder>(DiffUtilsCallBack()) {
+class CartItemAdapter(private val listener: CartListener) : ListAdapter<CartItem, CartItemAdapter.CartItemViewHolder>(DiffUtilsCallBack()) {
 
     class DiffUtilsCallBack : DiffUtil.ItemCallback<CartItem>() {
         override fun areItemsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.productKey == newItem.productKey
         }
 
         override fun areContentsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
@@ -28,20 +30,24 @@ class CartItemAdapter(private val listener: CartListener) :
 
 
     override fun onBindViewHolder(holder: CartItemViewHolder, position: Int) {
-        holder.bind(getItem(position), listener)
+        val cartItem = getItem(position)
+        holder.bind(cartItem, listener)
+
+        if (cartItem.quantity == "1"){
+            holder.binding.btnDecrease.setImageDrawable(ResourcesCompat.getDrawable(holder.itemView.context.resources, R.drawable.ic_delete, null))
+        } else{
+            holder.binding.btnDecrease.setImageDrawable(ResourcesCompat.getDrawable(holder.itemView.context.resources, R.drawable.ic_minus_box, null))
+        }
 
         holder.binding.btnDecrease.setOnClickListener {
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
             --quantity
             if (quantity <= 0) {
-                holder.binding.btnDecrease.isEnabled = false
+                listener.removeCartItem(cartItem)
             } else {
                 listener.onQuantityChange(
-                    getItem(position),
-                    null,
-                    getItem(position).productPrice.toInt(),
-                    getItem(position).productMRP.toInt()
-                        .minus(getItem(position).productPrice.toInt())
+                    cartItem = cartItem,
+                    quantity = quantity
                 )
                 holder.binding.userQuantity.text = quantity.toString()
             }
@@ -54,11 +60,8 @@ class CartItemAdapter(private val listener: CartListener) :
             if (quantity < 5) {
                 ++quantity
                 listener.onQuantityChange(
-                    getItem(position),
-                    getItem(position).productPrice.toInt(),
-                    null,
-                    getItem(position).productMRP.toInt()
-                        .minus(getItem(position).productPrice.toInt())
+                    cartItem = cartItem,
+                    quantity = quantity
                 )
                 holder.binding.userQuantity.text = quantity.toString()
             } else {
@@ -69,7 +72,6 @@ class CartItemAdapter(private val listener: CartListener) :
                 ).show()
             }
         }
-
     }
 
     class CartItemViewHolder(val binding: ItemCartProductBinding) :
@@ -94,14 +96,4 @@ class CartItemAdapter(private val listener: CartListener) :
         }
     }
 
-
-    interface CartListener {
-        fun removeCartItem(cartItem: CartItem)
-        fun onQuantityChange(
-            cartItem: CartItem,
-            amountPlus: Int? = null,
-            amountMinus: Int? = null,
-            mrpAndPriceDifference: Int
-        )
-    }
 }

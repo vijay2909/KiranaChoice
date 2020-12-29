@@ -16,8 +16,8 @@
             type="Boolean" />
 
         <variable
-            name="productModel"
-            type="com.app.kiranachoice.models.ProductModel" />
+            name="product"
+            type="com.app.kiranachoice.data.domain.Product" />
 
     </data>
 
@@ -58,7 +58,7 @@
                         android:contentDescription="@string/product_image"
                         android:scaleType="fitCenter"
                         tools:src="@drawable/loading_animation"
-                        app:imageUrl="@{productModel.productImageUrl}"
+                        app:imageUrl="@{product.productImageUrl}"
                         app:layout_constraintBottom_toTopOf="@+id/textView4"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +84,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="16dp"
-                        android:text="@{productModel.productTitle}"
+                        android:text="@{product.productTitle}"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/imageView"

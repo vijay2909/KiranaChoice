@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemSearchBinding
-import com.app.kiranachoice.models.SearchWord
+import com.app.kiranachoice.data.SearchWord
 
 class SearchResultsAdapter(private val onClickListener: OnClickListener) :
     ListAdapter<SearchWord, SearchResultsAdapter.SearchResultViewHolder>(DiffCallbacks()) {

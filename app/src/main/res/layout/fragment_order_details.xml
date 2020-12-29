@@ -9,7 +9,7 @@
 
         <variable
             name="bookItemOrderModel"
-            type="com.app.kiranachoice.models.BookItemOrderModel" />
+            type="com.app.kiranachoice.data.BookItemOrderModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

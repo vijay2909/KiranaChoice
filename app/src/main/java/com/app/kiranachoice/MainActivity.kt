@@ -2,10 +2,8 @@ package com.app.kiranachoice
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -28,19 +26,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private lateinit var navController: NavController
 
-    private lateinit var mAuth : FirebaseAuth
+    private lateinit var mAuth: FirebaseAuth
 
     private var totalCartItem = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        val mainViewModelFactory = MainViewModelFactory(this.application)
-        viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         mAuth = FirebaseAuth.getInstance()
 
@@ -53,7 +51,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             navHeader.user = user
         })
 
-        binding.textAppVersion.text = getString(R.string.app_version).plus(" ${BuildConfig.VERSION_NAME}")
+        binding.textAppVersion.text =
+            getString(R.string.app_version).plus(" ${BuildConfig.VERSION_NAME}")
 
         binding.navView.addHeaderView(navHeader.root)
 
@@ -85,12 +84,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         setupBottomNavMenu()
 
-        viewModel.allCartItems.observe(this, {
+        /*viewModel.allCartItems.observe(this, {
             it?.let {
                 totalCartItem = it.size
                 invalidateOptionsMenu()
             }
-        })
+        })*/
 
         binding.navView.setNavigationItemSelectedListener(this)
 
@@ -98,7 +97,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             when (destination.id) {
                 R.id.cartFragment, R.id.contactUsFragment,
                 R.id.myOrdersFragment, R.id.editProfileFragment,
-                R.id.addressFragment, R.id.paymentFragment, R.id.chatFragment ->{
+                R.id.addressFragment, R.id.paymentFragment, R.id.chatFragment -> {
                     binding.appBarMain.bottomNavView.visibility = View.GONE
                 }
                 else -> {
@@ -106,24 +105,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 }
             }
         }
-
-        /*Firebase.dynamicLinks
-            .getDynamicLink(intent)
-            .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                // Get deep link from result (may be null if no link is found)
-                var deepLink: Uri? = null
-                if (pendingDynamicLinkData != null) {
-                    deepLink = pendingDynamicLinkData.link
-                }
-
-                deepLink?.let {
-                    val productId = deepLink.toString().substringAfter("=")
-                    Log.i(TAG, "productId : $productId")
-
-                }
-
-            }
-            .addOnFailureListener(this) { e -> Log.w(TAG, "getDynamicLink:onFailure", e) }*/
     }
 
     private fun setupActionBar() {
@@ -139,7 +120,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    /*override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
 
         val menuItem = menu.findItem(R.id.cartFragment)
@@ -158,10 +139,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         actionView.setOnClickListener { onOptionsItemSelected(menuItem) }
 
         return true
-    }
+    }*/
 
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.cartFragment){
             if (mAuth.currentUser == null){
                 startActivity(Intent(this, AuthActivity::class.java))
@@ -169,8 +150,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 navController.navigate(R.id.cartFragment)
             }
         }
-        return /*item.onNavDestinationSelected(navController) || */super.onOptionsItemSelected(item)
-    }
+        return *//*item.onNavDestinationSelected(navController) || *//*super.onOptionsItemSelected(item)
+    }*/
 
 
     override fun onSupportNavigateUp(): Boolean {
@@ -178,10 +159,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.getUserDetails()
-    }
 
     private fun onShareClicked() {
 

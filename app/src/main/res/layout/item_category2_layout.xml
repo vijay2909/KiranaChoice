@@ -9,7 +9,7 @@
             type="com.app.kiranachoice.recyclerView_adapters.Category1Adapter.CategoryClickListener" />
         <variable
             name="model"
-            type="com.app.kiranachoice.models.Category1Model" />
+            type="com.app.kiranachoice.data.domain.Category" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -26,7 +26,7 @@
             android:layout_height="110dp"
             app:imageUrl="@{model.category_image_url}"
             android:contentDescription="@string/category_image"
-            tools:src="@drawable/placeholder_image"
+            tools:src="@drawable/ic_placeholder"
             android:scaleType="fitXY" />
     </com.google.android.material.card.MaterialCardView>
 </layout>

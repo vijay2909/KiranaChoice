@@ -11,7 +11,7 @@
 
         <variable
             name="model"
-            type="com.app.kiranachoice.models.BookItemOrderModel" />
+            type="com.app.kiranachoice.data.BookItemOrderModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

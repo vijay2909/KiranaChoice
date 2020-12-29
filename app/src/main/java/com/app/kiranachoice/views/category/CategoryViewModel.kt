@@ -3,8 +3,8 @@ package com.app.kiranachoice.views.category
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.app.kiranachoice.models.Category1Model
-import com.app.kiranachoice.models.SubCategoryModel
+import com.app.kiranachoice.data.SubCategoryModel
+import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.utils.CATEGORY_REFERENCE
 import com.app.kiranachoice.utils.SUB_CATEGORY_REFERENCE
 import com.google.firebase.database.DataSnapshot
@@ -24,9 +24,9 @@ class CategoryViewModel : ViewModel() {
     private var _subCategoryList = MutableLiveData<List<SubCategoryModel>>()
     val subCategoryList: LiveData<List<SubCategoryModel>> get() = _subCategoryList
 
-    fun getSubCategories(categoryModel: Category1Model) {
+    fun getSubCategories(category: Category) {
         dbRef?.getReference(CATEGORY_REFERENCE)
-            ?.child(categoryModel.key.toString())
+            ?.child(category.key)
             ?.child(SUB_CATEGORY_REFERENCE)
             ?.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {}

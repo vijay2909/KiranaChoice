@@ -4,10 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.ItemHorizontolProductItemBinding
-import com.app.kiranachoice.db.CartItem
 import com.app.kiranachoice.listeners.ProductClickListener
-import com.app.kiranachoice.models.ProductModel
 import com.google.android.material.snackbar.Snackbar
 
 class SimilarProductsAdapter(
@@ -18,7 +18,7 @@ class SimilarProductsAdapter(
 
     var addToCartClickedItemPosition = -1
 
-    var list = listOf<ProductModel>()
+    var list = listOf<Product>()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -35,12 +35,12 @@ class SimilarProductsAdapter(
     }
 
     override fun onBindViewHolder(holder: SimilarProductsViewHolder, position: Int) {
-        val productModel = list[position]
-        holder.bind(productModel)
+        val product = list[position]
+        holder.bind(product)
 
         if (!cartItem.isNullOrEmpty()){
             for (cartItem in cartItem) {
-                if (cartItem.productKey == productModel.product_key){
+                if (cartItem.productKey == product.product_key){
                     holder.binding.btnAddToCart.visibility = View.GONE
                     holder.binding.quantityLayout.visibility = View.VISIBLE
                     holder.binding.userQuantity.text = cartItem.quantity
@@ -74,14 +74,12 @@ class SimilarProductsAdapter(
         with(holder.binding) {
             btnAddToCart.setOnClickListener {
                 if (position != RecyclerView.NO_POSITION) {
-                    productModel.let { model ->
-                        listener.addItemToCart(
-                            model,
-                            spinnerPackaging.selectedItemPosition,
-                            userQuantity.text.toString(),
-                            position
-                        )
-                    }
+                    listener.addItemToCart(
+                        product,
+                        spinnerPackaging.selectedItemPosition,
+                        userQuantity.text.toString(),
+                        position
+                    )
                 }
             }
         }
@@ -101,8 +99,8 @@ class SimilarProductsAdapter(
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(productModel: ProductModel) {
-            binding.productModel = productModel
+        fun bind(product: Product) {
+            binding.product = product
             binding.executePendingBindings()
         }
     }

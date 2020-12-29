@@ -11,7 +11,7 @@
 
         <variable
             name="addressModel"
-            type="com.app.kiranachoice.models.AddressModel" />
+            type="com.app.kiranachoice.data.AddressModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

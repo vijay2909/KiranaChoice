@@ -1,14 +1,16 @@
-package com.app.kiranachoice.db
+package com.app.kiranachoice.data.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
-@Database(entities = [CartItem::class, SearchItem::class], version = 2, exportSchema = false)
+@Database(entities = [CartItem::class, SearchItem::class, BannerImage::class, CategoryItem::class, ProductItem::class], version = 2, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class CartDatabase : RoomDatabase() {
 
-    abstract val cartDao: CartDao
+    abstract val databaseDao: DatabaseDao
 
     companion object {
 

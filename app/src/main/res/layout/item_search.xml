@@ -7,7 +7,7 @@
 
         <variable
             name="searchWord"
-            type="com.app.kiranachoice.models.SearchWord" />
+            type="com.app.kiranachoice.data.SearchWord" />
     </data>
 
     <TextView

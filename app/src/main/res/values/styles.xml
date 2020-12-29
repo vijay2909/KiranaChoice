@@ -20,11 +20,14 @@
     <style name="Theme.KiranaChoice.NoActionBar" >
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="Theme.KiranaChoice.FullScreen" >
         <item name="android:windowFullscreen">true</item>
     </style>
+
 
     <style name="Theme.KiranaChoice.NoActionBar.CheckOutActivity">
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>

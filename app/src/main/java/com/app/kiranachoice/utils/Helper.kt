@@ -3,10 +3,10 @@ package com.app.kiranachoice.utils
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
-import com.app.kiranachoice.db.CartItem
-import com.app.kiranachoice.models.PackagingSizeModel
-import com.app.kiranachoice.models.ProductModel
-import com.app.kiranachoice.repositories.CartRepo
+import com.app.kiranachoice.data.PackagingSizeModel
+import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.repositories.DataRepository
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.text.DecimalFormat
@@ -18,31 +18,33 @@ fun String.toPriceAmount(): String {
     return dec.format(this.toDouble())
 }
 
+
 suspend fun addToCart(
-    cartRepo: CartRepo,
-    productModel: ProductModel,
+    dataRepository: DataRepository,
+    product: Product,
     packagingSizeModel: PackagingSizeModel,
     quantity: String
 ): Boolean {
-    val isAlreadyAdded = cartRepo.isAlreadyAdded(
-        productModel.product_key.toString(),
+    val isAlreadyAdded = dataRepository.isAlreadyAdded(
+        product.product_key,
         packagingSizeModel.packagingSize.toString()
     )
     if (!isAlreadyAdded) {
         val cartItem = CartItem(
-            productModel.product_key.toString(),
-            productModel.product_sku.toString(),
-            productModel.productTitle.toString(),
-            productModel.productImageUrl.toString(),
+            product.product_key,
+            product.product_sku,
+            product.productTitle,
+            product.productImageUrl,
             packagingSizeModel.mrp.toString(),
             packagingSizeModel.price.toString(),
             packagingSizeModel.packagingSize.toString(),
             quantity
         )
-        cartRepo.insert(cartItem)
+        dataRepository.insert(cartItem)
     }
     return !isAlreadyAdded
 }
+
 
 fun TextInputEditText.isNotNullOrEmpty(errorString: String): Boolean {
     val textInputLayout = this.parent.parent as TextInputLayout

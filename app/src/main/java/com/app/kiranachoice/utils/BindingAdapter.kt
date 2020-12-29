@@ -1,7 +1,6 @@
 package com.app.kiranachoice.utils
 
 import android.graphics.Paint
-import android.media.Image
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
@@ -10,11 +9,11 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.R
-import com.app.kiranachoice.models.AddressModel
-import com.app.kiranachoice.models.ProductModel
-import com.app.kiranachoice.models.SearchWord
+import com.app.kiranachoice.data.AddressModel
+import com.app.kiranachoice.data.ProductModel
+import com.app.kiranachoice.data.SearchWord
+import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.recyclerView_adapters.SearchResultsAdapter
-import com.app.kiranachoice.recyclerView_adapters.SimilarProductsAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.textview.MaterialTextView
@@ -65,11 +64,11 @@ fun setProductMRP(view: TextView, text: String?) {
 }
 
 @BindingAdapter("sizes")
-fun setSizes(spinner: Spinner, productModel: ProductModel) {
-    val packagingSize = arrayOfNulls<String>(productModel.productPackagingSize.size)
+fun setSizes(spinner: Spinner, product: Product) {
+    val packagingSize = arrayOfNulls<String>(product.productPackagingSize.size)
 
-    for (i in productModel.productPackagingSize.indices) {
-        packagingSize[i] = productModel.productPackagingSize[i].packagingSize.toString()
+    for (i in product.productPackagingSize.indices) {
+        packagingSize[i] = product.productPackagingSize[i].packagingSize.toString()
     }
 
     val arrayAdapter = ArrayAdapter(

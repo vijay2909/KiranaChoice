@@ -10,8 +10,8 @@
             type="com.app.kiranachoice.recyclerView_adapters.Category1Adapter.CategoryClickListener" />
 
         <variable
-            name="categoryModel"
-            type="com.app.kiranachoice.models.Category1Model" />
+            name="category"
+            type="com.app.kiranachoice.data.domain.Category" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -23,7 +23,7 @@
         app:strokeWidth="1dp"
         app:rippleColor="?attr/colorPrimary"
         app:strokeColor="@color/stroke_color"
-        android:onClick="@{() -> categoryInterface.onCategoryItemClick(categoryModel)}"
+        android:onClick="@{() -> categoryInterface.onCategoryItemClick(category)}"
         android:translationZ="4dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp">
@@ -42,18 +42,18 @@
                 android:layout_marginEnd="8dp"
                 android:contentDescription="@string/category_image"
                 android:scaleType="fitCenter"
-                app:imageUrl="@{categoryModel.category_image_url}"
+                app:imageUrl="@{category.category_image_url}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/placeholder_image" />
+                tools:src="@drawable/ic_placeholder" />
 
             <TextView
                 style="@style/TextAppearance.AppCompat.Body2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@{categoryModel.category_name}"
+                android:text="@{category.category_name}"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/category_image"

@@ -31,6 +31,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_homeFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
     </fragment>
 
     <fragment
@@ -137,7 +140,7 @@
         tools:layout="@layout/fragment_category">
         <argument
             android:name="categoryModel"
-            app:argType="com.app.kiranachoice.models.Category1Model" />
+            app:argType="com.app.kiranachoice.data.domain.Category" />
         <argument
             android:name="title"
             app:argType="string" />
@@ -192,21 +195,17 @@
         android:label="My Cart"
         tools:layout="@layout/fragment_cart">
         <action
-            android:id="@+id/action_cartFragment_self"
-            app:destination="@id/cartFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/cartFragment"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_cartFragment_to_addressFragment"
             app:destination="@id/addressFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_cartFragment_self"
+            app:destination="@id/cartFragment"
+            app:popUpTo="@id/cartFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
@@ -217,8 +216,8 @@
             android:name="title"
             app:argType="string" />
         <argument
-            android:name="productModel"
-            app:argType="com.app.kiranachoice.models.ProductModel"
+            android:name="product"
+            app:argType="com.app.kiranachoice.data.domain.Product"
             app:nullable="true"
             android:defaultValue="@null" />
         <action
@@ -294,7 +293,7 @@
         tools:layout="@layout/fragment_order_details">
         <argument
             android:name="bookItemOrderModel"
-            app:argType="com.app.kiranachoice.models.BookItemOrderModel" />
+            app:argType="com.app.kiranachoice.data.BookItemOrderModel" />
     </fragment>
     <fragment
         android:id="@+id/offerDetailFragment"
@@ -303,6 +302,6 @@
         tools:layout="@layout/fragment_offer_detail" >
         <argument
             android:name="offerModel"
-            app:argType="com.app.kiranachoice.models.OfferModel" />
+            app:argType="com.app.kiranachoice.data.OfferModel" />
     </fragment>
 </navigation>

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="terms"
-            type="com.app.kiranachoice.models.Terms" />
+            type="com.app.kiranachoice.data.Terms" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

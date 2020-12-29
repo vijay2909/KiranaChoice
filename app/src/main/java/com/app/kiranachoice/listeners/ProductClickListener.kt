@@ -1,12 +1,13 @@
 package com.app.kiranachoice.listeners
 
-import com.app.kiranachoice.models.PackagingSizeModel
-import com.app.kiranachoice.models.ProductModel
+import com.app.kiranachoice.data.domain.Product
 
 interface ProductClickListener {
-    fun addItemToCart(productModel: ProductModel,
+    fun addItemToCart(product: Product,
                       packagingSize: Int,
                       quantity: String,
                       position: Int)
-    fun onItemClick(productModel: ProductModel)
+    fun onItemClick(product: Product)
+    fun onRemoveProduct(productKey: String)
+    fun onQuantityChanged(productKey: String, quantity: String)
 }
