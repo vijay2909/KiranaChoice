@@ -41,6 +41,8 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
 
     private lateinit var dialog: AlertDialog
 
+    private var couponCode : String? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -106,7 +108,7 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
 
 
         binding.btnPlaceOrder.setOnClickListener {
-//            view.findNavController().navigate(CartFragmentDirections.actionCartFragmentToAddressFragment(viewModel.totalAmount.value.toString(), viewModel.couponCode, viewModel.couponDescription.value))
+            view.findNavController().navigate(CartFragmentDirections.actionCartFragmentToAddressFragment(viewModel.totalAmount.value.toString(), couponCode, viewModel.couponDescription.value))
         }
 
         val couponsAdapter = CouponsAdapter(this)
@@ -180,9 +182,9 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
 
     override fun onCouponApplied(couponModel: CouponModel, position: Int) {
         couponPosition = position
+        couponCode = couponModel.couponCode
         if (couponModel.isActive) {
-            if (couponModel.upToPrice.toString()
-                    .toDouble() <= viewModel.totalAmount.value.toString().toDouble()
+            if (couponModel.upToPrice.toString().toDouble() <= viewModel.totalAmount.value.toString().toDouble()
             ) {
                 viewModel.couponApplied(couponModel)
             } else {

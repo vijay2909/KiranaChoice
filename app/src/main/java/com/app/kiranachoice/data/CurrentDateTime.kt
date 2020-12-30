@@ -4,48 +4,30 @@ import com.google.gson.annotations.SerializedName
 
 data class CurrentDateTime(
 
-	@field:SerializedName("unixtime")
-	val unixtime: Long? = null,
+	@field:SerializedName("message")
+	val message: String,
 
-	@field:SerializedName("utc_offset")
-	val utcOffset: String? = null,
+	@field:SerializedName("zones")
+	val zones: List<ZonesItem>,
 
-	@field:SerializedName("dst")
-	val dst: Boolean? = null,
+	@field:SerializedName("status")
+	val status: String
+)
 
-	@field:SerializedName("day_of_year")
-	val dayOfYear: Int? = null,
+data class ZonesItem(
 
-	@field:SerializedName("timezone")
-	val timezone: String? = null,
+	@field:SerializedName("countryCode")
+	val countryCode: String,
 
-	@field:SerializedName("abbreviation")
-	val abbreviation: String? = null,
+	@field:SerializedName("gmtOffset")
+	val gmtOffset: Int,
 
-	@field:SerializedName("dst_offset")
-	val dstOffset: Int? = null,
+	@field:SerializedName("countryName")
+	val countryName: String,
 
-	@field:SerializedName("utc_datetime")
-	val utcDatetime: String? = null,
+	@field:SerializedName("zoneName")
+	val zoneName: String,
 
-	@field:SerializedName("datetime")
-	val datetime: String? = null,
-
-	@field:SerializedName("dst_until")
-	val dstUntil: Any? = null,
-
-	@field:SerializedName("client_ip")
-	val clientIp: String? = null,
-
-	@field:SerializedName("dst_from")
-	val dstFrom: Any? = null,
-
-	@field:SerializedName("week_number")
-	val weekNumber: Int? = null,
-
-	@field:SerializedName("day_of_week")
-	val dayOfWeek: Int? = null,
-
-	@field:SerializedName("raw_offset")
-	val rawOffset: Int? = null
+	@field:SerializedName("timestamp")
+	val timestamp: Int
 )

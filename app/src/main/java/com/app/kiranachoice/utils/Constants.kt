@@ -37,7 +37,6 @@ const val AMOUNT_WITH_SHIPPING_CHARGE = "ORDER_TOTAL"
 
 const val SEQUENCE = "Sequence Order Id"
 
-const val ORDER_ID_FORMAT = "KC1000"
 
 const val ADMIN_REFERENCE = "Admin"
 

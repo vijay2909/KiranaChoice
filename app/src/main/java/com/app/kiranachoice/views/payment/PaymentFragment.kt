@@ -1,11 +1,9 @@
 package com.app.kiranachoice.views.payment
 
-import android.app.Application
 import android.app.NotificationManager
 import android.content.Context.NOTIFICATION_SERVICE
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.media.RingtoneManager
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -24,8 +22,10 @@ import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.App
 import com.app.kiranachoice.MainActivity
 import com.app.kiranachoice.R
+import com.app.kiranachoice.data.db.CartDatabase
 import com.app.kiranachoice.databinding.DialogBookingConfirmedBinding
 import com.app.kiranachoice.databinding.FragmentPaymentBinding
+import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.DELIVERY_FREE
 import com.app.kiranachoice.utils.Mailer
 import com.app.kiranachoice.utils.getDateTimeFromUnix
@@ -39,18 +39,22 @@ class PaymentFragment : Fragment() {
     private val binding get() = bindingPayment!!
     private lateinit var viewModel: PaymentViewModel
 
+    private lateinit var dataRepository: DataRepository
 
-    private lateinit var manager: NotificationManager
+    private lateinit var notificationManager: NotificationManager
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val factory = PaymentViewModelFactory(requireActivity().application)
+    ): View {
+        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
+        dataRepository = DataRepository(localDatabase.databaseDao)
+        val factory = PaymentViewModelFactory(dataRepository)
         viewModel = ViewModelProvider(this, factory).get(PaymentViewModel::class.java)
 
         bindingPayment = FragmentPaymentBinding.inflate(inflater, container, false)
 
-        manager = requireActivity().getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = requireActivity().getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         return binding.root
     }
@@ -59,7 +63,7 @@ class PaymentFragment : Fragment() {
     private val args: PaymentFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.lifecycleOwner = viewLifecycleOwner
+        binding.lifecycleOwner = this
         binding.paymentViewModel = viewModel
         binding.totalAmount = args.totalAmount
         binding.couponDescription = args.couponDescription
@@ -100,8 +104,7 @@ class PaymentFragment : Fragment() {
         val amountWithDeliveryCharge = if (viewModel.deliveryCharge.value == DELIVERY_FREE) {
             viewModel.totalProductsAmount.value
         } else {
-            val amount = viewModel.totalProductsAmount.value.toString().filter { it.isDigit() }
-                .removeSuffix("00")
+            val amount = viewModel.totalProductsAmount.value.toString().filter { it.isDigit() }.removeSuffix("00")
             amount.toInt().plus(viewModel.deliveryCharge.value?.toInt()!!)
                 .toString().toPriceAmount()
         }
@@ -110,9 +113,9 @@ class PaymentFragment : Fragment() {
 
         Mailer.sendMail(
             requireContext(),
-            viewModel.user?.email.toString(),
-            viewModel.user?.name.toString(),
-            viewModel.orderId.toString(),
+            viewModel.user.value?.email.toString(),
+            viewModel.user.value?.name.toString(),
+            dataRepository.orderId.toString(),
             orderPlacedDate,
             viewModel.totalProductsAmount.value.toString(),
             getString(R.string.rupee).plus(viewModel.deliveryCharge.value.toString()),
@@ -149,14 +152,13 @@ class PaymentFragment : Fragment() {
             .setComponentName(MainActivity::class.java)
             .setGraph(R.navigation.mobile_navigation)
             .setDestination(R.id.myOrdersFragment)
-//            .setArguments(bundle)
             .createPendingIntent()
 
 
         val builder = NotificationCompat.Builder(requireContext(), App.CHANNEL_ORDER_BOOKED_ID)
         builder.setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(getString(R.string.order_booked))
-            .setContentText("Thank you for order ${viewModel.user?.name?.substringBefore(" ")}")
+            .setContentText("Thank you for order ${viewModel.user.value?.name?.substringBefore(" ")}")
             .setContentIntent(pendingIntent)
             .setColor(resources.getColor(R.color.colorPrimaryDark, null))
             .setVibrate(longArrayOf(1000,1000))
@@ -169,7 +171,7 @@ class PaymentFragment : Fragment() {
             .priority = NotificationCompat.PRIORITY_HIGH
 
 
-        manager.notify(1, builder.build())
+        notificationManager.notify(1, builder.build())
     }
 
 
@@ -250,8 +252,11 @@ class PaymentFragment : Fragment() {
 }
 
 @Suppress("UNCHECKED_CAST")
-class PaymentViewModelFactory(val application: Application) : ViewModelProvider.Factory {
+class PaymentViewModelFactory(private val dataRepository: DataRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return PaymentViewModel(application) as T
+        if (modelClass.isAssignableFrom(PaymentViewModel::class.java)){
+            return PaymentViewModel(dataRepository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel")
     }
 }

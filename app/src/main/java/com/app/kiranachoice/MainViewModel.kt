@@ -5,8 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.kiranachoice.data.User
-import com.app.kiranachoice.repositories.UserRepository
+import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.USER_IMAGE_REFERENCE
 import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth
@@ -17,15 +16,14 @@ import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val dataRepository: DataRepository) : ViewModel() {
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val dbFire: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var storage: FirebaseStorage? = null
     private var dbRef: FirebaseDatabase? = null
 
-    private val userRepository = UserRepository(mAuth, dbFire)
 
-    val user: LiveData<User> = userRepository.user
+    val user = dataRepository.user
 
     var userName: String? = null
     var email: String? = null
@@ -42,7 +40,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun getUserDetails() = viewModelScope.launch {
-        userRepository.getUserDetails()
+        dataRepository.getUserDetails()
     }
 
     private var _currentProgress = MutableLiveData<Int>()

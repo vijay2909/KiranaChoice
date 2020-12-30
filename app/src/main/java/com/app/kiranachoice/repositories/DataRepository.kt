@@ -1,5 +1,6 @@
 package com.app.kiranachoice.repositories
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -28,6 +29,23 @@ class DataRepository(private val databaseDao: DatabaseDao) {
     private val dbRef = FirebaseDatabase.getInstance()
     private val mAuth = FirebaseAuth.getInstance()
     private val dbFire = FirebaseFirestore.getInstance().collection(USER_REFERENCE)
+
+    private var _user = MutableLiveData<User>()
+    val user: LiveData<User> get() = _user
+
+    suspend fun getUserDetails() {
+        withContext(Dispatchers.IO) {
+            mAuth.currentUser?.let { user ->
+                dbFire.document(user.uid).get()
+                    .addOnSuccessListener { snapShot ->
+                        if (snapShot.exists()) {
+                            _user.postValue(snapShot.toObject(User::class.java))
+                        }
+                    }
+            }
+        }
+    }
+
 
     val allCartItems = databaseDao.getAllCartItem()
 
@@ -110,18 +128,18 @@ class DataRepository(private val databaseDao: DatabaseDao) {
                             couponModel.couponCode,
                             System.currentTimeMillis()
                         )
+
                         dbFire.document(mAuth.currentUser!!.uid)
                             .collection(APPLIED_COUPON).document(couponKey)
                             .set(appliedCouponModel)
-
                     }
                 }
         }
     }
 
 
-    suspend fun removeCoupon(){
-        withContext(Dispatchers.IO){
+    suspend fun removeCoupon() {
+        withContext(Dispatchers.IO) {
             couponDiscount.value?.let {
                 dbFire.document(mAuth.currentUser!!.uid)
                     .collection(APPLIED_COUPON).document(it.key.toString())
@@ -148,7 +166,7 @@ class DataRepository(private val databaseDao: DatabaseDao) {
                             }
                     }
                     runBlocking {
-                        withContext(Dispatchers.IO){
+                        withContext(Dispatchers.IO) {
                             databaseDao.insertBanners(bannersList.asDatabaseModel())
                         }
                     }
@@ -160,7 +178,7 @@ class DataRepository(private val databaseDao: DatabaseDao) {
             })
     }
 
-    val categories : LiveData<List<Category>> = Transformations.map(databaseDao.getCategories()){
+    val categories: LiveData<List<Category>> = Transformations.map(databaseDao.getCategories()) {
         it.asDomainModel()
     }
 
@@ -174,7 +192,7 @@ class DataRepository(private val databaseDao: DatabaseDao) {
                     categoryModel?.let { model -> categoryList.add(model) }
                 }
                 runBlocking {
-                    withContext(Dispatchers.IO){
+                    withContext(Dispatchers.IO) {
                         databaseDao.insertCategories(categoryList.asDatabaseModel())
                     }
                 }
@@ -187,9 +205,10 @@ class DataRepository(private val databaseDao: DatabaseDao) {
     }
 
 
-    val bestOfferProducts : LiveData<List<Product>> = Transformations.map(databaseDao.getBestOfferProducts()){
-        it.asDomainModel()
-    }
+    val bestOfferProducts: LiveData<List<Product>> =
+        Transformations.map(databaseDao.getBestOfferProducts()) {
+            it.asDomainModel()
+        }
 
     fun refreshBestOfferProduct() {
         dbRef.getReference(PRODUCT_REFERENCE)
@@ -202,7 +221,7 @@ class DataRepository(private val databaseDao: DatabaseDao) {
                             ?.let { model -> bestOfferProductList.add(model) }
                     }
                     runBlocking {
-                        withContext(Dispatchers.IO){
+                        withContext(Dispatchers.IO) {
                             databaseDao.insertProducts(bestOfferProductList.asProductDatabaseModel())
                         }
                     }
@@ -214,9 +233,10 @@ class DataRepository(private val databaseDao: DatabaseDao) {
             })
     }
 
-    val bestSellingProducts : LiveData<List<Product>> = Transformations.map(databaseDao.getBestSellingProducts()){
-        it.asDomainModel()
-    }
+    val bestSellingProducts: LiveData<List<Product>> =
+        Transformations.map(databaseDao.getBestSellingProducts()) {
+            it.asDomainModel()
+        }
 
     fun refreshBestSellingProduct() {
         dbRef.getReference(PRODUCT_REFERENCE)
@@ -229,7 +249,7 @@ class DataRepository(private val databaseDao: DatabaseDao) {
                             ?.let { model -> bestSellingProductList.add(model) }
                     }
                     runBlocking {
-                        withContext(Dispatchers.IO){
+                        withContext(Dispatchers.IO) {
                             databaseDao.insertProducts(bestSellingProductList.asProductDatabaseModel())
                         }
                     }
@@ -242,16 +262,40 @@ class DataRepository(private val databaseDao: DatabaseDao) {
     }
 
 
-    suspend fun getProduct(productKey: String) = withContext(Dispatchers.IO){
+    suspend fun getProduct(productKey: String) = withContext(Dispatchers.IO) {
         listOf(databaseDao.getProduct(productKey)).asDomainModel()
     }
 
-    suspend fun getProductsByCategoryName(subCategoryName: String) = withContext(Dispatchers.IO){
+    suspend fun getProductsByCategoryName(subCategoryName: String) = withContext(Dispatchers.IO) {
         databaseDao.getProductBySubCategoryName(subCategoryName).asDomainModel()
     }
 
-    suspend fun getProductsByCategoryKey(subCategoryKey: String) = withContext(Dispatchers.IO){
+    suspend fun getProductsByCategoryKey(subCategoryKey: String) = withContext(Dispatchers.IO) {
         databaseDao.getProductBySubCategoryKey(subCategoryKey).asDomainModel()
+    }
+
+
+    var orderId: String? = null
+    var sequence: Int? = null
+
+    suspend fun generateOrderId() {
+        withContext(Dispatchers.IO) {
+            dbRef.getReference(SEQUENCE)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        Log.d(TAG, "generateOrderId sequence: ${snapshot.value} ")
+                        sequence = snapshot.children.elementAt(0).value.toString().toInt().plus(1)
+                        orderId = "KC" + (1000 + sequence!!)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {}
+
+                })
+        }
+    }
+
+    companion object {
+        private const val TAG = "DataRepository"
     }
 
 }

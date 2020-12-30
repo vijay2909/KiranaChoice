@@ -6,13 +6,16 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
+import com.app.kiranachoice.data.db.CartDatabase
 import com.app.kiranachoice.databinding.ActivityMainBinding
 import com.app.kiranachoice.databinding.NavHeaderMainBinding
+import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -28,8 +31,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private lateinit var mAuth: FirebaseAuth
 
-    private var totalCartItem = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -38,7 +39,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        val localDatabase = CartDatabase.getInstance(applicationContext)
+        val mainViewModelFactory = MainViewModelFactory(DataRepository(localDatabase.databaseDao))
+        viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
 
         mAuth = FirebaseAuth.getInstance()
 
@@ -188,4 +191,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return true
     }
 
+}
+
+
+class MainViewModelFactory(private val dataRepository: DataRepository) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            return MainViewModel(dataRepository = dataRepository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel")
+    }
 }

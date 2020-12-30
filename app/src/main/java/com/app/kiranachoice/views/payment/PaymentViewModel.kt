@@ -1,20 +1,17 @@
 package com.app.kiranachoice.views.payment
 
-import android.app.Application
 import androidx.lifecycle.*
-import com.app.kiranachoice.data.db.CartDatabase
+import com.app.kiranachoice.data.AdminOrder
+import com.app.kiranachoice.data.BookItemOrderModel
+import com.app.kiranachoice.data.CurrentDateTime
+import com.app.kiranachoice.data.Product
 import com.app.kiranachoice.data.db.CartItem
-import com.app.kiranachoice.data.*
 import com.app.kiranachoice.network.DateTimeApi
-import com.app.kiranachoice.network.RetrofitClient
 import com.app.kiranachoice.network.SendNotificationAPI
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.*
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
@@ -26,57 +23,27 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class PaymentViewModel(val application: Application) : ViewModel() {
+class PaymentViewModel(private val dataRepository: DataRepository) : ViewModel() {
 
-    private val dbFire: FirebaseFirestore
-    private val mAuth: FirebaseAuth
-    private val dbRef: FirebaseDatabase
+    private val dbFire: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val dbRef: FirebaseDatabase = FirebaseDatabase.getInstance()
 
-    private val dataBase = CartDatabase.getInstance(application)
-    private val repository = DataRepository(dataBase.databaseDao)
-
-    val allProducts: LiveData<List<CartItem>>
+    val allProducts = dataRepository.allCartItems
 
     private var _orderPlacedDate = MutableLiveData<Long>()
     val orderPlacedDate : LiveData<Long> get() = _orderPlacedDate
 
-    private var sequence: Int? = null
+    val user = dataRepository.user
 
     init {
-        allProducts = repository.allCartItems
-        dbFire = FirebaseFirestore.getInstance()
-        dbRef = FirebaseDatabase.getInstance()
-        mAuth = FirebaseAuth.getInstance()
-        getUserInfo()
-        generateOrderId()
+        viewModelScope.launch {
+            dataRepository.getUserDetails()
+            dataRepository.generateOrderId()
+        }
         getTime()
     }
 
-    var orderId: String? = null
-
-    private fun generateOrderId() {
-        dbRef.getReference(SEQUENCE)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    sequence = snapshot.children.elementAt(0).value.toString().toInt().plus(1)
-                    orderId = ORDER_ID_FORMAT + sequence
-                }
-
-                override fun onCancelled(error: DatabaseError) {}
-
-            })
-    }
-
-    var user: User? = null
-
-    private fun getUserInfo() {
-        dbFire.collection(USER_REFERENCE)
-            .document(mAuth.currentUser!!.uid)
-            .get()
-            .addOnSuccessListener {
-                user = it.toObject(User::class.java)
-            }
-    }
 
     var cartItems: List<CartItem>? = null
 
@@ -107,6 +74,7 @@ class PaymentViewModel(val application: Application) : ViewModel() {
             DELIVERY_CHARGE.toString()
         }
     }
+
 
     private var _orderSaved = MutableLiveData<Boolean>()
     val orderSaved: LiveData<Boolean> get() = _orderSaved
@@ -139,7 +107,7 @@ class PaymentViewModel(val application: Application) : ViewModel() {
                 couponCode = couponCode,
                 couponApplied = couponCode != null,
                 orderPlacedDate = orderPlacedDate.value,
-                orderId = orderId
+                orderId = dataRepository.orderId
             )
 
             dbFire.collection(USER_REFERENCE)
@@ -158,12 +126,13 @@ class PaymentViewModel(val application: Application) : ViewModel() {
 
     private fun updateOrderIdSequence() {
         dbRef.getReference(SEQUENCE)
-            .updateChildren(mapOf(SEQUENCE to sequence))
+            .updateChildren(mapOf(SEQUENCE to dataRepository.sequence))
     }
+
 
     private fun saveOrderForAdmin() {
         val key = UUID.randomUUID().toString()
-        val adminOrder = AdminOrder(key, mAuth.currentUser!!.uid, orderId, sequence)
+        val adminOrder = AdminOrder(key, mAuth.currentUser!!.uid, dataRepository.orderId, dataRepository.sequence)
         dbFire.collection(ADMIN_REFERENCE)
             .document(key)
             .set(adminOrder)
@@ -198,46 +167,36 @@ class PaymentViewModel(val application: Application) : ViewModel() {
         return payload
     }
 
+
     private fun getTime() {
-        val retrofit = RetrofitClient.getRetrofitClient()
 
-        val api: DateTimeApi = retrofit.create(DateTimeApi::class.java)
-
-        api.getTime().enqueue(object : Callback<CurrentDateTime> {
+        DateTimeApi.getInstance().getTime("3K01ECC74C9F", "json", "IN").enqueue(object : Callback<CurrentDateTime> {
             override fun onResponse(
                 call: Call<CurrentDateTime>,
                 response: Response<CurrentDateTime>
             ) {
-                val currentDateTime = response.body()
-//                val unix = currentDateTime?.unixtime?.let { currentDateTime.rawOffset?.plus(it) }
-                val unix = currentDateTime?.unixtime
-                getDate(unix)
+                if (response.isSuccessful && response.body() != null) {
+
+                    val timestamp = response.body()!!.zones[0].timestamp
+                    _orderPlacedDate.value = (timestamp * 1_000).toLong()
+                }
             }
 
-            override fun onFailure(
-                call: Call<CurrentDateTime>,
-                t: Throwable
-            ) {
-                t.printStackTrace()
+            override fun onFailure(call: Call<CurrentDateTime>, t: Throwable) {
             }
         })
     }
 
 
-    fun getDate(unix: Long?) {
-        if (unix != null) {
-            _orderPlacedDate.value = unix * 1000
-        }
-    }
-
     fun orderSaveFinished() {
         _orderSaved.value = false
     }
 
+
     fun removeCartItems() {
         viewModelScope.launch(Dispatchers.IO) {
             cartItems?.forEach { cartItem ->
-                repository.delete(cartItem.productKey)
+                dataRepository.delete(cartItem.productKey)
             }
         }
     }
