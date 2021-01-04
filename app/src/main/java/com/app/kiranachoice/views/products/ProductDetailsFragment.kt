@@ -36,9 +36,11 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
 
     private lateinit var similarProductsAdapter: SimilarProductsAdapter
 
+    private val args: ProductDetailsFragmentArgs by navArgs()
+
     private val viewModel: ProductDetailsViewModel by lazy {
         val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
-        val factory = ProductViewModelFactory(DataRepository(localDatabase.databaseDao))
+        val factory = ProductViewModelFactory(args.title, DataRepository(localDatabase.databaseDao))
         ViewModelProvider(this, factory).get(ProductDetailsViewModel::class.java)
     }
 
@@ -51,7 +53,6 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
     }
 
 
-    private val args: ProductDetailsFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -62,7 +63,7 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
 
         args.product?.let {
             binding.product = it
-            packagingSizeAdapter.list = it.productPackagingSize
+            packagingSizeAdapter.list = it.packagingSize
 
             if (!it.aboutTheProduct.isNullOrEmpty()) {
                 binding.isListEmpty = false
@@ -77,11 +78,9 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
             }
         }
 
-
-        viewModel.cartItems.observe(viewLifecycleOwner, {
+        viewModel.getProducts.observe(viewLifecycleOwner, {
             binding.recyclerViewSimilarProducts.apply {
-                similarProductsAdapter = SimilarProductsAdapter(it,
-                    args.product?.product_key.toString(),this@ProductDetailsFragment)
+                similarProductsAdapter = SimilarProductsAdapter(it.second, args.product?.key,it.first,this@ProductDetailsFragment)
                 adapter = similarProductsAdapter
                 setHasFixedSize(true)
             }
@@ -89,7 +88,7 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
 
 
         binding.shareButton.setOnClickListener {
-            val productId = args.product?.product_key
+            val productId = args.product?.id
 
             Firebase.dynamicLinks.shortLinkAsync {
                 link = Uri.parse("https://www.kiranachoice.com/refer.php?productId=$productId")
@@ -115,17 +114,6 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
     }
 
 
-    override fun onStart() {
-        super.onStart()
-        args.product?.let {
-            viewModel.getProductList(it.sub_category_name).observe(viewLifecycleOwner, { products ->
-                if (this::similarProductsAdapter.isInitialized){
-                    similarProductsAdapter.list = products
-                }
-            })
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _bindingProductDetails = null
@@ -138,10 +126,10 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
         position: Int
     ) {
         if (mAuth.currentUser != null) {
-            val packagingSizeModel = if (product.productPackagingSize.size > 1) {
-                product.productPackagingSize[packagingSize]
+            val packagingSizeModel = if (product.packagingSize.size > 1) {
+                product.packagingSize[packagingSize]
             } else {
-                product.productPackagingSize[0]
+                product.packagingSize[0]
             }
             if (viewModel.addItemToCart(product, packagingSizeModel, quantity)) {
                 similarProductsAdapter.addToCartClickedItemPosition = position
@@ -156,7 +144,7 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
     override fun onItemClick(product: Product) {
         navController.navigate(
             ProductDetailsFragmentDirections.actionProductDetailsFragmentSelf(
-                product.productTitle,
+                product.name,
                 product
             )
         )

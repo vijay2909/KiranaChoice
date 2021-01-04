@@ -9,9 +9,12 @@ const val DEVICE_TOKEN = "Device Token"
 const val HOME_TOP_BANNER = "Home Top Banner"
 const val CATEGORY_REFERENCE = "Category"
 const val OFFER_REFERENCE = "Offer"
-const val SECOND_CATEGORY_REFERENCE = "Category2"
-const val SUB_CATEGORY_REFERENCE = "Sub Categories"
+const val SUB_CATEGORY_REFERENCE = "SubCategory"
 const val PRODUCT_REFERENCE = "Products"
+
+const val NO_INDEX = -1
+const val INDEX_ONE_CATEGORY = 1
+const val INDEX_TWO_CATEGORY = 2
 
 const val USER_REFERENCE = "Users"
 const val USER_CART_ITEMS_REFERENCE = "Cart Items"

@@ -2,6 +2,7 @@ package com.app.kiranachoice.views.products
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,6 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.data.db.CartDatabase
-import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.FragmentProductsBinding
 import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
@@ -31,16 +31,14 @@ class ProductsFragment : Fragment(),
     private var verticalProductsAdapter: VerticalProductsAdapter? = null
 
     private lateinit var mAuth: FirebaseAuth
-
-    private lateinit var cartItems: List<CartItem>
+    private val args: ProductsFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
-        val productViewModelFactory =
-            ProductViewModelFactory(DataRepository(localDatabase.databaseDao))
+        val productViewModelFactory = ProductViewModelFactory(args.title, DataRepository(localDatabase.databaseDao))
         viewModel =
             ViewModelProvider(this, productViewModelFactory).get(ProductsViewModel::class.java)
         _bindingProduct = FragmentProductsBinding.inflate(inflater, container, false)
@@ -48,18 +46,10 @@ class ProductsFragment : Fragment(),
         return binding.root
     }
 
-    private val args: ProductsFragmentArgs by navArgs()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-
-        viewModel.allCartItems.observe(viewLifecycleOwner, {
-            cartItems = it
-        })
-
-        viewModel.productsList.observe(viewLifecycleOwner, {
-
-        })
 
         viewModel.navigateToAuthActivity.observe(viewLifecycleOwner, {
             if (it) {
@@ -74,6 +64,7 @@ class ProductsFragment : Fragment(),
             }
         })
 
+
         viewModel.productAdded.observe(viewLifecycleOwner, {
             if (it) {
                 Toast.makeText(requireContext(), "1 item added", Toast.LENGTH_SHORT).show()
@@ -81,8 +72,9 @@ class ProductsFragment : Fragment(),
             }
         })
 
-        viewModel.getProductList(args.key).observe(viewLifecycleOwner, {
-            verticalProductsAdapter = VerticalProductsAdapter(it, cartItems, this)
+        viewModel.getProducts.observe(viewLifecycleOwner, {
+            Log.d("Products", "products: ${it.second}")
+            verticalProductsAdapter = VerticalProductsAdapter(it.second, it.first, this)
             binding.recyclerViewProductList.setHasFixedSize(true)
             binding.recyclerViewProductList.adapter = verticalProductsAdapter
         })
@@ -101,10 +93,10 @@ class ProductsFragment : Fragment(),
         position: Int
     ) {
         if (mAuth.currentUser != null) {
-            val packagingSizeModel = if (product.productPackagingSize.size > 1) {
-                product.productPackagingSize[packagingSize]
+            val packagingSizeModel = if (product.packagingSize.size > 1) {
+                product.packagingSize[packagingSize]
             } else {
-                product.productPackagingSize[0]
+                product.packagingSize[0]
             }
             val result = viewModel.addItemToCart(product, packagingSizeModel, quantity)
             if (result) {
@@ -123,9 +115,10 @@ class ProductsFragment : Fragment(),
     override fun onItemClick(product: Product) {
         navController.navigate(
             ProductsFragmentDirections.actionProductsFragmentToProductDetailsFragment(
-                product.productTitle, product
+                product.name, product
             )
         )
     }
 
 }
+

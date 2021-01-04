@@ -1,12 +1,24 @@
 package com.app.kiranachoice.data
 
+import com.app.kiranachoice.data.db.SubCategoryItem
 import java.io.Serializable
 
+
 data class SubCategoryModel(
-    var sequence: Long = 0,
-    var category_key: String? = null,
-    var category_name: String? = null,
-    var sub_category_Key: String? = null,
-    var sub_category_name: String? = null,
-    var sub_category_image_url: String? = null
+    var key: String = "",
+    var categoryName: String = "",
+    var image: String = "",
+    var name: String = ""
 ) : Serializable
+
+
+fun List<SubCategoryModel>.asDatabaseModel(): List<SubCategoryItem> {
+    return map {
+        SubCategoryItem(
+            key = it.key,
+            name = it.name,
+            image = it.image,
+            categoryName = it.categoryName
+        )
+    }
+}

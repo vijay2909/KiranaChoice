@@ -37,7 +37,7 @@
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:contentDescription="@string/product_image"
-                app:imageUrl="@{product.productImageUrl}"
+                app:imageUrl="@{product.image}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="@{product.productTitle}"
+                android:text="@{product.name}"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/productImage"
@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@{@string/rupee_with_text(product.productPackagingSize.get(0).price)}"
+                android:text="@{@string/rupee_with_text(product.packagingSize.get(0).price)}"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -81,7 +81,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/productPrice"
                 app:layout_constraintStart_toEndOf="@+id/productPrice"
                 app:layout_constraintTop_toTopOf="@+id/productPrice"
-                app:productMRP="@{product.productPackagingSize.get(0).mrp}"
+                app:productMRP="@{product.packagingSize.get(0).mrp}"
                 tools:text="₹90.00" />
 
             <TextView
@@ -121,8 +121,8 @@
                     android:paddingTop="4dp"
                     android:paddingEnd="8dp"
                     android:paddingBottom="4dp"
-                    android:text="@{product.productPackagingSize[0].packagingSize}"
-                    android:visibility="@{product.productPackagingSize.size() > 1 ? View.GONE : View.VISIBLE}"
+                    android:text="@{product.packagingSize[0].size}"
+                    android:visibility="@{product.packagingSize.size() > 1 ? View.GONE : View.VISIBLE}"
                     tools:text="1 kg" />
 
                 <Spinner
@@ -134,7 +134,7 @@
                     android:paddingTop="4dp"
                     android:paddingEnd="8dp"
                     android:paddingBottom="4dp"
-                    android:visibility="@{product.productPackagingSize.size() > 1 ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{product.packagingSize.size() > 1 ? View.VISIBLE : View.GONE}"
                     app:sizes="@{product}" />
             </FrameLayout>
 

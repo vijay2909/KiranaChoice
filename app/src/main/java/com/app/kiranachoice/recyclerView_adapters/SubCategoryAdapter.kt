@@ -3,12 +3,12 @@ package com.app.kiranachoice.recyclerView_adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.app.kiranachoice.BR
-import com.app.kiranachoice.databinding.ItemSubCategoryBinding
 import com.app.kiranachoice.data.SubCategoryModel
+import com.app.kiranachoice.data.domain.SubCategory
+import com.app.kiranachoice.databinding.ItemSubCategoryBinding
 
 class SubCategoryAdapter(
-    private val list: List<SubCategoryModel>,
+    private val list: List<SubCategory>,
     private val listener: SubCategoryClickListener
 ) :
     RecyclerView.Adapter<SubCategoryAdapter.SubCategoryViewHolder>() {
@@ -29,12 +29,13 @@ class SubCategoryAdapter(
 
     class SubCategoryViewHolder(val binding: ItemSubCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(subCategoryModel: SubCategoryModel) {
-            binding.setVariable(BR.subCategoryModel, subCategoryModel)
+        fun bind(subCategory: SubCategory) {
+            binding.subCategory = subCategory
+            binding.executePendingBindings()
         }
     }
 
     interface SubCategoryClickListener {
-        fun onSubCategoryItemClicked(subCategoryModel: SubCategoryModel)
+        fun onSubCategoryItemClicked(subCategory: SubCategory)
     }
 }

@@ -67,9 +67,10 @@ class CartViewModel(val dataRepository: DataRepository) : ViewModel() {
         viewModelScope.launch {
             val item = CartItem(
                 productKey = cartItem.productKey,
+                productId = cartItem.productId,
                 productSKU = cartItem.productSKU,
-                productTitle = cartItem.productTitle,
-                productImageUrl = cartItem.productImageUrl,
+                productName = cartItem.productName,
+                productImage = cartItem.productImage,
                 productMRP = cartItem.productMRP,
                 productPrice = cartItem.productPrice,
                 packagingSize = cartItem.packagingSize,

@@ -3,20 +3,25 @@ package com.app.kiranachoice.views.category
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.app.kiranachoice.data.SubCategoryModel
 import com.app.kiranachoice.data.domain.Category
+import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.CATEGORY_REFERENCE
 import com.app.kiranachoice.utils.SUB_CATEGORY_REFERENCE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
-class CategoryViewModel : ViewModel() {
-    private var dbRef: FirebaseDatabase? = null
+class CategoryViewModel(private val categoryName: String, private val dataRepository: DataRepository) : ViewModel() {
+
+    val subCategories = dataRepository.getSubCategories(categoryName)
 
     init {
-        dbRef = FirebaseDatabase.getInstance()
+        viewModelScope.launch { dataRepository.refreshSubCategories() }
     }
 
 
@@ -25,7 +30,7 @@ class CategoryViewModel : ViewModel() {
     val subCategoryList: LiveData<List<SubCategoryModel>> get() = _subCategoryList
 
     fun getSubCategories(category: Category) {
-        dbRef?.getReference(CATEGORY_REFERENCE)
+        /*dbRef?.getReference(CATEGORY_REFERENCE)
             ?.child(category.key)
             ?.child(SUB_CATEGORY_REFERENCE)
             ?.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -39,7 +44,7 @@ class CategoryViewModel : ViewModel() {
                     }
                     _subCategoryList.postValue(fakeSubCategoryList)
                 }
-            })
+            })*/
     }
 
 }

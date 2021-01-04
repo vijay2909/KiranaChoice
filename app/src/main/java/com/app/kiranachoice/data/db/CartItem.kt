@@ -7,9 +7,10 @@ import androidx.room.PrimaryKey
 data class CartItem(
     @PrimaryKey
     var productKey: String,
+    var productId: Int,
     var productSKU: String,
-    var productTitle: String,
-    var productImageUrl: String,
+    var productName: String,
+    var productImage: String,
     var productMRP: String,
     var productPrice: String,
     var packagingSize: String,

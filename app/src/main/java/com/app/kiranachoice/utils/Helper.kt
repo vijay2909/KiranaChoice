@@ -26,18 +26,19 @@ suspend fun addToCart(
     quantity: String
 ): Boolean {
     val isAlreadyAdded = dataRepository.isAlreadyAdded(
-        product.product_key,
-        packagingSizeModel.packagingSize.toString()
+        product.key,
+        packagingSizeModel.size.toString()
     )
     if (!isAlreadyAdded) {
         val cartItem = CartItem(
-            product.product_key,
+            product.key,
+            product.id,
             product.product_sku,
-            product.productTitle,
-            product.productImageUrl,
+            product.name,
+            product.image,
             packagingSizeModel.mrp.toString(),
             packagingSizeModel.price.toString(),
-            packagingSizeModel.packagingSize.toString(),
+            packagingSizeModel.size.toString(),
             quantity
         )
         dataRepository.insert(cartItem)
@@ -59,6 +60,7 @@ fun TextInputEditText.isNotNullOrEmpty(errorString: String): Boolean {
     }
 }
 
+
 fun EditText.onChange(cb: (String) -> Unit) {
     this.addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -78,6 +80,7 @@ fun getDateTimeFromUnix(unix: Long?) : String {
     sdf.timeZone = TimeZone.getTimeZone("GMT+5:30")
     return sdf.format(date!!)
 }
+
 
 fun getDateFromUnix(unix: Long?) : String?{
     val date = unix?.let { Date(it) }

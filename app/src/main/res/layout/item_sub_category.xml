@@ -10,8 +10,8 @@
             type="com.app.kiranachoice.recyclerView_adapters.SubCategoryAdapter.SubCategoryClickListener" />
 
         <variable
-            name="subCategoryModel"
-            type="com.app.kiranachoice.data.SubCategoryModel" />
+            name="subCategory"
+            type="com.app.kiranachoice.data.domain.SubCategory" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         app:cardBackgroundColor="@color/colorPrimaryLight"
-        android:onClick="@{() -> subCategoryInterface.onSubCategoryItemClicked(subCategoryModel)}"
+        android:onClick="@{() -> subCategoryInterface.onSubCategoryItemClicked(subCategory)}"
         app:cardCornerRadius="10dp"
         app:cardElevation="2dp">
 
@@ -36,7 +36,7 @@
                 android:contentDescription="@string/category_image"
                 android:scaleType="fitCenter"
                 android:src="@drawable/loading_animation"
-                app:imageUrl="@{subCategoryModel.sub_category_image_url}" />
+                app:imageUrl="@{subCategory.image}" />
 
             <TextView
                 style="@style/TextAppearance.MaterialComponents.Body2"
@@ -45,7 +45,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="@{subCategoryModel.sub_category_name}"
+                android:text="@{subCategory.name}"
                 android:textSize="15sp"
                 app:drawableEndCompat="@drawable/ic_arrow_right"
                 tools:text="Atta" />

@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_homeFragment_to_cartFragment"
             app:destination="@id/cartFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_productsFragment"
+            app:destination="@id/productsFragment" />
     </fragment>
 
     <fragment
@@ -136,13 +139,10 @@
     <fragment
         android:id="@+id/categoryFragment"
         android:name="com.app.kiranachoice.views.category.CategoryFragment"
-        android:label="{title}"
+        android:label="{categoryName}"
         tools:layout="@layout/fragment_category">
         <argument
-            android:name="categoryModel"
-            app:argType="com.app.kiranachoice.data.domain.Category" />
-        <argument
-            android:name="title"
+            android:name="categoryName"
             app:argType="string" />
         <action
             android:id="@+id/action_categoryFragment_to_productsFragment"
@@ -166,9 +166,6 @@
             app:popExitAnim="@anim/slide_out_right" />
         <argument
             android:name="title"
-            app:argType="string" />
-        <argument
-            android:name="key"
             app:argType="string" />
     </fragment>
     <activity

@@ -32,7 +32,7 @@ class VerticalProductsAdapter(
 
         if (!cartItem.isNullOrEmpty() ){
             for (cartItem in cartItem) {
-                if (cartItem.productKey == list[position].product_key){
+                if (cartItem.productId == list[position].id){
                     holder.binding.btnAddToCart.visibility = View.GONE
                     holder.binding.quantityLayout.visibility = View.VISIBLE
                     holder.binding.userQuantity.text = cartItem.quantity
@@ -43,7 +43,7 @@ class VerticalProductsAdapter(
 
         holder.binding.btnIncrease.setOnClickListener {
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
-            if (quantity < 5) ++quantity else Snackbar.make(
+            if (quantity < list[holder.adapterPosition].minOrderQty) ++quantity else Snackbar.make(
                 holder.binding.root,
                 "You can get maximum 5 quantity.",
                 Snackbar.LENGTH_SHORT

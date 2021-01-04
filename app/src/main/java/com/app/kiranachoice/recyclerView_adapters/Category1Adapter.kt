@@ -3,9 +3,9 @@ package com.app.kiranachoice.recyclerView_adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.app.kiranachoice.data.CategoryModel
 import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.databinding.ItemCategory1LayoutBinding
+import com.app.kiranachoice.listeners.CategoryClickListener
 
 
 class Category1Adapter(private val listener: CategoryClickListener) :
@@ -24,7 +24,7 @@ class Category1Adapter(private val listener: CategoryClickListener) :
                 parent,
                 false
             )
-        view.categoryInterface = listener
+        view.clickListener = listener
         return CategoryViewHolder(view)
     }
 
@@ -40,9 +40,5 @@ class Category1Adapter(private val listener: CategoryClickListener) :
             binding.category = category
             binding.executePendingBindings()
         }
-    }
-
-    interface CategoryClickListener {
-        fun onCategoryItemClick(category: Category)
     }
 }

@@ -184,7 +184,7 @@ class PaymentFragment : Fragment() {
             textProductName.setTextColor(Color.BLACK)
             textProductName.id = View.generateViewId()
             textProductName.textSize = 15f
-            textProductName.text = cartItem.productTitle
+            textProductName.text = cartItem.productName
 
             val textSellingPriceAndQuantity = TextView(requireContext())
             textSellingPriceAndQuantity.textSize = 12f

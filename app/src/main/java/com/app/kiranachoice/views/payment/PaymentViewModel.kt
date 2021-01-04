@@ -85,8 +85,8 @@ class PaymentViewModel(private val dataRepository: DataRepository) : ViewModel()
             cartItems?.forEach {
                 val item = Product(
                     productSKU = it.productSKU,
-                    productName = it.productTitle,
-                    productImage = it.productImageUrl,
+                    productName = it.productName,
+                    productImage = it.productImage,
                     productSize = it.packagingSize,
                     productQuantity = it.quantity,
                     productMRP = it.productMRP,

@@ -5,15 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.databinding.ItemCategory2LayoutBinding
+import com.app.kiranachoice.listeners.CategoryClickListener
 
-class SmallBannerCategoryAdapter(val listener: Category1Adapter.CategoryClickListener) :
+class SmallBannerCategoryAdapter(val list : List<Category>, val listener: CategoryClickListener) :
     RecyclerView.Adapter<SmallBannerCategoryAdapter.Category2ViewHolder>() {
 
-    var list = listOf<Category>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Category2ViewHolder {
         val view =

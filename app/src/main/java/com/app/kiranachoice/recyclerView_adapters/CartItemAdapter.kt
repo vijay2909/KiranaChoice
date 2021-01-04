@@ -16,7 +16,7 @@ class CartItemAdapter(private val listener: CartListener) : ListAdapter<CartItem
 
     class DiffUtilsCallBack : DiffUtil.ItemCallback<CartItem>() {
         override fun areItemsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
-            return oldItem.productKey == newItem.productKey
+            return oldItem.productId == newItem.productId
         }
 
         override fun areContentsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {

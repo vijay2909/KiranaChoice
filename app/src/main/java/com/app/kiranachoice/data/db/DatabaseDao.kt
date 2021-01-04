@@ -9,14 +9,14 @@ interface DatabaseDao {
     @Query("SELECT * from cart_item_table")
     fun getAllCartItem(): LiveData<List<CartItem>>
 
-    @Query("SELECT EXISTS(SELECT * FROM cart_item_table WHERE productKey = :key AND packagingSize = :packagingSize)")
-    suspend fun isAlreadyAdded(key: String, packagingSize: String): Boolean
+    @Query("SELECT EXISTS(SELECT * FROM cart_item_table WHERE productKey = :productKey AND packagingSize = :packagingSize)")
+    suspend fun isAlreadyAdded(productKey: String, packagingSize: String): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(cartItem: CartItem): Long
 
-    @Query("DELETE FROM cart_item_table WHERE productKey = :key")
-    suspend fun delete(key: String)
+    @Query("DELETE FROM cart_item_table WHERE productKey = :productKey")
+    suspend fun delete(productKey: String)
 
     @Delete
     suspend fun delete(cartItem: CartItem)
@@ -33,7 +33,7 @@ interface DatabaseDao {
     @Query("SELECT * FROM searchitem")
     fun getAllSearchWords(): LiveData<List<SearchItem>>
 
-    @Query("SELECT * FROM searchitem  WHERE productName LIKE :query")
+    @Query("SELECT * FROM searchitem  WHERE productName LIKE :query OR categoryName LIKE :query OR tag Like :query")
     fun getSearchWords(query: String): LiveData<List<SearchItem>>
 
     @Query("select * from bannerimage")
@@ -42,27 +42,45 @@ interface DatabaseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBanners(banners: List<BannerImage>)
 
-    @Query("select * from categoryitem")
-    fun getCategories(): LiveData<List<CategoryItem>>
+    @Query("select * from categoryitem WHERE `index` = :index")
+    fun getCategories(index : Int): LiveData<List<CategoryItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategories(categories: List<CategoryItem>)
 
-    @Query("select * from productitem WHERE makeBestOffer = :value")
+    @Query("select * from productitem WHERE makeBestOffer = :value AND isAvailable = :value ORDER BY id ASC")
     fun getBestOfferProducts(value: Boolean = true): LiveData<List<ProductItem>>
 
-    @Query("select * from productitem WHERE makeBestSelling = :value")
+    @Query("select * from productitem WHERE makeBestSelling = :value AND isAvailable = :value ORDER BY id ASC")
     fun getBestSellingProducts(value: Boolean = true): LiveData<List<ProductItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProducts(products: List<ProductItem>)
 
-    @Query("SELECT * FROM productitem WHERE product_key=:productKey ")
+    @Query("SELECT * FROM productitem WHERE `key`=:productKey")
     suspend fun getProduct(productKey: String): ProductItem
 
-    @Query("SELECT * FROM productitem WHERE sub_category_name =:subCategoryName ")
-    suspend fun getProductBySubCategoryName(subCategoryName: String): List<ProductItem>
+    @Query("SELECT * FROM productitem WHERE subCategoryName =:subCategoryName AND isAvailable = :value ORDER BY id ASC")
+    fun getProductBySubCategoryName(subCategoryName: String, value: Boolean = true): LiveData<List<ProductItem>>
 
-    @Query("SELECT * FROM productitem WHERE sub_category_key =:subCategoryKey ")
-    suspend fun getProductBySubCategoryKey(subCategoryKey: String): List<ProductItem>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSubCategories(subCategories: List<SubCategoryItem>)
+
+    @Query("SELECT * FROM subcategoryitem WHERE categoryName =:categoryName ")
+    fun getSubCategories(categoryName: String): LiveData<List<SubCategoryItem>>
+
+    @Query("SELECT COUNT(*) FROM cart_item_table")
+    fun getTotalCartItems(): LiveData<Int>
+
+    @Query("DELETE FROM productitem")
+    suspend fun deleteAllProducts()
+
+    @Query("DELETE FROM subcategoryitem")
+    suspend fun deleteAllSubCategories()
+
+    @Query("DELETE FROM categoryitem")
+    suspend fun deleteAllCategories()
+
+    @Query("DELETE FROM bannerimage")
+    suspend fun deleteAllBanners()
 }

@@ -47,7 +47,7 @@
                     android:contentDescription="@string/product_image"
                     android:scaleType="fitCenter"
                     android:src="@drawable/loading_animation"
-                    app:imageUrl="@{product.productImageUrl}"
+                    app:imageUrl="@{product.image}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -62,7 +62,7 @@
                     android:layout_marginEnd="8dp"
                     android:ellipsize="end"
                     android:maxLines="3"
-                    android:text="@{product.productTitle}"
+                    android:text="@{product.name}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:text="@{@string/rupee_with_text(product.productPackagingSize.get(0).price)}"
+                    android:text="@{@string/rupee_with_text(product.packagingSize.get(0).price)}"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
@@ -91,10 +91,10 @@
                     android:layout_marginStart="24dp"
                     android:textColor="@color/red"
                     android:textSize="12sp"
-                    android:visibility="@{product.productPackagingSize.get(0).mrp.equals(product.productPackagingSize.get(0).price) ? View.INVISIBLE : View.VISIBLE}"
+                    android:visibility="@{product.packagingSize.get(0).mrp.equals(product.packagingSize.get(0).price) ? View.INVISIBLE : View.VISIBLE}"
                     app:layout_constraintStart_toEndOf="@id/textProductPrice"
                     app:layout_constraintTop_toTopOf="@id/textProductPrice"
-                    app:productMRP="@{product.productPackagingSize.get(0).mrp}"
+                    app:productMRP="@{product.packagingSize.get(0).mrp}"
                     tools:text="₹149.00" />
 
                 <Spinner

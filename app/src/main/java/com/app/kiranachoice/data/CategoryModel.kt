@@ -1,23 +1,25 @@
 package com.app.kiranachoice.data
 
 import com.app.kiranachoice.data.db.CategoryItem
+import com.google.firebase.database.IgnoreExtraProperties
 
+@IgnoreExtraProperties
 data class CategoryModel(
-    var key: String? = null,
-    var category_name: String? = null,
-    var category_image_url: String? = null
+    var key: String = "",
+    var id: Int = 0,
+    var index: Int = 0,
+    var name: String = "",
+    var image: String = ""
 )
 
-
-/**
- * Convert Network results to database objects
- */
 fun List<CategoryModel>.asDatabaseModel(): List<CategoryItem> {
     return map {
         CategoryItem(
-            key = it.key.toString(),
-            category_name = it.category_name.toString(),
-            category_image_url = it.category_image_url.toString()
+            key = it.key,
+            id = it.id,
+            name = it.name,
+            image = it.image,
+            index = it.index
         )
     }
 }

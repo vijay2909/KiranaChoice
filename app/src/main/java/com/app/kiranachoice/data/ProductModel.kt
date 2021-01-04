@@ -1,25 +1,25 @@
 package com.app.kiranachoice.data
 
-import com.app.kiranachoice.data.db.BannerImage
 import com.app.kiranachoice.data.db.ProductItem
 import com.app.kiranachoice.data.db.SearchItem
-import java.io.Serializable
+import com.google.firebase.database.IgnoreExtraProperties
 import java.util.*
 
 data class ProductsList(val products: List<ProductModel>)
 
+@IgnoreExtraProperties
 data class ProductModel constructor(
-    var listSequence: Long = 0,
-    var sub_category_key: String? = null,
-    var sub_category_name: String? = null,
-    var product_key: String? = null,
-    var product_sku: String? = null,
-    var productImageUrl: String? = null,
-    var productTitle: String? = null,
-    var productPackagingSize: List<PackagingSizeModel> = emptyList(),
+    var key: String = "",
+    var id: Int = 0,
+    var subCategoryName: String = "",
+    var product_sku: String = "",
+    var image: String = "",
+    var name: String = "",
+    var packagingSize: List<PackagingSizeModel> = emptyList(),
     var aboutTheProduct: List<AboutProductModel> = emptyList(),
-    var totalQuantity: Long = 0,
-    var minimumOrderQuantity: Long = 5,
+    var tag: List<String> = emptyList(),
+    var totalQty: Long = 0,
+    var minOrderQty: Long = 5,
     var makeBestOffer: Boolean = false,
     var makeBestSelling: Boolean = false,
     var makeRecommendedProduct: Boolean = false,
@@ -30,9 +30,9 @@ data class ProductModel constructor(
 fun ProductsList.asDatabaseModel(): List<SearchItem> {
     return products.map {
         SearchItem(
-            subCategoryKey = it.sub_category_key!!,
-            categoryName = it.sub_category_name!!,
-            productName = it.productTitle?.toLowerCase(Locale.getDefault())!!
+            categoryName = it.subCategoryName,
+            productName = it.name.toLowerCase(Locale.getDefault()),
+            tag = it.tag
         )
     }
 }
@@ -43,17 +43,16 @@ fun ProductsList.asDatabaseModel(): List<SearchItem> {
 fun List<ProductModel>.asProductDatabaseModel(): List<ProductItem> {
     return map {
         ProductItem(
-            product_key = it.product_key.toString(),
-            listSequence = it.listSequence,
-            sub_category_key = it.sub_category_key.toString(),
-            sub_category_name = it.sub_category_name.toString(),
-            product_sku = it.product_sku.toString(),
-            productImageUrl = it.productImageUrl.toString(),
-            productTitle = it.productTitle.toString(),
-            productPackagingSize = it.productPackagingSize,
+            key = it.key,
+            id = it.id,
+            subCategoryName = it.subCategoryName,
+            product_sku = it.product_sku,
+            image = it.image,
+            name = it.name,
+            packagingSize = it.packagingSize,
             aboutTheProduct = it.aboutTheProduct,
-            totalQuantity = it.totalQuantity,
-            minimumOrderQuantity = it.minimumOrderQuantity,
+            totalQty = it.totalQty,
+            minOrderQty = it.minOrderQty,
             makeBestOffer = it.makeBestOffer,
             makeBestSelling = it.makeBestSelling,
             makeRecommendedProduct = it.makeRecommendedProduct,

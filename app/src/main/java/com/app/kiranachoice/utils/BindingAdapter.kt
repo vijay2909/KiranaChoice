@@ -65,10 +65,10 @@ fun setProductMRP(view: TextView, text: String?) {
 
 @BindingAdapter("sizes")
 fun setSizes(spinner: Spinner, product: Product) {
-    val packagingSize = arrayOfNulls<String>(product.productPackagingSize.size)
+    val packagingSize = arrayOfNulls<String>(product.packagingSize.size)
 
-    for (i in product.productPackagingSize.indices) {
-        packagingSize[i] = product.productPackagingSize[i].packagingSize.toString()
+    for (i in product.packagingSize.indices) {
+        packagingSize[i] = product.packagingSize[i].size.toString()
     }
 
     val arrayAdapter = ArrayAdapter(

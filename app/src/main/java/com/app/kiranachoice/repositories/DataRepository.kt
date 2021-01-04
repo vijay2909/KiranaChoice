@@ -13,10 +13,7 @@ import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.utils.*
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -25,6 +22,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class DataRepository(private val databaseDao: DatabaseDao) {
+
 
     private val dbRef = FirebaseDatabase.getInstance()
     private val mAuth = FirebaseAuth.getInstance()
@@ -47,6 +45,7 @@ class DataRepository(private val databaseDao: DatabaseDao) {
     }
 
 
+    val totalCartItems = databaseDao.getTotalCartItems()
     val allCartItems = databaseDao.getAllCartItem()
 
 
@@ -55,13 +54,14 @@ class DataRepository(private val databaseDao: DatabaseDao) {
     }
 
 
-    suspend fun isAlreadyAdded(key: String, packagingSize: String) = withContext(Dispatchers.IO) {
-        databaseDao.isAlreadyAdded(key, packagingSize)
-    }
+    suspend fun isAlreadyAdded(productKey: String, packagingSize: String) =
+        withContext(Dispatchers.IO) {
+            databaseDao.isAlreadyAdded(productKey, packagingSize)
+        }
 
 
-    suspend fun delete(key: String) = withContext(Dispatchers.IO) {
-        databaseDao.delete(key)
+    suspend fun delete(productKey: String) = withContext(Dispatchers.IO) {
+        databaseDao.delete(productKey)
     }
 
 
@@ -167,6 +167,7 @@ class DataRepository(private val databaseDao: DatabaseDao) {
                     }
                     runBlocking {
                         withContext(Dispatchers.IO) {
+                            databaseDao.deleteAllBanners()
                             databaseDao.insertBanners(bannersList.asDatabaseModel())
                         }
                     }
@@ -178,102 +179,61 @@ class DataRepository(private val databaseDao: DatabaseDao) {
             })
     }
 
-    val categories: LiveData<List<Category>> = Transformations.map(databaseDao.getCategories()) {
-        it.asDomainModel()
-    }
 
-    fun refreshCategories() {
-        dbRef.getReference(CATEGORY_REFERENCE).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val categoryList = ArrayList<CategoryModel>()
+    val firstCategories: LiveData<List<Category>> =
+        Transformations.map(databaseDao.getCategories(1)) {
+            it.asDomainModel()
+        }
 
-                snapshot.children.forEach {
-                    val categoryModel = it.getValue(CategoryModel::class.java)
-                    categoryModel?.let { model -> categoryList.add(model) }
-                }
-                runBlocking {
-                    withContext(Dispatchers.IO) {
-                        databaseDao.insertCategories(categoryList.asDatabaseModel())
+    val secondCategories: LiveData<List<Category>> =
+        Transformations.map(databaseDao.getCategories(2)) {
+            it.asDomainModel()
+        }
+
+    suspend fun refreshCategories() {
+        withContext(Dispatchers.IO) {
+            dbRef.getReference(CATEGORY_REFERENCE)
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val categoryList = ArrayList<CategoryModel>()
+                        snapshot.children.forEach {
+                            val categoryModel = it.getValue(CategoryModel::class.java)
+                            categoryModel?.let { model -> categoryList.add(model) }
+                        }
+                        Log.d(TAG, "categoryList: $categoryList")
+                        runBlocking {
+                            withContext(Dispatchers.IO) {
+                                databaseDao.deleteAllCategories()
+                                databaseDao.insertCategories(categoryList.asDatabaseModel())
+                            }
+                        }
                     }
-                }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-            }
-
-        })
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
+        }
     }
-
 
     val bestOfferProducts: LiveData<List<Product>> =
         Transformations.map(databaseDao.getBestOfferProducts()) {
             it.asDomainModel()
         }
 
-    fun refreshBestOfferProduct() {
-        dbRef.getReference(PRODUCT_REFERENCE)
-            .orderByChild(BEST_OFFER_PRODUCT).equalTo(true)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val bestOfferProductList = ArrayList<ProductModel>()
-                    snapshot.children.forEach {
-                        it.getValue(ProductModel::class.java)
-                            ?.let { model -> bestOfferProductList.add(model) }
-                    }
-                    runBlocking {
-                        withContext(Dispatchers.IO) {
-                            databaseDao.insertProducts(bestOfferProductList.asProductDatabaseModel())
-                        }
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-
-            })
-    }
 
     val bestSellingProducts: LiveData<List<Product>> =
         Transformations.map(databaseDao.getBestSellingProducts()) {
             it.asDomainModel()
         }
 
-    fun refreshBestSellingProduct() {
-        dbRef.getReference(PRODUCT_REFERENCE)
-            .orderByChild(BEST_SELLING_PRODUCT).equalTo(true)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val bestSellingProductList = ArrayList<ProductModel>()
-                    snapshot.children.forEach {
-                        it.getValue(ProductModel::class.java)
-                            ?.let { model -> bestSellingProductList.add(model) }
-                    }
-                    runBlocking {
-                        withContext(Dispatchers.IO) {
-                            databaseDao.insertProducts(bestSellingProductList.asProductDatabaseModel())
-                        }
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-
-            })
+    suspend fun getProduct(productId: String) = withContext(Dispatchers.IO) {
+        listOf(databaseDao.getProduct(productId)).asDomainModel()
     }
 
-
-    suspend fun getProduct(productKey: String) = withContext(Dispatchers.IO) {
-        listOf(databaseDao.getProduct(productKey)).asDomainModel()
-    }
-
-    suspend fun getProductsByCategoryName(subCategoryName: String) = withContext(Dispatchers.IO) {
-        databaseDao.getProductBySubCategoryName(subCategoryName).asDomainModel()
-    }
-
-    suspend fun getProductsByCategoryKey(subCategoryKey: String) = withContext(Dispatchers.IO) {
-        databaseDao.getProductBySubCategoryKey(subCategoryKey).asDomainModel()
-    }
-
+    fun getProductsByCategoryName(subCategoryName: String) =
+        Transformations.map(databaseDao.getProductBySubCategoryName(subCategoryName)) {
+            it.asDomainModel()
+        }
 
     var orderId: String? = null
     var sequence: Int? = null
@@ -284,7 +244,11 @@ class DataRepository(private val databaseDao: DatabaseDao) {
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         Log.d(TAG, "generateOrderId sequence: ${snapshot.value} ")
-                        sequence = snapshot.children.elementAt(0).value.toString().toInt().plus(1)
+                        if (snapshot.exists()){
+                            sequence = snapshot.children.elementAt(0).value.toString().toInt().plus(1)
+                        }else{
+                            sequence = 1
+                        }
                         orderId = "KC" + (1000 + sequence!!)
                     }
 
@@ -292,6 +256,62 @@ class DataRepository(private val databaseDao: DatabaseDao) {
 
                 })
         }
+    }
+
+
+    fun getSubCategories(categoryName: String) =
+        Transformations.map(databaseDao.getSubCategories(categoryName)) {
+            it.asDomainModel()
+        }
+
+    suspend fun refreshSubCategories() {
+        dbRef.getReference(SUB_CATEGORY_REFERENCE)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                val subCategoriesList = ArrayList<SubCategoryModel>()
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    snapshot.children.forEach {
+                        it.getValue(SubCategoryModel::class.java)?.let { subCategoryModel ->
+                            subCategoriesList.add(subCategoryModel)
+                        }
+                    }
+                    runBlocking {
+                        withContext(Dispatchers.IO) {
+                            databaseDao.deleteAllSubCategories()
+                            databaseDao.insertSubCategories(subCategoriesList.asDatabaseModel())
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
+    }
+
+
+    suspend fun refreshProducts() {
+        dbRef.getReference(PRODUCT_REFERENCE).addListenerForSingleValueEvent(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val productList = ArrayList<ProductModel>()
+                Log.d(TAG, "outer product: ${snapshot.value}")
+                snapshot.children.forEach {
+                    it.getValue(ProductModel::class.java)?.let { productModel ->
+                        Log.d(TAG, "inner product: $productModel")
+                        productList.add(productModel)
+                    }
+                }
+                runBlocking {
+                    withContext(Dispatchers.IO) {
+                        databaseDao.deleteAllProducts()
+                        databaseDao.insertProducts(productList.asProductDatabaseModel())
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
     }
 
     companion object {

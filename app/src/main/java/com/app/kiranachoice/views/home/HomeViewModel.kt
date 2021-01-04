@@ -1,104 +1,90 @@
 package com.app.kiranachoice.views.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.app.kiranachoice.data.CategoryModel
+import androidx.lifecycle.*
 import com.app.kiranachoice.data.PackagingSizeModel
-import com.app.kiranachoice.data.ProductModel
 import com.app.kiranachoice.data.db.CartItem
-import com.app.kiranachoice.data.db.ProductItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.repositories.DataRepository
-import com.app.kiranachoice.utils.*
+import com.app.kiranachoice.utils.BEST_OFFER_PRODUCT
+import com.app.kiranachoice.utils.BEST_RECOMMENDED_PRODUCT
+import com.app.kiranachoice.utils.BEST_SELLING_PRODUCT
+import com.app.kiranachoice.utils.addToCart
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
 
-    private var dbRef: FirebaseDatabase = FirebaseDatabase.getInstance()
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    val cartItems: LiveData<List<CartItem>> = dataRepository.allCartItems
+    val totalCartItems = dataRepository.totalCartItems
 
     init {
 
         refreshDataFromRepository()
         /*getCategory2()*/
+//        dataRepository.getCategories()
     }
 
-    private var _eventNetworkError = MutableLiveData<Boolean>(false)
+
+    private var _eventNetworkError = MutableLiveData(false)
     val eventNetworkError: LiveData<Boolean> get() = _eventNetworkError
 
     val banners = dataRepository.banners
 
-    val categories = dataRepository.categories
+    val firstCategories = dataRepository.firstCategories
 
-    val bestOfferProducts = dataRepository.bestOfferProducts
+    val secondCategories = dataRepository.secondCategories
 
-    val bestSellingProducts = dataRepository.bestSellingProducts
+//    val bestOfferProducts = dataRepository.bestOfferProducts
+
+    val bestSellingProducts = object : MediatorLiveData<Pair<List<CartItem>, List<Product>>>(){
+        var cartItems : List<CartItem>? = null
+        var products : List<Product>? = null
+        init {
+            addSource(dataRepository.bestSellingProducts){products ->
+                this.products = products
+                cartItems?.let {
+                    value = it to products
+                }
+            }
+            addSource(dataRepository.allCartItems){ cartItems ->
+                this.cartItems = cartItems
+                products?.let {
+                    value = cartItems to it
+                }
+            }
+        }
+    }
+
+
+    val bestOfferProducts = object : MediatorLiveData<Pair<List<CartItem>, List<Product>>>(){
+        var cartItems : List<CartItem>? = null
+        var products : List<Product>? = null
+        init {
+            addSource(dataRepository.bestOfferProducts){ products ->
+                this.products = products
+                cartItems?.let {
+                    value = it to products
+                }
+            }
+            addSource(dataRepository.allCartItems){ cartItems ->
+                this.cartItems = cartItems
+                products?.let {
+                    value = cartItems to it
+                }
+            }
+        }
+    }
 
     private fun refreshDataFromRepository() {
         viewModelScope.launch {
             dataRepository.refreshBanners()
             dataRepository.refreshCategories()
-            dataRepository.refreshBestOfferProduct()
-            dataRepository.refreshBestSellingProduct()
+            dataRepository.refreshProducts()
         }
     }
-
-
-    /*private var fakeCategoryList = ArrayList<CategoryModel>()
-    private var _categoryList = MutableLiveData<List<CategoryModel>>()
-    val categoryList: LiveData<List<CategoryModel>> get() = _categoryList*/
-
-    /*private fun getCategories() {
-        dbRef.getReference(CATEGORY_REFERENCE).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                fakeCategoryList.clear()
-
-                snapshot.children.forEach {
-                    val categoryModel = it.getValue(Category1Model::class.java)
-                    categoryModel?.let { model -> fakeCategoryList.add(model) }
-                }
-
-                _categoryList.postValue(fakeCategoryList)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-
-        })
-        *//*dbRef.getReference(CATEGORY_REFERENCE).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.i(TAG, "getCategories onDataChange: called")
-
-                    fakeCategoryList.clear()
-
-                    snapshot.children.forEach {
-                        val categoryModel = it.getValue(Category1Model::class.java)
-                        categoryModel?.let { model -> fakeCategoryList.add(model) }
-                    }
-
-                    _categoryList.postValue(fakeCategoryList)
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e(TAG, "getCategories error code: ${error.code}")
-                    Log.e(TAG, "getCategories error message: ${error.message}")
-                }
-
-            })*//*
-    }*/
-
 
     private var _navigateToAuthActivity = MutableLiveData<Boolean>()
     val navigateToAuthActivity: LiveData<Boolean> get() = _navigateToAuthActivity
@@ -149,33 +135,12 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
     }
 
 
-    fun getProduct(productKey: String): LiveData<List<Product>> {
+    fun getProduct(productId: String): LiveData<List<Product>> {
         val result = MutableLiveData<List<Product>>()
         viewModelScope.launch {
-            result.postValue(dataRepository.getProduct(productKey))
+            result.postValue(dataRepository.getProduct(productId))
         }
         return result
-    }
-
-    private var fakeCategory2 = ArrayList<CategoryModel>()
-    private var _category2 = MutableLiveData<List<CategoryModel>>()
-    val category2: LiveData<List<CategoryModel>> get() = _category2
-
-    private fun getCategory2() {
-        dbRef.getReference(SECOND_CATEGORY_REFERENCE)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    snapshot.children.forEach {
-                        it.getValue(CategoryModel::class.java)?.let { categoryModel ->
-                            fakeCategory2.add(categoryModel)
-                        }
-                    }
-                    _category2.postValue(fakeCategory2)
-                }
-
-                override fun onCancelled(error: DatabaseError) {}
-
-            })
     }
 
 
@@ -190,10 +155,4 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
     fun updateQuantity(productKey: String, quantity: String) = viewModelScope.launch {
         dataRepository.update(productKey, quantity)
     }
-
-
-    companion object {
-        private const val TAG = "HomeViewModel"
-    }
-
 }

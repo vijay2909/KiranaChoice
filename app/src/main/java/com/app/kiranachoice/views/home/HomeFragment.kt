@@ -18,11 +18,11 @@ import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.app.kiranachoice.R
 import com.app.kiranachoice.data.db.CartDatabase
-import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Banner
 import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.FragmentHomeBinding
+import com.app.kiranachoice.listeners.CategoryClickListener
 import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.recyclerView_adapters.Category1Adapter
 import com.app.kiranachoice.recyclerView_adapters.HorizontalProductsAdapter
@@ -30,6 +30,8 @@ import com.app.kiranachoice.recyclerView_adapters.SmallBannerCategoryAdapter
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.BEST_OFFER_PRODUCT
 import com.app.kiranachoice.utils.BEST_SELLING_PRODUCT
+import com.app.kiranachoice.utils.INDEX_ONE_CATEGORY
+import com.app.kiranachoice.utils.INDEX_TWO_CATEGORY
 import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.android.material.tabs.TabLayoutMediator
@@ -37,7 +39,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
 
-class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, ProductClickListener {
+class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 
     private var _bindingHome: FragmentHomeBinding? = null
     private val binding get() = _bindingHome!!
@@ -58,8 +60,6 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
     private lateinit var bestOfferProductsAdapter: HorizontalProductsAdapter
     private lateinit var bestSellingProductsAdapter: HorizontalProductsAdapter
-
-    private lateinit var cartItems : List<CartItem>
 
     private var totalCartItem = 0
 
@@ -109,7 +109,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
                         it?.let {
                             navController.navigate(
                                 HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
-                                    it[0].productTitle,
+                                    it[0].name,
                                     it[0]
                                 )
                             )
@@ -120,9 +120,8 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             }
 
 
-        viewModel.cartItems.observe(viewLifecycleOwner, {
-            totalCartItem = it.count()
-            cartItems = it
+        viewModel.totalCartItems.observe(viewLifecycleOwner, {
+            totalCartItem = it
             requireActivity().invalidateOptionsMenu()
         })
 
@@ -153,7 +152,7 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
             adapter = category1Adapter
         }
 
-        viewModel.categories.observe(viewLifecycleOwner, {
+        viewModel.firstCategories.observe(viewLifecycleOwner, {
             category1Adapter.list = it
             binding.shimmerLayout.rootLayout.stopShimmer()
             binding.shimmerLayout.root.visibility = View.GONE
@@ -164,8 +163,8 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
 
         // Best Offer Products [[ START ]] >>>>>>>>>>>>>>
         viewModel.bestOfferProducts.observe(viewLifecycleOwner, {
-            binding.bestOfferProductsAvailable = it.isNotEmpty()
-            bestOfferProductsAdapter = HorizontalProductsAdapter(it, cartItems,this)
+            binding.bestOfferProductsAvailable = it.second.isNotEmpty()
+            bestOfferProductsAdapter = HorizontalProductsAdapter(it.second, it.first,this)
             binding.recyclerViewBestOffers.apply {
                 setHasFixedSize(true)
                 adapter = bestOfferProductsAdapter
@@ -174,20 +173,20 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         // Best Offer Products [[ END ]] >>>>>>>>>>>>>>
 
 
-        val smallBannerCategoryAdapter = SmallBannerCategoryAdapter(this)
-        binding.recyclerViewCategory2.adapter = smallBannerCategoryAdapter
-
-        /*viewModel.category2.observe(viewLifecycleOwner, {
+        // Category 2 [[ START ]] >>>>>>>>>>>>>>>
+        viewModel.secondCategories.observe(viewLifecycleOwner, {
+            val smallBannerCategoryAdapter = SmallBannerCategoryAdapter(it,this)
             binding.recyclerViewCategory2.setHasFixedSize(true)
-            smallBannerCategoryAdapter.list = it
-        })*/
+            binding.recyclerViewCategory2.adapter = smallBannerCategoryAdapter
+        })
+        // Category [[ END ]] >>>>>>>>>>>>>>>
 
 
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
 
         viewModel.bestSellingProducts.observe(viewLifecycleOwner, {
-            binding.bestSellingProductAvailable = it.isNotEmpty()
-            bestSellingProductsAdapter = HorizontalProductsAdapter(it, cartItems,this)
+            binding.bestSellingProductAvailable = it.second.isNotEmpty()
+            bestSellingProductsAdapter = HorizontalProductsAdapter(it.second, it.first,this)
             binding.recyclerViewBestSelling.apply {
                 setHasFixedSize(true)
                 adapter = bestSellingProductsAdapter
@@ -339,13 +338,16 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         _bindingHome = null
     }
 
-    override fun onCategoryItemClick(category: Category) {
-        navController.navigate(
-            HomeFragmentDirections.actionNavHomeToCategoryFragment(
-                category,
-                category.category_name
+    override fun onCategoryItemClick(category : Category) {
+        if (category.index == INDEX_ONE_CATEGORY){
+            navController.navigate(
+                HomeFragmentDirections.actionNavHomeToCategoryFragment(category.name)
             )
-        )
+        }else if (category.index == INDEX_TWO_CATEGORY){
+            navController.navigate(
+                HomeFragmentDirections.actionHomeFragmentToProductsFragment(category.name)
+            )
+        }
     }
 
     override fun addItemToCart(
@@ -355,10 +357,10 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         position: Int
     ) {
         if (mAuth.currentUser != null) {
-            val packagingSizeModel = if (product.productPackagingSize.size > 1) {
-                product.productPackagingSize[packagingSize]
+            val packagingSizeModel = if (product.packagingSize.size > 1) {
+                product.packagingSize[packagingSize]
             } else {
-                product.productPackagingSize[0]
+                product.packagingSize[0]
             }
             when (viewModel.addItemToCart(product, packagingSizeModel, quantity)) {
                 BEST_OFFER_PRODUCT -> {
@@ -373,13 +375,12 @@ class HomeFragment : Fragment(), Category1Adapter.CategoryClickListener, Product
         } else {
             startActivity(Intent(requireContext(), AuthActivity::class.java))
         }
-
     }
 
     override fun onItemClick(product: Product) {
         navController.navigate(
             HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
-                product.productTitle,
+                product.name,
                 product
             )
         )

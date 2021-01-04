@@ -50,7 +50,7 @@ class SearchFragment : Fragment() {
         viewModel.navigateToSelectedProduct.observe(viewLifecycleOwner, {
             if (null != it) {
                 this.findNavController().navigate(
-                    SearchFragmentDirections.actionShowProducts(it.categoryName, it.key)
+                    SearchFragmentDirections.actionShowProducts(it.categoryName)
                 )
                 viewModel.showSearchProductsComplete()
             }

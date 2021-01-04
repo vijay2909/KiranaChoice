@@ -35,12 +35,12 @@ class HorizontalProductsAdapter(
     }
 
     override fun onBindViewHolder(holder: HorizontalProductsViewHolder, position: Int) {
-        val productModel = list[position]
-        holder.bind(productModel)
+        val product = list[position]
+        holder.bind(product)
 
         if (!cartItem.isNullOrEmpty() ){
             for (cartItem in cartItem) {
-                if (cartItem.productKey == productModel.product_key){
+                if (cartItem.productName == product.name){
                     holder.binding.btnAddToCart.visibility = View.GONE
                     holder.binding.quantityLayout.visibility = View.VISIBLE
                     holder.binding.userQuantity.text = cartItem.quantity
@@ -49,13 +49,14 @@ class HorizontalProductsAdapter(
             }
         }
 
+
         holder.binding.btnIncrease.setOnClickListener {
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
-            if (quantity < 5) {
+            if (quantity < list[holder.adapterPosition].minOrderQty) {
                 ++quantity
                 val qty = quantity.toString()
                 holder.binding.userQuantity.text = qty
-                listener.onQuantityChanged(productModel.product_key, quantity = qty)
+                listener.onQuantityChanged(product.key, quantity = qty)
             } else Snackbar.make(
                 holder.binding.root,
                 "You can get maximum 5 quantity.",
@@ -63,17 +64,18 @@ class HorizontalProductsAdapter(
             ).show()
         }
 
+
         holder.binding.btnDecrease.setOnClickListener {
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
             --quantity
             if (quantity == 0) {
                 holder.binding.btnAddToCart.visibility = View.VISIBLE
                 holder.binding.quantityLayout.visibility = View.GONE
-                listener.onRemoveProduct(productModel.product_key)
+                listener.onRemoveProduct(product.key)
             } else {
                 val qty = quantity.toString()
                 holder.binding.userQuantity.text = qty
-                listener.onQuantityChanged(productModel.product_key, qty)
+                listener.onQuantityChanged(product.key, qty)
             }
         }
 
@@ -84,6 +86,7 @@ class HorizontalProductsAdapter(
     }
 
     override fun getItemCount(): Int = list.size
+
 
     inner class HorizontalProductsViewHolder(val binding: ItemHorizontolProductItemBinding, val listener: ProductClickListener?) :
         RecyclerView.ViewHolder(binding.root) {

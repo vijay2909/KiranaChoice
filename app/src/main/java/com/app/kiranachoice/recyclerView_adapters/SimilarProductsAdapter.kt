@@ -11,18 +11,13 @@ import com.app.kiranachoice.listeners.ProductClickListener
 import com.google.android.material.snackbar.Snackbar
 
 class SimilarProductsAdapter(
+    private val productsList : List<Product>,
+    private val productKey: String?,
     private val cartItem: List<CartItem>,
-    private val productKey : String,
     private val listener: ProductClickListener
 ) : RecyclerView.Adapter<SimilarProductsAdapter.SimilarProductsViewHolder>() {
 
     var addToCartClickedItemPosition = -1
-
-    var list = listOf<Product>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimilarProductsViewHolder {
         val view = ItemHorizontolProductItemBinding.inflate(
@@ -35,12 +30,14 @@ class SimilarProductsAdapter(
     }
 
     override fun onBindViewHolder(holder: SimilarProductsViewHolder, position: Int) {
-        val product = list[position]
-        holder.bind(product)
+        val product = productsList[position]
+
+        // skip the current product
+        if (!productKey.equals(product.key)) holder.bind(product)
 
         if (!cartItem.isNullOrEmpty()){
             for (cartItem in cartItem) {
-                if (cartItem.productKey == product.product_key){
+                if (cartItem.productId == product.id){
                     holder.binding.btnAddToCart.visibility = View.GONE
                     holder.binding.quantityLayout.visibility = View.VISIBLE
                     holder.binding.userQuantity.text = cartItem.quantity
@@ -91,7 +88,7 @@ class SimilarProductsAdapter(
         }
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int = productsList.size
 
     class SimilarProductsViewHolder(
         val binding: ItemHorizontolProductItemBinding,

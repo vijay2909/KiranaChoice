@@ -31,4 +31,16 @@ class Converters {
         return Gson().toJson(list)
     }
 
+
+    @TypeConverter
+    fun fromSearchValue(value: String?): List<String> {
+        val listType: Type = object : TypeToken<List<String>>(){}.type
+        return Gson().fromJson(value, listType)
+    }
+
+    @TypeConverter
+    fun fromSearchList(list: List<String>): String? {
+        return Gson().toJson(list)
+    }
+
 }

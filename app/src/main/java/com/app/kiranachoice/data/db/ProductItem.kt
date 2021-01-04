@@ -9,23 +9,21 @@ import com.app.kiranachoice.data.domain.Product
 @Entity
 data class ProductItem constructor(
     @PrimaryKey
-    var product_key: String,
-    var listSequence: Long,
-    var sub_category_key: String,
-    var sub_category_name: String,
+    var key: String,
+    var id: Int,
+    var subCategoryName: String,
     var product_sku: String,
-    var productImageUrl: String,
-    var productTitle: String,
-    var productPackagingSize: List<PackagingSizeModel>,
+    var image: String,
+    var name: String,
+    var packagingSize: List<PackagingSizeModel>,
     var aboutTheProduct: List<AboutProductModel>,
-    var totalQuantity: Long,
-    var minimumOrderQuantity: Long,
+    var totalQty: Long,
+    var minOrderQty: Long,
     var makeBestOffer: Boolean,
     var makeBestSelling: Boolean,
     var makeRecommendedProduct: Boolean,
     var isAvailable: Boolean
 )
-
 
 /**
  * Map ProductItem to domain entities
@@ -33,17 +31,16 @@ data class ProductItem constructor(
 fun List<ProductItem>.asDomainModel(): List<Product> {
     return map {
         Product(
-            product_key = it.product_key,
-            listSequence = it.listSequence,
-            sub_category_key = it.sub_category_key,
-            sub_category_name = it.sub_category_name,
+            key = it.key,
+            id = it.id,
+            subCategoryName = it.subCategoryName,
             product_sku = it.product_sku,
-            productImageUrl = it.productImageUrl,
-            productTitle = it.productTitle,
-            productPackagingSize = it.productPackagingSize,
+            image = it.image,
+            name = it.name,
+            packagingSize = it.packagingSize,
             aboutTheProduct = it.aboutTheProduct,
-            totalQuantity = it.totalQuantity,
-            minimumOrderQuantity = it.minimumOrderQuantity,
+            totalQty = it.totalQty,
+            minOrderQty = it.minOrderQty,
             makeBestOffer = it.makeBestOffer,
             makeBestSelling = it.makeBestSelling,
             makeRecommendedProduct = it.makeRecommendedProduct,

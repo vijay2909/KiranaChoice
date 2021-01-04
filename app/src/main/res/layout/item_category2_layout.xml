@@ -6,7 +6,7 @@
     <data>
         <variable
             name="clickListener"
-            type="com.app.kiranachoice.recyclerView_adapters.Category1Adapter.CategoryClickListener" />
+            type="com.app.kiranachoice.listeners.CategoryClickListener" />
         <variable
             name="model"
             type="com.app.kiranachoice.data.domain.Category" />
@@ -24,7 +24,7 @@
         <ImageView
             android:layout_width="180dp"
             android:layout_height="110dp"
-            app:imageUrl="@{model.category_image_url}"
+            app:imageUrl="@{model.image}"
             android:contentDescription="@string/category_image"
             tools:src="@drawable/ic_placeholder"
             android:scaleType="fitXY" />

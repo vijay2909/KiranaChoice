@@ -8,15 +8,14 @@ import com.app.kiranachoice.data.SearchWord
 data class SearchItem(
     @PrimaryKey
     val productName: String,
-    val subCategoryKey: String,
-    val categoryName: String
+    val categoryName: String,
+    val tag : List<String>
 )
 
 fun List<SearchItem>.asDomainModel() : List<SearchWord> {
     return map {
         SearchWord(
             productName = it.productName,
-            key = it.subCategoryKey,
             categoryName = it.categoryName
         )
     }

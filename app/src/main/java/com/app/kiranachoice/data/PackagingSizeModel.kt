@@ -1,10 +1,12 @@
 package com.app.kiranachoice.data
 
+import com.google.firebase.database.IgnoreExtraProperties
 import java.io.Serializable
 
+@IgnoreExtraProperties
 data class PackagingSizeModel(
-    var packagingSize: String? = null,
     var mrp : String? = null,
+    var size : String? = null,
     var price: String? = null,
     var discount: String? = null
 ) : Serializable
