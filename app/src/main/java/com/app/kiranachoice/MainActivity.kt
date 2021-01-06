@@ -100,7 +100,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             when (destination.id) {
                 R.id.cartFragment, R.id.contactUsFragment,
                 R.id.myOrdersFragment, R.id.editProfileFragment,
-                R.id.addressFragment, R.id.paymentFragment, R.id.chatFragment -> {
+                R.id.addressFragment, R.id.paymentFragment, R.id.chatFragment,
+                R.id.cameraFragment -> {
                     binding.appBarMain.bottomNavView.visibility = View.GONE
                 }
                 else -> {

@@ -58,7 +58,7 @@ interface DatabaseDao {
     suspend fun insertProducts(products: List<ProductItem>)
 
     @Query("SELECT * FROM productitem WHERE `key`=:productKey")
-    suspend fun getProduct(productKey: String): ProductItem
+    fun getProduct(productKey: String): LiveData<ProductItem>
 
     @Query("SELECT * FROM productitem WHERE subCategoryName =:subCategoryName AND isAvailable = :value ORDER BY id ASC")
     fun getProductBySubCategoryName(subCategoryName: String, value: Boolean = true): LiveData<List<ProductItem>>

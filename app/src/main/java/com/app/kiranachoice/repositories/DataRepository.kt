@@ -226,9 +226,10 @@ class DataRepository(private val databaseDao: DatabaseDao) {
             it.asDomainModel()
         }
 
-    suspend fun getProduct(productId: String) = withContext(Dispatchers.IO) {
-        listOf(databaseDao.getProduct(productId)).asDomainModel()
+    fun getProduct(productId: String) = Transformations.map(databaseDao.getProduct(productId)){
+        it.asDomainModel()
     }
+
 
     fun getProductsByCategoryName(subCategoryName: String) =
         Transformations.map(databaseDao.getProductBySubCategoryName(subCategoryName)) {

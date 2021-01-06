@@ -2,12 +2,14 @@ package com.app.kiranachoice.views.products
 
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.app.kiranachoice.data.PackagingSizeModel
 import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.addToCart
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class ProductDetailsViewModel(private val subCategoryName: String, private val dataRepository: DataRepository) : ViewModel() {
@@ -35,9 +37,8 @@ class ProductDetailsViewModel(private val subCategoryName: String, private val d
         product: Product,
         packagingSizeModel: PackagingSizeModel,
         quantity: String
-    ) = runBlocking {
-        val result = async { addToCart(dataRepository, product, packagingSizeModel, quantity) }
-        result.await()
+    ) = viewModelScope.launch {
+        addToCart(dataRepository, product, packagingSizeModel, quantity)
     }
 
 }

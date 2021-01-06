@@ -10,7 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentChatBinding
 import com.app.kiranachoice.data.Chat
 import com.app.kiranachoice.network.SendNotificationAPI
@@ -74,6 +76,10 @@ class ChatFragment : Fragment() {
 
         binding.messageEditText.addTextChangedListener {
             binding.sendButton.isEnabled = it.toString().trim().isNotEmpty()
+        }
+
+        binding.addCameraImage.setOnClickListener {
+            findNavController().navigate(R.id.action_chatFragment_to_cameraFragment)
         }
 
         binding.sendButton.setOnClickListener {

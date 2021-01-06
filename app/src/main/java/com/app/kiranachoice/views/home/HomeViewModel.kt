@@ -5,14 +5,10 @@ import com.app.kiranachoice.data.PackagingSizeModel
 import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.repositories.DataRepository
-import com.app.kiranachoice.utils.BEST_OFFER_PRODUCT
-import com.app.kiranachoice.utils.BEST_RECOMMENDED_PRODUCT
-import com.app.kiranachoice.utils.BEST_SELLING_PRODUCT
 import com.app.kiranachoice.utils.addToCart
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
 
@@ -99,29 +95,13 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
         product: Product,
         packagingSizeModel: PackagingSizeModel,
         quantity: String
-    ): String {
+    ) {
         if (mAuth.currentUser == null) {
             _navigateToAuthActivity.value = true
-            return ""
         } else {
-            var added = ""
-            runBlocking {
-                val result =
-                    async { addToCart(dataRepository, product, packagingSizeModel, quantity) }
-                if (result.await()) {
-                    _productAdded.postValue(true)
-                    added = when {
-                        product.makeBestOffer -> BEST_OFFER_PRODUCT
-                        product.makeBestSelling -> BEST_SELLING_PRODUCT
-                        product.makeRecommendedProduct -> BEST_RECOMMENDED_PRODUCT
-                        else -> ""
-                    }
-                } else {
-                    _alreadyAddedMsg.postValue("Already added in cart.")
-                }
+            viewModelScope.launch {
+                addToCart(dataRepository, product, packagingSizeModel, quantity)
             }
-
-            return added
         }
     }
 
@@ -135,13 +115,7 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
     }
 
 
-    fun getProduct(productId: String): LiveData<List<Product>> {
-        val result = MutableLiveData<List<Product>>()
-        viewModelScope.launch {
-            result.postValue(dataRepository.getProduct(productId))
-        }
-        return result
-    }
+    fun getProduct(productId: String)= dataRepository.getProduct(productId)
 
 
     fun removeProductFromCart(productKey: String) = viewModelScope.launch {

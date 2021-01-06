@@ -9,7 +9,7 @@
 
         <variable
             name="clickListener"
-            type="com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter.ProductListener" />
+            type="com.app.kiranachoice.listeners.ProductClickListener" />
 
         <variable
             name="product"

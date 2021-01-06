@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -131,11 +130,7 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
             } else {
                 product.packagingSize[0]
             }
-            if (viewModel.addItemToCart(product, packagingSizeModel, quantity)) {
-                similarProductsAdapter.addToCartClickedItemPosition = position
-                similarProductsAdapter.notifyItemChanged(position)
-                Toast.makeText(requireContext(), "1 item Added.", Toast.LENGTH_SHORT).show()
-            }
+            viewModel.addItemToCart(product, packagingSizeModel, quantity)
         } else {
             startActivity(Intent(requireContext(), AuthActivity::class.java))
         }
@@ -155,7 +150,7 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
 
     }
 
-    override fun onQuantityChanged(productKey: String, quantity: String) {
+    override fun onQuantityChanged(product: Product/*productKey: String, quantity: String*/) {
 
     }
 }

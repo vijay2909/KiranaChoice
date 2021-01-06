@@ -18,5 +18,7 @@ data class Product constructor(
     var makeBestOffer: Boolean,
     var makeBestSelling: Boolean,
     var makeRecommendedProduct: Boolean,
-    var isAvailable: Boolean
+    var isAvailable: Boolean,
+    var added : Boolean = false,
+    var userQuantity : Int = 0
 ): Serializable

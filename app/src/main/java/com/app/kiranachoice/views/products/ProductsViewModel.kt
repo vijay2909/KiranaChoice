@@ -8,7 +8,6 @@ import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.addToCart
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class ProductsViewModel(subCategoryName: String, private val dataRepository: DataRepository) : ViewModel() {
@@ -54,23 +53,13 @@ class ProductsViewModel(subCategoryName: String, private val dataRepository: Dat
         product: Product,
         packagingSizeModel: PackagingSizeModel,
         quantity: String
-    ): Boolean {
+    ) {
         if (mAuth.currentUser == null) {
             _navigateToAuthActivity.value = true
-            return false
         } else {
-            var added = false
             viewModelScope.launch {
-                val result =
-                    async { addToCart(dataRepository, product, packagingSizeModel, quantity) }
-                if (result.await()) {
-                    _productAdded.postValue(true)
-                    added = true
-                } else {
-                    _alreadyAddedMsg.postValue("Already added in cart.")
-                }
+                addToCart(dataRepository, product, packagingSizeModel, quantity)
             }
-            return added
         }
     }
 
@@ -83,7 +72,14 @@ class ProductsViewModel(subCategoryName: String, private val dataRepository: Dat
         _productAdded.value = false
     }
 
-    fun deleteCartItem(product: Product) = viewModelScope.launch {
-        dataRepository.delete(product.key)
+    fun deleteCartItem(productKey: String) = viewModelScope.launch {
+        dataRepository.delete(productKey)
+    }
+
+    /**
+     * update product quantity
+     * */
+    fun updateQuantity(productKey: String, quantity: String) = viewModelScope.launch {
+        dataRepository.update(productKey, quantity)
     }
 }

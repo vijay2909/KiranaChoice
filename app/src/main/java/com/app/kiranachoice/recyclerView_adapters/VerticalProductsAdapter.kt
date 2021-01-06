@@ -3,36 +3,51 @@ package com.app.kiranachoice.recyclerView_adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.ItemVerticalProductListBinding
-import com.google.android.material.snackbar.Snackbar
+import com.app.kiranachoice.listeners.ProductClickListener
 
 
 class VerticalProductsAdapter(
-    private val list : List<Product>,
-    private val cartItem: List<CartItem>,
-    private val listener: ProductListener
+    private val listener: ProductClickListener
 ) :
-    RecyclerView.Adapter<VerticalProductsAdapter.VerticalProductViewHolder>() {
+    ListAdapter<Product, VerticalProductsAdapter.VerticalProductViewHolder>(DiffUtilCallback()) {
 
-    var addToCartClickedItemPosition = -1
+    class DiffUtilCallback : DiffUtil.ItemCallback<Product>() {
+        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem === newItem
+        }
+
+        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem.id == newItem.id
+        }
+    }
+
+    private lateinit var cartItems : List<CartItem>
+
+    fun submitCartItem(cartItems : List<CartItem>){
+        this.cartItems = cartItems
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VerticalProductViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ItemVerticalProductListBinding.inflate(layoutInflater, parent, false)
-        return VerticalProductViewHolder(binding, listener)
+        binding.clickListener = listener
+        return VerticalProductViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: VerticalProductViewHolder, position: Int) {
-        holder.bind(list[position])
+        val product = getItem(position)
+        holder.bind(product)
 
-        if (!cartItem.isNullOrEmpty() ){
-            for (cartItem in cartItem) {
-                if (cartItem.productId == list[position].id){
+        if (this::cartItems.isInitialized ){
+            for (cartItem in cartItems) {
+                if (cartItem.productKey == product.key){
                     holder.binding.btnAddToCart.visibility = View.GONE
                     holder.binding.quantityLayout.visibility = View.VISIBLE
                     holder.binding.userQuantity.text = cartItem.quantity
@@ -41,7 +56,7 @@ class VerticalProductsAdapter(
             }
         }
 
-        holder.binding.btnIncrease.setOnClickListener {
+        /*holder.binding.btnIncrease.setOnClickListener {
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
             if (quantity < list[holder.adapterPosition].minOrderQty) ++quantity else Snackbar.make(
                 holder.binding.root,
@@ -61,27 +76,16 @@ class VerticalProductsAdapter(
             } else {
                 holder.binding.userQuantity.text = quantity.toString()
             }
-        }
-
-        if (addToCartClickedItemPosition == position) {
-            holder.binding.btnAddToCart.visibility = View.GONE
-            holder.binding.quantityLayout.visibility = View.VISIBLE
-        }
-
+        }*/
 
     }
 
     inner class VerticalProductViewHolder(
         val binding: ItemVerticalProductListBinding,
-        listener: ProductListener
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private var model: Product? = null
-
         fun bind(product: Product) {
-            this.model = product
-            binding.clickListener = listener
             binding.product = product
             binding.executePendingBindings()
         }
@@ -90,13 +94,45 @@ class VerticalProductsAdapter(
             with(binding) {
                 btnAddToCart.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
-                        model?.let { model ->
-                            listener.onAddToCartButtonClick(
-                                model,
+                        getItem(adapterPosition)?.let { product ->
+                            product.added = !product.added
+                            notifyItemChanged(adapterPosition)
+                            listener.addItemToCart(
+                                product,
                                 spinnerPackaging.selectedItemPosition,
                                 userQuantity.text.toString(),
                                 adapterPosition
                             )
+                        }
+                    }
+                }
+
+
+                btnIncrease.setOnClickListener {
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        getItem(adapterPosition)?.let { product ->
+                            if (product.userQuantity < product.minOrderQty) {
+                                product.userQuantity += 1
+                                notifyItemChanged(adapterPosition)
+                            }
+                            listener.onQuantityChanged(product/*.key, quantity = qty*/)
+                        }
+                    }
+                }
+
+
+                btnDecrease.setOnClickListener {
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        getItem(adapterPosition)?.let { product ->
+                            if (product.userQuantity == 1) {
+                                product.added = !product.added
+                                notifyItemChanged(adapterPosition)
+                                listener.onRemoveProduct(product.key)
+                            } else {
+                                --product.userQuantity
+                                notifyItemChanged(adapterPosition)
+                                listener.onQuantityChanged(product)
+                            }
                         }
                     }
                 }

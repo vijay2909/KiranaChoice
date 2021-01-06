@@ -9,5 +9,5 @@ interface ProductClickListener {
                       position: Int)
     fun onItemClick(product: Product)
     fun onRemoveProduct(productKey: String)
-    fun onQuantityChanged(productKey: String, quantity: String)
+    fun onQuantityChanged(product: Product/*productKey: String, quantity: String*/)
 }

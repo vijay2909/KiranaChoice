@@ -25,6 +25,7 @@
             layout="@layout/shimmer_effect_home_page_layout" />
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".views.home.HomeFragment">
@@ -37,7 +38,7 @@
                 android:orientation="vertical"
                 android:paddingTop="0dp"
                 android:paddingBottom="16dp"
-                android:visibility="visible">
+                android:visibility="invisible">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/searchCard"
@@ -139,6 +140,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
                     android:orientation="horizontal"
+                    android:descendantFocusability="blocksDescendants"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_category2_layout" />
 

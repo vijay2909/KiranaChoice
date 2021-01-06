@@ -15,20 +15,20 @@ import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.data.db.CartDatabase
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.FragmentProductsBinding
+import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.firebase.auth.FirebaseAuth
 
-class ProductsFragment : Fragment(),
-    VerticalProductsAdapter.ProductListener {
+class ProductsFragment : Fragment(), ProductClickListener{
 
     private var _bindingProduct: FragmentProductsBinding? = null
     private val binding get() = _bindingProduct!!
     private lateinit var viewModel: ProductsViewModel
 
     private lateinit var navController: NavController
-    private var verticalProductsAdapter: VerticalProductsAdapter? = null
+    private lateinit var verticalProductsAdapter: VerticalProductsAdapter
 
     private lateinit var mAuth: FirebaseAuth
     private val args: ProductsFragmentArgs by navArgs()
@@ -43,6 +43,9 @@ class ProductsFragment : Fragment(),
             ViewModelProvider(this, productViewModelFactory).get(ProductsViewModel::class.java)
         _bindingProduct = FragmentProductsBinding.inflate(inflater, container, false)
         mAuth = FirebaseAuth.getInstance()
+
+        verticalProductsAdapter = VerticalProductsAdapter(this)
+
         return binding.root
     }
 
@@ -74,7 +77,7 @@ class ProductsFragment : Fragment(),
 
         viewModel.getProducts.observe(viewLifecycleOwner, {
             Log.d("Products", "products: ${it.second}")
-            verticalProductsAdapter = VerticalProductsAdapter(it.second, it.first, this)
+            verticalProductsAdapter.submitList(it.second)
             binding.recyclerViewProductList.setHasFixedSize(true)
             binding.recyclerViewProductList.adapter = verticalProductsAdapter
         })
@@ -86,7 +89,8 @@ class ProductsFragment : Fragment(),
         _bindingProduct = null
     }
 
-    override fun onAddToCartButtonClick(
+
+    override fun addItemToCart(
         product: Product,
         packagingSize: Int,
         quantity: String,
@@ -98,18 +102,10 @@ class ProductsFragment : Fragment(),
             } else {
                 product.packagingSize[0]
             }
-            val result = viewModel.addItemToCart(product, packagingSizeModel, quantity)
-            if (result) {
-                verticalProductsAdapter?.addToCartClickedItemPosition = position
-                verticalProductsAdapter?.notifyItemChanged(position)
-            }
+            viewModel.addItemToCart(product, packagingSizeModel, quantity)
         } else {
             startActivity(Intent(requireContext(), AuthActivity::class.java))
         }
-    }
-
-    override fun onItemRemoved(product: Product) {
-        viewModel.deleteCartItem(product)
     }
 
     override fun onItemClick(product: Product) {
@@ -118,6 +114,14 @@ class ProductsFragment : Fragment(),
                 product.name, product
             )
         )
+    }
+
+    override fun onRemoveProduct(productKey: String) {
+        viewModel.deleteCartItem(productKey)
+    }
+
+    override fun onQuantityChanged(product: Product) {
+        viewModel.updateQuantity(product.key, product.userQuantity.toString())
     }
 
 }

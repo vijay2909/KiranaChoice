@@ -214,4 +214,6 @@
     <string name="cancel_order">Cancel Order</string>
     <string name="order_cancelled">Order canceled</string>
     <string name="type_your_message">Type Your Message</string>
+
+    <string name="rationale_camera">This app needs access to your camera so you can take pictures.</string>
 </resources>

@@ -25,6 +25,25 @@ data class ProductItem constructor(
     var isAvailable: Boolean
 )
 
+fun ProductItem.asDomainModel(): Product {
+    return Product(
+        key = this.key,
+        id = this.id,
+        subCategoryName = this.subCategoryName,
+        product_sku = this.product_sku,
+        image = this.image,
+        name = this.name,
+        packagingSize = this.packagingSize,
+        aboutTheProduct = this.aboutTheProduct,
+        totalQty = this.totalQty,
+        minOrderQty = this.minOrderQty,
+        makeBestOffer = this.makeBestOffer,
+        makeBestSelling = this.makeBestSelling,
+        makeRecommendedProduct = this.makeRecommendedProduct,
+        isAvailable = this.isAvailable
+    )
+}
+
 /**
  * Map ProductItem to domain entities
  */

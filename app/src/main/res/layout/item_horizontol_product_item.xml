@@ -133,6 +133,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/gradient_background"
                     android:text="@string/add_to_cart"
+                    android:visibility="@{product.added ? View.INVISIBLE : View.VISIBLE}"
                     android:textAllCaps="false"
                     app:backgroundTint="@null" />
 
@@ -141,7 +142,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    android:visibility="invisible">
+                    android:visibility="@{product.added ? View.VISIBLE : View.INVISIBLE}">
 
                     <ImageButton
                         android:id="@+id/btnDecrease"
@@ -159,7 +160,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="@string/one" />
+                        android:text="@{String.valueOf(product.userQuantity)}" />
 
                     <ImageButton
                         android:id="@+id/btnIncrease"

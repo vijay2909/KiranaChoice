@@ -24,26 +24,19 @@ suspend fun addToCart(
     product: Product,
     packagingSizeModel: PackagingSizeModel,
     quantity: String
-): Boolean {
-    val isAlreadyAdded = dataRepository.isAlreadyAdded(
+) {
+    val cartItem = CartItem(
         product.key,
-        packagingSizeModel.size.toString()
+        product.id,
+        product.product_sku,
+        product.name,
+        product.image,
+        packagingSizeModel.mrp.toString(),
+        packagingSizeModel.price.toString(),
+        packagingSizeModel.size.toString(),
+        quantity
     )
-    if (!isAlreadyAdded) {
-        val cartItem = CartItem(
-            product.key,
-            product.id,
-            product.product_sku,
-            product.name,
-            product.image,
-            packagingSizeModel.mrp.toString(),
-            packagingSizeModel.price.toString(),
-            packagingSizeModel.size.toString(),
-            quantity
-        )
-        dataRepository.insert(cartItem)
-    }
-    return !isAlreadyAdded
+    dataRepository.insert(cartItem)
 }
 
 
