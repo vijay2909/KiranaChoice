@@ -9,14 +9,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.camera.core.*
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentCameraBinding
-import pub.devrel.easypermissions.AppSettingsDialog
-import pub.devrel.easypermissions.EasyPermissions
+import com.google.firebase.storage.FirebaseStorage
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
+import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import com.vmadalin.easypermissions.models.PermissionRequest
+import id.zelory.compressor.Compressor
+import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -24,17 +33,19 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 
-class CameraFragment : Fragment(), EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
+class CameraFragment : Fragment(), EasyPermissions.PermissionCallbacks,
+    EasyPermissions.RationaleCallbacks {
 
 
-
-    private var _binding : FragmentCameraBinding? = null
+    private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
 
     private var imageCapture: ImageCapture? = null
 
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
+
+    private val storage = FirebaseStorage.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,11 +65,7 @@ class CameraFragment : Fragment(), EasyPermissions.PermissionCallbacks, EasyPerm
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
 
         // Request camera permissions
-        if (hasPermissionAllowed()) {
-            startCamera()
-        } else {
-            requestForPermission()
-        }
+        hasPermissionAllowed()
 
         binding.cameraCaptureButton.setOnClickListener {
             takePhoto()
@@ -74,25 +81,28 @@ class CameraFragment : Fragment(), EasyPermissions.PermissionCallbacks, EasyPerm
         // Create time-stamped output file to hold the image
         val photoFile = File(
             outputDirectory,
-            SimpleDateFormat(FILENAME_FORMAT, Locale.US
-            ).format(System.currentTimeMillis()) + ".jpg")
+            SimpleDateFormat(
+                FILENAME_FORMAT, Locale.US
+            ).format(System.currentTimeMillis()) + ".jpg"
+        )
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-        // Set up image capture listener, which is triggered after photo has
-        // been taken
+        // Set up image capture listener, which is triggered after photo has been taken
         imageCapture.takePicture(
-            outputOptions, ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageSavedCallback {
+            outputOptions,
+            ContextCompat.getMainExecutor(requireContext()),
+            object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedUri = Uri.fromFile(photoFile)
-                    val msg = "Photo capture succeeded: $savedUri"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
+                    lifecycleScope.launch {
+                        val compressedImageFile = Compressor.compress(requireContext(), photoFile)
+                        val savedUri = Uri.fromFile(compressedImageFile)
+                    }
                 }
             })
     }
@@ -124,25 +134,46 @@ class CameraFragment : Fragment(), EasyPermissions.PermissionCallbacks, EasyPerm
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture)
+                    this, cameraSelector, preview, imageCapture
+                )
 
-            } catch(exc: Exception) {
+            } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
-
-    private fun hasPermissionAllowed(): Boolean {
-        return EasyPermissions.hasPermissions(requireContext(), CAMERA_PERMISSION)
+    @AfterPermissionGranted(REQUEST_CODE_PERMISSIONS)
+    private fun hasPermissionAllowed() {
+        if (EasyPermissions.hasPermissions(requireContext(), CAMERA_PERMISSION)) {
+            // Already have permission, do the thing
+            startCamera()
+        } else {
+            val request = PermissionRequest.Builder(requireContext())
+                .code(REQUEST_CODE_PERMISSIONS)
+                .perms(CAMERA_ARRAY_PERMISSION)
+                /*.theme(R.style.my_fancy_style)*/
+                .rationale(R.string.rationale_camera)
+                .positiveButtonText(R.string.rationale_ok)
+                .build()
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(this, request)
+            /*EasyPermissions.requestPermissions(
+                this,
+                getString(R.string.rationale_camera),
+                REQUEST_CODE_PERMISSIONS,
+                CAMERA_PERMISSION
+            )*/
+        }
     }
 
-    private fun requestForPermission() {
-        EasyPermissions.requestPermissions(
-            this, getString(R.string.rationale_camera),
-            REQUEST_CODE_PERMISSIONS, CAMERA_PERMISSION
-        )
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        hasPermissionAllowed()
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
+        hasPermissionAllowed()
     }
 
     override fun onRequestPermissionsResult(
@@ -155,32 +186,12 @@ class CameraFragment : Fragment(), EasyPermissions.PermissionCallbacks, EasyPerm
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
-    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        if (hasPermissionAllowed()) startCamera()
-    }
-
-    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
-
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            AppSettingsDialog.Builder(this).build().show()
-        }else{
-            requestForPermission()
-        }
-
-    }
-
-    override fun onRationaleAccepted(requestCode: Int) {
-        requestForPermission()
-    }
-
-    override fun onRationaleDenied(requestCode: Int) {
-        requestForPermission()
-    }
 
 
     private fun getOutputDirectory(): File {
         val mediaDir = requireActivity().externalMediaDirs.firstOrNull()?.let {
-            File(it, resources.getString(R.string.app_name)).apply { mkdirs() } }
+            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
+        }
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else requireContext().filesDir
     }
@@ -200,13 +211,26 @@ class CameraFragment : Fragment(), EasyPermissions.PermissionCallbacks, EasyPerm
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
 
-    companion object{
+    companion object {
         private const val TAG = "CameraFragment"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
+        private val CAMERA_ARRAY_PERMISSION = arrayOf(Manifest.permission.CAMERA)
     }
 
+    override fun onRationaleAccepted(requestCode: Int) {
+        hasPermissionAllowed()
+    }
+
+    override fun onRationaleDenied(requestCode: Int) {
+
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, CAMERA_PERMISSION)) {
+            SettingsDialog.Builder(requireContext()).build().show()
+        }else{
+            hasPermissionAllowed()
+        }
+    }
 
 
 }

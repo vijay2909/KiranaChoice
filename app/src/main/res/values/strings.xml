@@ -216,4 +216,6 @@
     <string name="type_your_message">Type Your Message</string>
 
     <string name="rationale_camera">This app needs access to your camera so you can take pictures.</string>
+    <string name="rationale_ok">OK</string>
+    <string name="no_internet_image">no internet image</string>
 </resources>

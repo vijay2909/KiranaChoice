@@ -1,8 +1,10 @@
 package com.app.kiranachoice.utils
 
+import android.net.ConnectivityManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 import com.app.kiranachoice.data.PackagingSizeModel
 import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
@@ -81,3 +83,4 @@ fun getDateFromUnix(unix: Long?) : String?{
     sdf.timeZone = TimeZone.getTimeZone("GMT+5:30")
     return date?.let { sdf.format(it) }
 }
+

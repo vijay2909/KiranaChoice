@@ -25,6 +25,7 @@ import com.app.kiranachoice.R
 import com.app.kiranachoice.data.db.CartDatabase
 import com.app.kiranachoice.databinding.DialogBookingConfirmedBinding
 import com.app.kiranachoice.databinding.FragmentPaymentBinding
+import com.app.kiranachoice.network.DateTimeApi
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.DELIVERY_FREE
 import com.app.kiranachoice.utils.Mailer
@@ -49,7 +50,8 @@ class PaymentFragment : Fragment() {
     ): View {
         val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
         dataRepository = DataRepository(localDatabase.databaseDao)
-        val factory = PaymentViewModelFactory(dataRepository)
+        val apiService = (requireActivity().applicationContext as App).getApiService()
+        val factory = PaymentViewModelFactory(apiService, dataRepository)
         viewModel = ViewModelProvider(this, factory).get(PaymentViewModel::class.java)
 
         bindingPayment = FragmentPaymentBinding.inflate(inflater, container, false)
@@ -252,10 +254,10 @@ class PaymentFragment : Fragment() {
 }
 
 @Suppress("UNCHECKED_CAST")
-class PaymentViewModelFactory(private val dataRepository: DataRepository) : ViewModelProvider.Factory {
+class PaymentViewModelFactory(private val apiService: DateTimeApi, private val dataRepository: DataRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PaymentViewModel::class.java)){
-            return PaymentViewModel(dataRepository) as T
+            return PaymentViewModel(apiService, dataRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel")
     }

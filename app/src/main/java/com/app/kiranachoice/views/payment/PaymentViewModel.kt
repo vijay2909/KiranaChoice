@@ -23,7 +23,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class PaymentViewModel(private val dataRepository: DataRepository) : ViewModel() {
+class PaymentViewModel(private val apiService: DateTimeApi, private val dataRepository: DataRepository) : ViewModel() {
 
     private val dbFire: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -31,8 +31,6 @@ class PaymentViewModel(private val dataRepository: DataRepository) : ViewModel()
 
     val allProducts = dataRepository.allCartItems
 
-    private var _orderPlacedDate = MutableLiveData<Long>()
-    val orderPlacedDate : LiveData<Long> get() = _orderPlacedDate
 
     val user = dataRepository.user
 
@@ -167,10 +165,12 @@ class PaymentViewModel(private val dataRepository: DataRepository) : ViewModel()
         return payload
     }
 
+    private var _orderPlacedDate = MutableLiveData<Long>()
+    val orderPlacedDate : LiveData<Long> get() = _orderPlacedDate
 
     private fun getTime() {
-
-        DateTimeApi.getInstance().getTime("3K01ECC74C9F", "json", "IN").enqueue(object : Callback<CurrentDateTime> {
+        apiService.getTime("3K01ECC74C9F", "json", "IN").enqueue(object :
+            Callback<CurrentDateTime> {
             override fun onResponse(
                 call: Call<CurrentDateTime>,
                 response: Response<CurrentDateTime>

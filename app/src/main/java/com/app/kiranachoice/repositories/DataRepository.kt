@@ -13,7 +13,10 @@ import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.utils.*
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking

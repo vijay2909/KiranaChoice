@@ -1,9 +1,14 @@
 package com.app.kiranachoice
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
@@ -21,7 +26,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 
 
-class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity()/*BaseActivity()*/, NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -100,16 +105,22 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             when (destination.id) {
                 R.id.cartFragment, R.id.contactUsFragment,
                 R.id.myOrdersFragment, R.id.editProfileFragment,
-                R.id.addressFragment, R.id.paymentFragment, R.id.chatFragment,
+                R.id.addressFragment, R.id.paymentFragment, R.id.chatFragment -> {
+                    binding.appBarMain.bottomNavView.visibility = View.GONE
+                    supportActionBar?.show()
+                }
                 R.id.cameraFragment -> {
                     binding.appBarMain.bottomNavView.visibility = View.GONE
+                    supportActionBar?.hide()
                 }
                 else -> {
                     binding.appBarMain.bottomNavView.visibility = View.VISIBLE
+                    supportActionBar?.show()
                 }
             }
         }
     }
+
 
     private fun setupActionBar() {
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -122,40 +133,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun setupBottomNavMenu() {
         binding.appBarMain.bottomNavView.setupWithNavController(navController)
     }
-
-
-    /*override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-
-        val menuItem = menu.findItem(R.id.cartFragment)
-
-        val actionView = menuItem.actionView
-
-        val cartBadgeTextView = actionView.findViewById<TextView>(R.id.cart_badge_text_view)
-
-        if (totalCartItem == 0) {
-            cartBadgeTextView.visibility = View.GONE
-        } else {
-            cartBadgeTextView.text = totalCartItem.toString()
-            cartBadgeTextView.visibility = View.VISIBLE
-        }
-
-        actionView.setOnClickListener { onOptionsItemSelected(menuItem) }
-
-        return true
-    }*/
-
-
-    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.cartFragment){
-            if (mAuth.currentUser == null){
-                startActivity(Intent(this, AuthActivity::class.java))
-            }else {
-                navController.navigate(R.id.cartFragment)
-            }
-        }
-        return *//*item.onNavDestinationSelected(navController) || *//*super.onOptionsItemSelected(item)
-    }*/
 
 
     override fun onSupportNavigateUp(): Boolean {
@@ -192,6 +169,39 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return true
     }
 
+    override fun onStart() {
+        super.onStart()
+        registerReceiver(networkErrorBroadCast, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(networkErrorBroadCast)
+    }
+
+
+    private val networkErrorBroadCast = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val notConnected = intent?.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false) ?: return
+            if (notConnected) {
+                disconnected()
+            } else {
+                connected()
+            }
+        }
+    }
+
+    private fun connected() {
+        binding.appBarMain.imgNoInternet.visibility = View.INVISIBLE
+    }
+
+    private fun disconnected() {
+        binding.appBarMain.imgNoInternet.visibility = View.VISIBLE
+    }
+
+    companion object{
+        private const val TAG = "MainActivity"
+    }
 }
 
 
