@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimaryLight"
-    tools:context=".views.authentication.LoginFragment">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.app.kiranachoice.views.authentication.AuthViewModel" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,156 +17,186 @@
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="0dp"
-            android:layout_height="270dp"
+            android:layout_height="match_parent"
             android:contentDescription="@string/background_image"
-            android:scaleType="centerCrop"
-            android:src="@drawable/login_background"
+            android:elevation="0dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/auth_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/textKirana"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:text="@string/login"
-            android:textColor="@android:color/white"
-            android:textSize="45sp"
+            android:text="Kirana"
+            android:textColor="?attr/colorPrimaryDark"
+            android:textSize="35sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+            app:layout_constraintStart_toStartOf="@+id/guideline4"
+            app:layout_constraintTop_toTopOf="@+id/guideline3" />
+
+        <TextView
+            android:id="@+id/textChoice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choice"
+            android:textColor="?attr/colorAccent"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/textKirana"
+            app:layout_constraintStart_toEndOf="@+id/textKirana"
+            app:layout_constraintTop_toBottomOf="@+id/textKirana" />
+
+        <TextView
+            android:id="@+id/textTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="An easy way to get kirana items"
+            android:textColor="?attr/colorPrimaryDark"
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/textChoice" />
 
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/phoneLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2">
+            app:layout_constraintTop_toBottomOf="@id/textTag">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/phoneCard"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="4dp">
+            <TextView
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/country_code"
+                android:textSize="17sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/country_code"
-                        android:textSize="17sp" />
-
-                    <EditText
-                        android:id="@+id/etPhoneNumber"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@null"
-                        android:digits="0123456789"
-                        android:hint="@string/phone_number"
-                        android:imeOptions="actionDone"
-                        android:importantForAutofill="no"
-                        android:inputType="phone"
-                        android:maxLength="10"
-                        android:maxLines="1" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/otpCard"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:visibility="gone"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="4dp">
-
-                <EditText
-                    android:id="@+id/etOtpCode"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@null"
-                    android:digits="0123456789"
-                    android:hint="@string/one_time_password"
-                    android:imeOptions="actionDone"
-                    android:importantForAutofill="no"
-                    android:inputType="phone"
-                    android:maxLines="1" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <RelativeLayout
-                android:id="@+id/resend_code_layout"
+            <EditText
+                android:id="@+id/etPhoneNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:visibility="invisible">
-
-                <TextView
-                    android:id="@+id/textResend"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:clickable="true"
-                    android:enabled="false"
-                    android:focusable="true"
-                    android:text="@string/resend_otp" />
-
-                <TextView
-                    style="@style/TextAppearance.MaterialComponents.Body2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@id/textTimer"
-                    android:layout_toEndOf="@id/textResend"
-                    android:gravity="end"
-                    android:text="@string/zero_with_colon" />
-
-                <TextView
-                    android:id="@+id/textTimer"
-                    style="@style/TextAppearance.MaterialComponents.Body2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true" />
-            </RelativeLayout>
-
-            <Button
-                android:id="@+id/btnLogin"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="24dp"
-                android:background="@drawable/curved_button_background"
-                android:paddingStart="32dp"
-                android:paddingEnd="32dp"
-                android:text="@string/send_otp"
-                app:layout_constraintEnd_toEndOf="@+id/etOtpCode"
-                app:layout_constraintStart_toStartOf="@+id/etOtpCode"
-                app:layout_constraintTop_toBottomOf="@+id/etOtpCode" />
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:digits="0123456789"
+                android:hint="@string/phone_number"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="no"
+                android:inputType="phone"
+                android:maxLength="10"
+                android:maxLines="1"
+                android:text="@={viewModel.phoneNumber}" />
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.app.kiranachoice.utils.OtpEditText
+            android:id="@+id/otpLayout"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:cursorVisible="true"
+            android:digits="1234567890"
+            android:focusable="true"
+            android:inputType="number"
+            android:maxLength="6"
+            android:maxLines="1"
+            android:imeOptions="actionDone"
+            android:visibility="invisible"
+            android:textIsSelectable="false"
+            android:layout_marginTop="32dp"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/phoneLayout"
+            android:textSize="16sp"/>
 
-    <include
-        android:id="@+id/progressBar"
-        layout="@layout/progress_bar_with_text"
-        android:visibility="gone" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <LinearLayout
+            android:id="@+id/resend_code_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/otpLayout">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textResend"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:clickable="true"
+                android:enabled="false"
+                android:focusable="true"
+                android:text="@string/resend_otp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textTimer"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sixty" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGetOTP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/curved_button_background"
+            android:text="Get OTP"
+            android:textStyle="bold"
+            app:backgroundTint="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/resend_code_layout" />
+
+
+        <ImageButton
+            android:id="@+id/btnLogin"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/active_deactive_round_button_selector"
+            android:src="@drawable/ic_arrow_forward_32"
+            android:tint="@android:color/white"
+            android:visibility="gone"
+            android:enabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/resend_code_layout" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.12" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25" />
+
+        <include
+            android:id="@+id/progressBar"
+            layout="@layout/progress_bar_with_text"
+            android:visibility="invisible" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

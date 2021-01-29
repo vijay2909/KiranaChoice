@@ -20,13 +20,14 @@
         android:layout_margin="4dp"
         android:clickable="true"
         android:focusable="true"
-        app:strokeWidth="1dp"
-        app:rippleColor="?attr/colorPrimary"
-        app:strokeColor="@color/stroke_color"
-        android:onClick="@{() -> clickListener.onCategoryItemClick(category)}"
+        android:onClick="@{(view) -> clickListener.onCategoryItemClick(view, category)}"
+        android:transitionName="@{@string/category_transition_name(category.id)}"
         android:translationZ="4dp"
         app:cardCornerRadius="8dp"
-        app:cardElevation="4dp">
+        app:cardElevation="4dp"
+        app:rippleColor="?attr/colorPrimary"
+        app:strokeColor="@color/stroke_color"
+        app:strokeWidth="1dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

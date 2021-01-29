@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
 
         <variable
             name="listener"
@@ -65,8 +66,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:visibility="@{cartItem.productMRP.equals(cartItem.productPrice) ? View.INVISIBLE : View.VISIBLE}"
             android:textColor="@android:color/holo_red_dark"
+            android:visibility="@{cartItem.productMRP.equals(cartItem.productPrice) ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@+id/productPrice"
             app:layout_constraintStart_toEndOf="@+id/productPrice"
             app:layout_constraintTop_toTopOf="@+id/productPrice"
@@ -102,10 +103,10 @@
                 android:id="@+id/btnDecrease"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
                 android:background="@null"
                 android:contentDescription="@string/quantity_decrease_button"
-                android:src="@drawable/ic_minus_box" />
+                android:src='@{cartItem.quantity=="1" ? @drawable/ic_delete : @drawable/ic_minus_box_32}'
+                tools:src="@drawable/ic_minus_box_32" />
 
             <TextView
                 android:id="@+id/userQuantity"
@@ -122,10 +123,9 @@
                 android:id="@+id/btnIncrease"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
                 android:background="@null"
                 android:contentDescription="@string/quantity_increase_button"
-                android:src="@drawable/ic_add_box" />
+                android:src="@drawable/ic_add_box_32" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

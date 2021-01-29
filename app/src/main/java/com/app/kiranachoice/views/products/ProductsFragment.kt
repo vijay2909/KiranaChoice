@@ -9,8 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.data.db.CartDatabase
 import com.app.kiranachoice.data.domain.Product
@@ -21,13 +20,12 @@ import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.firebase.auth.FirebaseAuth
 
-class ProductsFragment : Fragment(), ProductClickListener{
+class ProductsFragment : Fragment(), ProductClickListener {
 
     private var _bindingProduct: FragmentProductsBinding? = null
     private val binding get() = _bindingProduct!!
     private lateinit var viewModel: ProductsViewModel
 
-    private lateinit var navController: NavController
     private lateinit var verticalProductsAdapter: VerticalProductsAdapter
 
     private lateinit var mAuth: FirebaseAuth
@@ -38,13 +36,16 @@ class ProductsFragment : Fragment(), ProductClickListener{
         savedInstanceState: Bundle?
     ): View {
         val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
-        val productViewModelFactory = ProductViewModelFactory(args.title, DataRepository(localDatabase.databaseDao))
+        val productViewModelFactory =
+            ProductViewModelFactory(args.title, DataRepository(localDatabase.databaseDao))
         viewModel =
             ViewModelProvider(this, productViewModelFactory).get(ProductsViewModel::class.java)
         _bindingProduct = FragmentProductsBinding.inflate(inflater, container, false)
         mAuth = FirebaseAuth.getInstance()
 
         verticalProductsAdapter = VerticalProductsAdapter(this)
+        binding.recyclerViewProductList.setHasFixedSize(true)
+        binding.recyclerViewProductList.adapter = verticalProductsAdapter
 
         return binding.root
     }
@@ -52,7 +53,6 @@ class ProductsFragment : Fragment(), ProductClickListener{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
 
         viewModel.navigateToAuthActivity.observe(viewLifecycleOwner, {
             if (it) {
@@ -77,9 +77,9 @@ class ProductsFragment : Fragment(), ProductClickListener{
 
         viewModel.getProducts.observe(viewLifecycleOwner, {
             Log.d("Products", "products: ${it.second}")
+            verticalProductsAdapter.submitCartItem(it.first)
             verticalProductsAdapter.submitList(it.second)
-            binding.recyclerViewProductList.setHasFixedSize(true)
-            binding.recyclerViewProductList.adapter = verticalProductsAdapter
+
         })
     }
 
@@ -92,24 +92,14 @@ class ProductsFragment : Fragment(), ProductClickListener{
 
     override fun addItemToCart(
         product: Product,
-        packagingSize: Int,
-        quantity: String,
-        position: Int
+        packagingIndex: Int
     ) {
-        if (mAuth.currentUser != null) {
-            val packagingSizeModel = if (product.packagingSize.size > 1) {
-                product.packagingSize[packagingSize]
-            } else {
-                product.packagingSize[0]
-            }
-            viewModel.addItemToCart(product, packagingSizeModel, quantity)
-        } else {
-            startActivity(Intent(requireContext(), AuthActivity::class.java))
-        }
+        val packagingSizeModel = product.packagingSize[packagingIndex]
+        viewModel.addItemToCart(product, packagingSizeModel)
     }
 
-    override fun onItemClick(product: Product) {
-        navController.navigate(
+    override fun onItemClick(view: View, product: Product) {
+        findNavController().navigate(
             ProductsFragmentDirections.actionProductsFragmentToProductDetailsFragment(
                 product.name, product
             )

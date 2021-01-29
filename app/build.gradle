@@ -83,7 +83,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.1.0'
 
     // firebase
-    implementation platform('com.google.firebase:firebase-bom:26.2.0')
+    implementation platform('com.google.firebase:firebase-bom:26.3.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
@@ -91,11 +91,13 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.firebase:firebase-config-ktx'
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-dynamic-links-ktx'
     implementation 'com.google.firebase:firebase-perf-ktx'
     implementation 'com.firebaseui:firebase-ui-database:7.1.1'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    // helps in sms retrieve
+    implementation 'com.google.android.gms:play-services-auth-api-phone:17.5.0'
 
 
     // facebook shimmer effect
@@ -137,6 +139,11 @@ dependencies {
 
     // compress image 
     implementation 'id.zelory:compressor:3.0.0'
+
+    // OTP library
+    implementation 'com.github.aabhasr1:OtpView:v1.1.2-ktx'
+
+
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

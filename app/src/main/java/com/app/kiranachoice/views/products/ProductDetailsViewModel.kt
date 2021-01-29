@@ -35,10 +35,9 @@ class ProductDetailsViewModel(private val subCategoryName: String, private val d
 
     fun addItemToCart(
         product: Product,
-        packagingSizeModel: PackagingSizeModel,
-        quantity: String
+        packagingSizeModel: PackagingSizeModel
     ) = viewModelScope.launch {
-        addToCart(dataRepository, product, packagingSizeModel, quantity)
+        addToCart(dataRepository, product, packagingSizeModel)
     }
 
 }

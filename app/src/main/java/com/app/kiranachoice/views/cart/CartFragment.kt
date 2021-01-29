@@ -47,6 +47,11 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // initialize viewModel
+        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
+        val cartViewModelFactory = CartViewModelFactory(DataRepository(localDatabase.databaseDao))
+        viewModel = ViewModelProvider(this, cartViewModelFactory).get(CartViewModel::class.java)
+
         _bindingCart = FragmentCartBinding.inflate(inflater, container, false)
 
         // Initialize cart adapter
@@ -61,10 +66,6 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
             )
         }
 
-        // initialize viewModel
-        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
-        val cartViewModelFactory = CartViewModelFactory(DataRepository(localDatabase.databaseDao))
-        viewModel = ViewModelProvider(this, cartViewModelFactory).get(CartViewModel::class.java)
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel

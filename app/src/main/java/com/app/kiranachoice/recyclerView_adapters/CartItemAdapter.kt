@@ -16,7 +16,7 @@ class CartItemAdapter(private val listener: CartListener) : ListAdapter<CartItem
 
     class DiffUtilsCallBack : DiffUtil.ItemCallback<CartItem>() {
         override fun areItemsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
-            return oldItem.productId == newItem.productId
+            return oldItem.productId == newItem.productId && oldItem.packagingSize == newItem.packagingSize
         }
 
         override fun areContentsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
@@ -33,11 +33,11 @@ class CartItemAdapter(private val listener: CartListener) : ListAdapter<CartItem
         val cartItem = getItem(position)
         holder.bind(cartItem, listener)
 
-        if (cartItem.quantity == "1"){
+        /*if (cartItem.quantity == "1"){
             holder.binding.btnDecrease.setImageDrawable(ResourcesCompat.getDrawable(holder.itemView.context.resources, R.drawable.ic_delete, null))
         } else{
-            holder.binding.btnDecrease.setImageDrawable(ResourcesCompat.getDrawable(holder.itemView.context.resources, R.drawable.ic_minus_box, null))
-        }
+            holder.binding.btnDecrease.setImageDrawable(ResourcesCompat.getDrawable(holder.itemView.context.resources, R.drawable.ic_minus_box_32, null))
+        }*/
 
         holder.binding.btnDecrease.setOnClickListener {
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
@@ -81,6 +81,14 @@ class CartItemAdapter(private val listener: CartListener) : ListAdapter<CartItem
             binding.listener = listener
             binding.cartItem = cartItem
             binding.executePendingBindings()
+        }
+
+        init {
+            with(binding){
+                btnDecrease.setOnClickListener {
+
+                }
+            }
         }
 
         companion object {

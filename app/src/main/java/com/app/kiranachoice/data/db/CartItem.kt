@@ -14,5 +14,6 @@ data class CartItem(
     var productMRP: String,
     var productPrice: String,
     var packagingSize: String,
+    var minOrderQuantity: Long,
     var quantity: String
 )

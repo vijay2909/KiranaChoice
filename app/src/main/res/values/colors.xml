@@ -9,6 +9,7 @@
     <color name="textSecondary">#757575</color>
 
     <color name="dividerColor">#BDBDBD</color>
+    <color name="disable_color">#BDBDBD</color>
     <color name="surface">#E6E6E6</color>
 
     <color name="shimmer_background">#dddddd</color>
@@ -17,4 +18,13 @@
     <color name="black">#000</color>
 
     <color name="red">#FF0000</color>
+
+    <color name="colorBlue">#0875FF</color>
+    <color name="colorMediumGray">#858585</color>
+    <color name="colorLightGray">#E1E1E1</color>
+
+    <color name="redPrimary">#4F032B</color>
+    <color name="sec">#FFAE33</color>
+    <color name="sec_accent">#FFC475</color>
+    <color name="light_accent">#FFDFB0</color>
 </resources>

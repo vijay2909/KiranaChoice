@@ -17,7 +17,7 @@ class SimilarProductsAdapter(
     private val listener: ProductClickListener
 ) : RecyclerView.Adapter<SimilarProductsAdapter.SimilarProductsViewHolder>() {
 
-    var addToCartClickedItemPosition = -1
+    private var addToCartClickedItemPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimilarProductsViewHolder {
         val view = ItemHorizontolProductItemBinding.inflate(
@@ -73,9 +73,7 @@ class SimilarProductsAdapter(
                 if (position != RecyclerView.NO_POSITION) {
                     listener.addItemToCart(
                         product,
-                        spinnerPackaging.selectedItemPosition,
-                        userQuantity.text.toString(),
-                        position
+                        spinnerPackaging.selectedItemPosition
                     )
                 }
             }

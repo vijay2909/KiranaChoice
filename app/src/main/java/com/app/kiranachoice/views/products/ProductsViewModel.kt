@@ -7,7 +7,6 @@ import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.addToCart
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class ProductsViewModel(subCategoryName: String, private val dataRepository: DataRepository) : ViewModel() {
@@ -15,7 +14,6 @@ class ProductsViewModel(subCategoryName: String, private val dataRepository: Dat
     init {
         Log.d("ProductsViewModel", "subCategoryName: $subCategoryName")
     }
-    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private val products = dataRepository.getProductsByCategoryName(subCategoryName)
 
@@ -51,15 +49,10 @@ class ProductsViewModel(subCategoryName: String, private val dataRepository: Dat
 
     fun addItemToCart(
         product: Product,
-        packagingSizeModel: PackagingSizeModel,
-        quantity: String
+        packagingSizeModel: PackagingSizeModel
     ) {
-        if (mAuth.currentUser == null) {
-            _navigateToAuthActivity.value = true
-        } else {
-            viewModelScope.launch {
-                addToCart(dataRepository, product, packagingSizeModel, quantity)
-            }
+        viewModelScope.launch {
+            addToCart(dataRepository, product, packagingSizeModel)
         }
     }
 

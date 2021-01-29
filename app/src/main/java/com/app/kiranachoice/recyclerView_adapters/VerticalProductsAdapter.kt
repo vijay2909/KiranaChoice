@@ -1,5 +1,6 @@
 package com.app.kiranachoice.recyclerView_adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,17 +20,17 @@ class VerticalProductsAdapter(
 
     class DiffUtilCallback : DiffUtil.ItemCallback<Product>() {
         override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
-            return oldItem === newItem
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem == newItem
         }
     }
 
-    private lateinit var cartItems : List<CartItem>
+    private lateinit var cartItems: List<CartItem>
 
-    fun submitCartItem(cartItems : List<CartItem>){
+    fun submitCartItem(cartItems: List<CartItem>) {
         this.cartItems = cartItems
     }
 
@@ -45,9 +46,9 @@ class VerticalProductsAdapter(
         val product = getItem(position)
         holder.bind(product)
 
-        if (this::cartItems.isInitialized ){
+        if (this::cartItems.isInitialized) {
             for (cartItem in cartItems) {
-                if (cartItem.productKey == product.key){
+                if (cartItem.productKey == product.key) {
                     holder.binding.btnAddToCart.visibility = View.GONE
                     holder.binding.quantityLayout.visibility = View.VISIBLE
                     holder.binding.userQuantity.text = cartItem.quantity
@@ -97,11 +98,10 @@ class VerticalProductsAdapter(
                         getItem(adapterPosition)?.let { product ->
                             product.added = !product.added
                             notifyItemChanged(adapterPosition)
+                            Log.d("VerticalProductsAdapter", "btnAddToCart called ")
                             listener.addItemToCart(
                                 product,
                                 spinnerPackaging.selectedItemPosition,
-                                userQuantity.text.toString(),
-                                adapterPosition
                             )
                         }
                     }
@@ -139,17 +139,5 @@ class VerticalProductsAdapter(
             }
         }
 
-    }
-
-    interface ProductListener {
-        fun onAddToCartButtonClick(
-            product: Product,
-            packagingSize: Int,
-            quantity: String,
-            position: Int
-        )
-
-        fun onItemRemoved(product: Product)
-        fun onItemClick(product: Product)
     }
 }

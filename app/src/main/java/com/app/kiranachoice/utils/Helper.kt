@@ -1,10 +1,8 @@
 package com.app.kiranachoice.utils
 
-import android.net.ConnectivityManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
-import androidx.core.content.ContextCompat
 import com.app.kiranachoice.data.PackagingSizeModel
 import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
@@ -24,8 +22,7 @@ fun String.toPriceAmount(): String {
 suspend fun addToCart(
     dataRepository: DataRepository,
     product: Product,
-    packagingSizeModel: PackagingSizeModel,
-    quantity: String
+    packagingSizeModel: PackagingSizeModel
 ) {
     val cartItem = CartItem(
         product.key,
@@ -36,7 +33,8 @@ suspend fun addToCart(
         packagingSizeModel.mrp.toString(),
         packagingSizeModel.price.toString(),
         packagingSizeModel.size.toString(),
-        quantity
+        product.minOrderQty,
+        product.userQuantity.toString()
     )
     dataRepository.insert(cartItem)
 }

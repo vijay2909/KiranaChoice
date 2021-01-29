@@ -93,15 +93,10 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
 
     fun addItemToCart(
         product: Product,
-        packagingSizeModel: PackagingSizeModel,
-        quantity: String
+        packagingSizeModel: PackagingSizeModel
     ) {
-        if (mAuth.currentUser == null) {
-            _navigateToAuthActivity.value = true
-        } else {
-            viewModelScope.launch {
-                addToCart(dataRepository, product, packagingSizeModel, quantity)
-            }
+        viewModelScope.launch {
+            addToCart(dataRepository, product, packagingSizeModel)
         }
     }
 

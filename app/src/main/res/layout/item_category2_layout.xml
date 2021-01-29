@@ -16,7 +16,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:onClick="@{() -> clickListener.onCategoryItemClick(model)}"
+        android:transitionName="@{@string/category_transition_name(model.id)}"
+        android:onClick="@{(view) -> clickListener.onCategoryItemClick(view, model)}"
         android:translationZ="2dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="2dp">

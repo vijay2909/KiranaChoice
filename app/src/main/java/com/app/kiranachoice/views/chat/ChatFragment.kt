@@ -1,5 +1,6 @@
 package com.app.kiranachoice.views.chat
 
+import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.net.Uri
@@ -13,8 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.kiranachoice.R
-import com.app.kiranachoice.databinding.FragmentChatBinding
 import com.app.kiranachoice.data.Chat
+import com.app.kiranachoice.databinding.FragmentChatBinding
 import com.app.kiranachoice.network.SendNotificationAPI
 import com.app.kiranachoice.recyclerView_adapters.ChatAdapter
 import com.app.kiranachoice.utils.ADMIN
@@ -27,12 +28,17 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.gson.JsonObject
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
+import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import com.vmadalin.easypermissions.models.PermissionRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class ChatFragment : Fragment() {
+class ChatFragment : Fragment(), EasyPermissions.PermissionCallbacks,
+    EasyPermissions.RationaleCallbacks {
 
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
@@ -79,7 +85,7 @@ class ChatFragment : Fragment() {
         }
 
         binding.addCameraImage.setOnClickListener {
-            findNavController().navigate(R.id.action_chatFragment_to_cameraFragment)
+            hasPermissionAllowed()
         }
 
         binding.sendButton.setOnClickListener {
@@ -174,6 +180,61 @@ class ChatFragment : Fragment() {
     }
 
 
+    @AfterPermissionGranted(REQUEST_CODE_PERMISSIONS)
+    private fun hasPermissionAllowed() {
+        if (EasyPermissions.hasPermissions(requireContext(), CAMERA_PERMISSION)) {
+            // Already have permission, do the thing
+            findNavController().navigate(R.id.action_chatFragment_to_cameraFragment)
+        } else {
+            val request = PermissionRequest.Builder(requireContext())
+                .code(REQUEST_CODE_PERMISSIONS)
+                .perms(CAMERA_ARRAY_PERMISSION)
+                /*.theme(R.style.my_fancy_style)*/
+                .rationale(R.string.rationale_camera)
+                .positiveButtonText(R.string.rationale_ok)
+                .build()
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(this, request)
+        }
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        Log.d(TAG, "onPermissionsDenied: called")
+        hasPermissionAllowed()
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
+        Log.w(TAG, "onPermissionsGranted: called")
+        hasPermissionAllowed()
+    }
+
+    override fun onRationaleAccepted(requestCode: Int) {
+        Log.i(TAG, "onRationaleAccepted: called")
+        hasPermissionAllowed()
+    }
+
+    override fun onRationaleDenied(requestCode: Int) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, CAMERA_PERMISSION)) {
+            Log.d(TAG, "onRationaleDenied: if block")
+            SettingsDialog.Builder(requireContext()).build().show()
+        }else{
+            Log.e(TAG, "onRationaleDenied: called")
+            hasPermissionAllowed()
+        }
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+
     private fun sendNotificationToAdmin(payload: JsonObject) {
 
         SendNotificationAPI.getInstance().sendChatNotification(payload)
@@ -256,8 +317,10 @@ class ChatFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         count = 0
-        if (mAuth.currentUser == null)
+        if (mAuth.currentUser == null) {
             startActivity(Intent(requireContext(), AuthActivity::class.java))
+            findNavController().popBackStack()
+        }
     }
 
 
@@ -272,6 +335,12 @@ class ChatFragment : Fragment() {
         private const val TAG = "ChatFragment"
         private const val REQUEST_IMAGE = 2
         private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
+
+        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        private const val REQUEST_CODE_PERMISSIONS = 10
+        private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
+        private val CAMERA_ARRAY_PERMISSION = arrayOf(Manifest.permission.CAMERA)
+
     }
 
 }

@@ -9,12 +9,14 @@ import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.viewpager2.widget.ViewPager2
 import com.app.kiranachoice.R
 import com.app.kiranachoice.data.db.CartDatabase
@@ -33,6 +35,7 @@ import com.app.kiranachoice.utils.INDEX_TWO_CATEGORY
 import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.MaterialElevationScale
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
@@ -63,12 +66,16 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
     private lateinit var bestOfferProductsAdapter: HorizontalProductsAdapter
     private lateinit var bestSellingProductsAdapter: HorizontalProductsAdapter
 
+    private lateinit var homeBannerAdapter: HomeTopBannerAdapter
+    private lateinit var category1Adapter: Category1Adapter
+
     private var totalCartItem = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,6 +97,31 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 //        handler2 = Handler(Looper.getMainLooper())
         mAuth = FirebaseAuth.getInstance()
 
+        // Home Top Banner [[START]] >>>>>>>>>>>>>
+        homeBannerAdapter = HomeTopBannerAdapter()
+        binding.homeBanner1.adapter = homeBannerAdapter
+        TabLayoutMediator(binding.tabLayout, binding.homeBanner1) { _, _ -> }.attach()
+        // Home Top Banner [[END]]>>>>>>>>>>>>>
+
+
+        // Category [[ START ]] >>>>>>>>>>>>>>>
+        category1Adapter = Category1Adapter(this)
+        binding.recyclerViewCategory1.apply {
+            setHasFixedSize(true)
+            adapter = category1Adapter
+        }
+        // Category [[ END ]] >>>>>>>>>>>>>>>
+
+
+        // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
+        bestSellingProductsAdapter = HorizontalProductsAdapter(this)
+        binding.recyclerViewBestSelling.apply {
+            adapter = bestSellingProductsAdapter
+            setHasFixedSize(true)
+        }
+        // Best Selling Products [[ END ]] >>>>>>>>>>>>>>>>>>>>>
+
+
         bestOfferProductsAdapter = HorizontalProductsAdapter(this)
         binding.recyclerViewBestOffers.apply {
             adapter = bestOfferProductsAdapter
@@ -103,6 +135,16 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
+
+
+        // Home Top Banner
+        viewModel.banners.observe(viewLifecycleOwner, {
+            homeTopBannerImageList = it
+            homeBannerAdapter.list = it
+        })
+
 
         Firebase.dynamicLinks
             .getDynamicLink(requireActivity().intent)
@@ -138,15 +180,6 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 
         navController = Navigation.findNavController(view)
 
-        // Home Top Banner [[START]] >>>>>>>>>>>>>
-        val banner1Adapter = HomeTopBannerAdapter()
-        binding.homeBanner1.adapter = banner1Adapter
-        TabLayoutMediator(binding.tabLayout, binding.homeBanner1) { _, _ -> }.attach()
-        viewModel.banners.observe(viewLifecycleOwner, {
-            homeTopBannerImageList = it
-            banner1Adapter.list = it
-        })
-        // Home Top Banner [[END]]>>>>>>>>>>>>>
 
         viewModel.eventNetworkError.observe(viewLifecycleOwner, {
             if (it) {
@@ -155,13 +188,7 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         })
 
 
-        // Category [[ START ]] >>>>>>>>>>>>>>>
-        val category1Adapter = Category1Adapter(this)
-        binding.recyclerViewCategory1.apply {
-            setHasFixedSize(true)
-            adapter = category1Adapter
-        }
-
+        // Category >>>>>>>>>>>>>>>
         viewModel.firstCategories.observe(viewLifecycleOwner, {
             category1Adapter.list = it
             binding.shimmerLayout.rootLayout.stopShimmer()
@@ -189,13 +216,7 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         // Category [[ END ]] >>>>>>>>>>>>>>>
 
 
-        // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
-        bestSellingProductsAdapter = HorizontalProductsAdapter(this)
-        binding.recyclerViewBestSelling.apply {
-            adapter = bestSellingProductsAdapter
-            setHasFixedSize(true)
-        }
-
+        // Best Selling Products >>>>>>>>>>>>>>>>>>>>>
         viewModel.bestSellingProducts.observe(viewLifecycleOwner, {
             binding.bestSellingProductAvailable = it.second.isNotEmpty()
             bestOfferProductsAdapter.submitCartItem(it.first)
@@ -203,6 +224,7 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 
         })
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
+
 
         /*binding.recyclerViewCategory3.apply {
             adapter = SmallBannerCategoryAdapter()
@@ -343,56 +365,59 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         viewPager2.unregisterOnPageChangeCallback(callbackMiddleBanner)*/
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onDestroy() {
+        super.onDestroy()
         _bindingHome = null
     }
 
-    override fun onCategoryItemClick(category: Category) {
+    override fun onCategoryItemClick(view: View, category: Category) {
         if (category.index == INDEX_ONE_CATEGORY) {
-            navController.navigate(
+            val categoryDetailTransitionName = getString(R.string.category_detail_transition_name)
+            val extras = FragmentNavigatorExtras(view to categoryDetailTransitionName)
+            val categoryDirection =
                 HomeFragmentDirections.actionNavHomeToCategoryFragment(category.name)
-            )
+            navController.navigate(categoryDirection, extras)
         } else if (category.index == INDEX_TWO_CATEGORY) {
-            navController.navigate(
+            val categoryProductTransitionName = getString(R.string.category_product_transition_name)
+            val extras = FragmentNavigatorExtras(view to categoryProductTransitionName)
+            val productDirection =
                 HomeFragmentDirections.actionHomeFragmentToProductsFragment(category.name)
-            )
+            navController.navigate(productDirection, extras)
         }
     }
 
 
     override fun addItemToCart(
         product: Product,
-        packagingSize: Int, // spinner adapter position
-        quantity: String,
-        position: Int
+        packagingIndex: Int // spinner adapter position
     ) {
-        if (mAuth.currentUser != null) {
-            val packagingSizeModel = if (product.packagingSize.size > 1) {
-                product.packagingSize[packagingSize]
-            } else {
-                product.packagingSize[0]
-            }
-            viewModel.addItemToCart(product, packagingSizeModel, quantity)
-        } else {
-            startActivity(Intent(requireContext(), AuthActivity::class.java))
-        }
+        val packagingSizeModel = product.packagingSize[packagingIndex]
+        viewModel.addItemToCart(product, packagingSizeModel)
     }
 
-    override fun onItemClick(product: Product) {
-        navController.navigate(
-            HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
-                product.name,
-                product
-            )
+
+    override fun onItemClick(view: View, product: Product) {
+        exitTransition = MaterialElevationScale(false).apply {
+            duration = resources.getInteger(R.integer.reply_motion_duration_large).toLong()
+        }
+        reenterTransition = MaterialElevationScale(true).apply {
+            duration = resources.getInteger(R.integer.reply_motion_duration_large).toLong()
+        }
+
+        val productDetailTransitionName = getString(R.string.product_detail_transition_name)
+        val extras = FragmentNavigatorExtras(view to productDetailTransitionName)
+        val directions = HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
+            product.name,
+            product
         )
+        navController.navigate(directions, extras)
     }
 
     override fun onRemoveProduct(productKey: String) {
         viewModel.removeProductFromCart(productKey)
     }
 
-    override fun onQuantityChanged(product: Product/*productKey: String, quantity: String*/) {
+    override fun onQuantityChanged(product: Product) {
         viewModel.updateQuantity(product.key, product.userQuantity.toString())
     }
 

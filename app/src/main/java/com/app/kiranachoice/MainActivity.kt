@@ -92,12 +92,6 @@ class MainActivity : AppCompatActivity()/*BaseActivity()*/, NavigationView.OnNav
 
         setupBottomNavMenu()
 
-        /*viewModel.allCartItems.observe(this, {
-            it?.let {
-                totalCartItem = it.size
-                invalidateOptionsMenu()
-            }
-        })*/
 
         binding.navView.setNavigationItemSelectedListener(this)
 

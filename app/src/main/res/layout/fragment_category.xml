@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:transitionName="@string/category_detail_transition_name">
 
     <LinearLayout
         android:id="@+id/shimmerLayoutRootLayout"
@@ -39,16 +40,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="invisible"
         tools:context=".views.category.CategoryFragment">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_sub_category"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/item_sub_category"
+            android:layoutAnimation="@anim/layout_animation"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="4"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            tools:listitem="@layout/item_sub_category" />
 
     </LinearLayout>
 </FrameLayout>

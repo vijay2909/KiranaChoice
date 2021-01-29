@@ -13,9 +13,16 @@ class AuthViewModel : ViewModel() {
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private var userSequence: Long = 1
-    var phoneNumber: String? = null
+    var phoneNumber = MutableLiveData<String>()
 
     lateinit var user: User
+
+    private var _otp = MutableLiveData<String>()
+    val otp: LiveData<String> get() = _otp
+
+    fun setOTP(otpCode: String){
+        _otp.value = otpCode
+    }
 
     init {
         getTotalUserCount()
@@ -40,14 +47,14 @@ class AuthViewModel : ViewModel() {
             val reference = dbFire.document(user.uid)
 
             reference.get().addOnSuccessListener { documentSnapShot ->
-                    if (documentSnapShot.exists()) {
-                        _userAlreadyExist.postValue(true)
-                        // update device token on user login
-                        reference.update(mapOf("deviceToken" to token))
-                    } else {
-                        _userDoesNotExist.postValue(true)
-                    }
+                if (documentSnapShot.exists()) {
+                    _userAlreadyExist.postValue(true)
+                    // update device token on user login
+                    reference.update(mapOf("deviceToken" to token))
+                } else {
+                    _userDoesNotExist.postValue(true)
                 }
+            }
         }
     }
 
@@ -61,7 +68,7 @@ class AuthViewModel : ViewModel() {
 
     fun saveUser(name: String, email: String, deviceToken: String?) {
         val userId = mAuth.currentUser!!.uid
-        user = User(userSequence, phoneNumber, null, name, email, deviceToken, userId)
+        user = User(userSequence, phoneNumber.value, null, name, email, deviceToken, userId)
         dbFire.document(userId).set(user)
             .addOnSuccessListener {
                 _userAlreadyExist.value = true

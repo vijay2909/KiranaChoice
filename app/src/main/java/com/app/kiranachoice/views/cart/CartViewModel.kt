@@ -74,6 +74,7 @@ class CartViewModel(val dataRepository: DataRepository) : ViewModel() {
                 productMRP = cartItem.productMRP,
                 productPrice = cartItem.productPrice,
                 packagingSize = cartItem.packagingSize,
+                minOrderQuantity = cartItem.minOrderQuantity,
                 quantity = quantity.toString()
             )
             dataRepository.insert(item)

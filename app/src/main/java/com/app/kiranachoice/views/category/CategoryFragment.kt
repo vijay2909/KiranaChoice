@@ -1,5 +1,6 @@
 package com.app.kiranachoice.views.category
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,8 @@ import com.app.kiranachoice.data.domain.SubCategory
 import com.app.kiranachoice.databinding.FragmentCategoryBinding
 import com.app.kiranachoice.recyclerView_adapters.SubCategoryAdapter
 import com.app.kiranachoice.repositories.DataRepository
+import com.app.kiranachoice.utils.themeColor
+import com.google.android.material.transition.MaterialContainerTransform
 
 
 class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener {
@@ -25,6 +28,16 @@ class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener
 
     private val args: CategoryFragmentArgs by navArgs()
     private lateinit var viewModel : CategoryViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = com.app.kiranachoice.R.id.nav_host_fragment
+            duration = resources.getInteger(com.app.kiranachoice.R.integer.reply_motion_duration_large).toLong()
+            scrimColor = Color.TRANSPARENT
+            setAllContainerColors(requireContext().themeColor(com.app.kiranachoice.R.attr.colorSurface))
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

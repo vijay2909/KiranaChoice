@@ -82,9 +82,7 @@ class HorizontalProductsAdapter(
                             notifyItemChanged(adapterPosition)
                             listener?.addItemToCart(
                                 product,
-                                spinnerPackaging.selectedItemPosition,
-                                userQuantity.text.toString(),
-                                adapterPosition
+                                spinnerPackaging.selectedItemPosition
                             )
                         }
                     }
@@ -95,10 +93,10 @@ class HorizontalProductsAdapter(
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         getItem(adapterPosition)?.let { product ->
                             if (product.userQuantity < product.minOrderQty) {
-                                product.userQuantity += 1
+                                ++product.userQuantity
                                 notifyItemChanged(adapterPosition)
                             }
-                            listener?.onQuantityChanged(product/*.key, quantity = qty*/)
+                            listener?.onQuantityChanged(product)
                         }
                     }
                 }

@@ -64,8 +64,8 @@
     <string name="send_otp">Send OTP</string>
     <string name="country_code">+91</string>
     <string name="resend_otp">Resend OTP</string>
-    <string name="zero_with_colon">00:</string>
-    <string name="sixty">60</string>
+    <string name="zero_with_colon">| 00:%s</string>
+    <string name="sixty">| 00:60</string>
     <string name="login">Login</string>
     <string name="phone_number">Phone number</string>
     <string name="one_time_password">One Time Password (OTP)</string>
@@ -218,4 +218,11 @@
     <string name="rationale_camera">This app needs access to your camera so you can take pictures.</string>
     <string name="rationale_ok">OK</string>
     <string name="no_internet_image">no internet image</string>
+
+    <string name="product_transition_name">product_%1$s</string>
+    <string name="product_detail_transition_name">product_detail</string>
+
+    <string name="category_transition_name">category_%1$s</string>
+    <string name="category_detail_transition_name">category_detail</string>
+    <string name="category_product_transition_name">category_product</string>
 </resources>

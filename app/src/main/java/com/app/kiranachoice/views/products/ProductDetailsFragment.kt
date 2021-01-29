@@ -1,6 +1,7 @@
 package com.app.kiranachoice.views.products
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,7 +20,9 @@ import com.app.kiranachoice.recyclerView_adapters.AboutProductAdapter
 import com.app.kiranachoice.recyclerView_adapters.PackagingSizeAdapter
 import com.app.kiranachoice.recyclerView_adapters.SimilarProductsAdapter
 import com.app.kiranachoice.repositories.DataRepository
+import com.app.kiranachoice.utils.themeColor
 import com.app.kiranachoice.views.authentication.AuthActivity
+import com.google.android.material.transition.MaterialContainerTransform
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
@@ -41,6 +44,16 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
         val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
         val factory = ProductViewModelFactory(args.title, DataRepository(localDatabase.databaseDao))
         ViewModelProvider(this, factory).get(ProductDetailsViewModel::class.java)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = com.app.kiranachoice.R.id.nav_host_fragment
+            duration = resources.getInteger(com.app.kiranachoice.R.integer.reply_motion_duration_large).toLong()
+            scrimColor = Color.TRANSPARENT
+            setAllContainerColors(requireContext().themeColor(com.app.kiranachoice.R.attr.colorSurface))
+        }
     }
 
     override fun onCreateView(
@@ -120,23 +133,13 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
 
     override fun addItemToCart(
         product: Product,
-        packagingSize: Int,
-        quantity: String,
-        position: Int
+        packagingIndex: Int
     ) {
-        if (mAuth.currentUser != null) {
-            val packagingSizeModel = if (product.packagingSize.size > 1) {
-                product.packagingSize[packagingSize]
-            } else {
-                product.packagingSize[0]
-            }
-            viewModel.addItemToCart(product, packagingSizeModel, quantity)
-        } else {
-            startActivity(Intent(requireContext(), AuthActivity::class.java))
-        }
+        val packagingSizeModel = product.packagingSize[packagingIndex]
+        viewModel.addItemToCart(product, packagingSizeModel)
     }
 
-    override fun onItemClick(product: Product) {
+    override fun onItemClick(view: View, product: Product) {
         navController.navigate(
             ProductDetailsFragmentDirections.actionProductDetailsFragmentSelf(
                 product.name,
