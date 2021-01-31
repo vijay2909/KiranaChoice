@@ -1,11 +1,11 @@
 package com.app.kiranachoice.recyclerView_adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.app.kiranachoice.BR
 import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.ItemHorizontolProductItemBinding
@@ -13,6 +13,7 @@ import com.app.kiranachoice.listeners.ProductClickListener
 
 
 class HorizontalProductsAdapter(
+    private val cartItems: List<CartItem>?,
     private val listener: ProductClickListener,
 ) :
     ListAdapter<Product, HorizontalProductsAdapter.HorizontalProductsViewHolder>(DiffUtilCallback()) {
@@ -27,11 +28,6 @@ class HorizontalProductsAdapter(
         }
     }
 
-    private lateinit var cartItems : List<CartItem>
-
-    fun submitCartItem(cartItems : List<CartItem>){
-        this.cartItems = cartItems
-    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -48,18 +44,19 @@ class HorizontalProductsAdapter(
 
     override fun onBindViewHolder(holder: HorizontalProductsViewHolder, position: Int) {
         val product = getItem(position)
-        holder.bind(product)
 
-        if (this::cartItems.isInitialized) {
-            for (cartItem in cartItems) {
-                if (cartItem.productName == product.name) {
-                    holder.binding.btnAddToCart.visibility = View.GONE
-                    holder.binding.quantityLayout.visibility = View.VISIBLE
-                    holder.binding.userQuantity.text = cartItem.quantity
-                    break
-                }
+        if (cartItems != null && cartItems.isNotEmpty()) {
+            // here find lambda return cartItem or return null
+            cartItems.singleOrNull { cartItem ->
+                cartItem.productName.equals(product.name, true)
+            }?.let { cartItem ->
+                product.added = true
+                product.userQuantity = cartItem.quantity.toInt()
             }
         }
+
+        holder.bind(product)
+
     }
 
 
@@ -69,7 +66,7 @@ class HorizontalProductsAdapter(
     ) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
-            binding.product = product
+            binding.setVariable(BR.product, product)
             binding.executePendingBindings()
         }
 
@@ -94,9 +91,11 @@ class HorizontalProductsAdapter(
                         getItem(adapterPosition)?.let { product ->
                             if (product.userQuantity < product.minOrderQty) {
                                 ++product.userQuantity
+                                if (product.userQuantity.toLong() == product.minOrderQty)
+                                    product.isEnable = !product.isEnable
                                 notifyItemChanged(adapterPosition)
+                                listener?.onQuantityChanged(product)
                             }
-                            listener?.onQuantityChanged(product)
                         }
                     }
                 }
@@ -111,6 +110,8 @@ class HorizontalProductsAdapter(
                                 listener?.onRemoveProduct(product.key)
                             } else {
                                 --product.userQuantity
+                                // enable button increase
+                                product.isEnable = true
                                 notifyItemChanged(adapterPosition)
                                 listener?.onQuantityChanged(product)
                             }

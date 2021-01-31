@@ -8,7 +8,6 @@ import android.os.Looper
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -20,6 +19,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.viewpager2.widget.ViewPager2
 import com.app.kiranachoice.R
 import com.app.kiranachoice.data.db.CartDatabase
+import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Banner
 import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.data.domain.Product
@@ -39,6 +39,7 @@ import com.google.android.material.transition.MaterialElevationScale
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.runBlocking
 
 
 class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
@@ -71,6 +72,8 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 
     private var totalCartItem = 0
 
+    private var cartItems : List<CartItem>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -82,7 +85,6 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        (activity as AppCompatActivity).supportActionBar?.show()
         _bindingHome = FragmentHomeBinding.inflate(inflater, container, false)
 
         val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
@@ -113,20 +115,25 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         // Category [[ END ]] >>>>>>>>>>>>>>>
 
 
+        runBlocking {
+            cartItems = viewModel.getCartItems()
+        }
+
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
-        bestSellingProductsAdapter = HorizontalProductsAdapter(this)
+        bestSellingProductsAdapter = HorizontalProductsAdapter(cartItems, this)
         binding.recyclerViewBestSelling.apply {
             adapter = bestSellingProductsAdapter
             setHasFixedSize(true)
+            itemAnimator?.changeDuration = 0
         }
         // Best Selling Products [[ END ]] >>>>>>>>>>>>>>>>>>>>>
 
 
-        bestOfferProductsAdapter = HorizontalProductsAdapter(this)
+        bestOfferProductsAdapter = HorizontalProductsAdapter(cartItems, this)
         binding.recyclerViewBestOffers.apply {
             adapter = bestOfferProductsAdapter
-            itemAnimator?.changeDuration = 0
             setHasFixedSize(true)
+            itemAnimator?.changeDuration = 0
         }
 
         return binding.root
@@ -195,16 +202,17 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
             binding.shimmerLayout.root.visibility = View.GONE
             binding.actualUiLayout.visibility = View.VISIBLE
         })
-        // Category [[ END ]] >>>>>>>>>>>>>>>
+        // Category [[ END ]] >>>>>>>>>>>>>
 
 
         // Best Offer Products [[ START ]] >>>>>>>>>>>>>>
-        viewModel.bestOfferProducts.observe(viewLifecycleOwner, {
-            binding.bestOfferProductsAvailable = it.second.isNotEmpty()
-            bestOfferProductsAdapter.submitCartItem(it.first)
-            bestOfferProductsAdapter.submitList(it.second)
+        viewModel.bestOfferProducts.observe(viewLifecycleOwner, { products ->
+            binding.bestOfferProductsAvailable = products.isNotEmpty()
+//            bestOfferProductsAdapter.submitCartItem(it.first)
+            bestOfferProductsAdapter.submitList(products)
         })
         // Best Offer Products [[ END ]] >>>>>>>>>>>>>>
+
 
 
         // Category 2 [[ START ]] >>>>>>>>>>>>>>>
@@ -217,10 +225,10 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 
 
         // Best Selling Products >>>>>>>>>>>>>>>>>>>>>
-        viewModel.bestSellingProducts.observe(viewLifecycleOwner, {
-            binding.bestSellingProductAvailable = it.second.isNotEmpty()
-            bestOfferProductsAdapter.submitCartItem(it.first)
-            bestSellingProductsAdapter.submitList(it.second)
+        viewModel.bestSellingProducts.observe(viewLifecycleOwner, { products ->
+            binding.bestSellingProductAvailable = products.isNotEmpty()
+//            bestSellingProductsAdapter.submitCartItem(it.first)
+            bestSellingProductsAdapter.submitList(products)
 
         })
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
@@ -420,7 +428,6 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
     override fun onQuantityChanged(product: Product) {
         viewModel.updateQuantity(product.key, product.userQuantity.toString())
     }
-
 }
 
 @Suppress("UNCHECKED_CAST")

@@ -33,6 +33,7 @@
                 android:id="@+id/mainLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
                 android:onClick="@{(view) -> clickListener.onItemClick(view, product)}"
                 android:transitionName="@{@string/product_transition_name(product.id)}"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -115,64 +116,70 @@
                     app:layout_constraintTop_toBottomOf="@id/textProductPrice"
                     app:sizes="@{product}" />
 
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <FrameLayout
-                android:id="@+id/addToCartLayout"
+
+            <ImageButton
+                android:id="@+id/btnDecrease"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/quantity_decrease_button"
+                android:src="@drawable/ic_minus_box_32"
+                android:visibility="@{product.added ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/mainLayout" />
+
+            <TextView
+                android:id="@+id/userQuantity"
+                style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{String.valueOf(product.userQuantity)}"
+                android:visibility="@{product.added ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@id/btnDecrease"
+                app:layout_constraintEnd_toStartOf="@id/btnIncrease"
+                app:layout_constraintStart_toEndOf="@id/btnDecrease"
+                app:layout_constraintTop_toTopOf="@id/btnDecrease"
+                tools:text="0" />
+
+
+            <ImageButton
+                android:id="@+id/btnIncrease"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:enabled="@{product.enable}"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/quantity_increase_button"
+                android:src="@drawable/ic_add_box_32"
+                android:visibility="@{product.added ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/mainLayout" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddToCart"
+                android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:layout_marginTop="8dp"
+                android:background="@drawable/gradient_background"
+                android:enabled="@{product.available}"
+                android:text="@string/add_to_cart"
+                android:textAllCaps="false"
+                android:visibility="@{product.added ? View.GONE : View.VISIBLE}"
+                app:backgroundTint="@null"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/mainLayout">
+                app:layout_constraintTop_toBottomOf="@id/mainLayout" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAddToCart"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/gradient_background"
-                    android:enabled="@{product.available}"
-                    android:text="@string/add_to_cart"
-                    android:textAllCaps="false"
-                    android:visibility="@{product.added ? View.INVISIBLE : View.VISIBLE}"
-                    app:backgroundTint="@null" />
-
-                <LinearLayout
-                    android:id="@+id/quantityLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:visibility="@{product.added ? View.VISIBLE : View.INVISIBLE}">
-
-                    <ImageButton
-                        android:id="@+id/btnDecrease"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackground"
-                        android:contentDescription="@string/quantity_decrease_button"
-                        android:src="@drawable/ic_minus_box_32" />
-
-                    <TextView
-                        android:id="@+id/userQuantity"
-                        style="@style/TextAppearance.MaterialComponents.Body1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@{String.valueOf(product.userQuantity)}" />
-
-                    <ImageButton
-                        android:id="@+id/btnIncrease"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackground"
-                        android:contentDescription="@string/quantity_increase_button"
-                        android:src="@drawable/ic_add_box_32" />
-                </LinearLayout>
-            </FrameLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

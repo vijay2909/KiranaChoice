@@ -7,8 +7,9 @@ import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.addToCart
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
 
@@ -35,7 +36,9 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
 
 //    val bestOfferProducts = dataRepository.bestOfferProducts
 
-    val bestSellingProducts = object : MediatorLiveData<Pair<List<CartItem>, List<Product>>>(){
+    val bestSellingProducts = dataRepository.bestSellingProducts
+
+    /*val bestSellingProducts = object : MediatorLiveData<Pair<List<CartItem>, List<Product>>>(){
         var cartItems : List<CartItem>? = null
         var products : List<Product>? = null
         init {
@@ -52,10 +55,15 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
                 }
             }
         }
+    }*/
+
+    suspend fun getCartItems() = withContext(Dispatchers.IO){
+        dataRepository.getCartItems()
     }
 
+    val bestOfferProducts = dataRepository.bestOfferProducts
 
-    val bestOfferProducts = object : MediatorLiveData<Pair<List<CartItem>, List<Product>>>(){
+    /*val bestOfferProducts = object : MediatorLiveData<Pair<List<CartItem>, List<Product>>>(){
         var cartItems : List<CartItem>? = null
         var products : List<Product>? = null
         init {
@@ -72,7 +80,7 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
                 }
             }
         }
-    }
+    }*/
 
     private fun refreshDataFromRepository() {
         viewModelScope.launch {

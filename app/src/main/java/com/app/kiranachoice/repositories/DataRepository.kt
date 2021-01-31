@@ -218,6 +218,8 @@ class DataRepository(private val databaseDao: DatabaseDao) {
         }
     }
 
+    suspend fun getCartItems() = databaseDao.getCartItems()
+
     val bestOfferProducts: LiveData<List<Product>> =
         Transformations.map(databaseDao.getBestOfferProducts()) {
             it.asDomainModel()

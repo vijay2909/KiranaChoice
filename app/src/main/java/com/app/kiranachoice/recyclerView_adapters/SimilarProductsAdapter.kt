@@ -33,7 +33,7 @@ class SimilarProductsAdapter(
         val product = productsList[position]
 
         // skip the current product
-        if (!productKey.equals(product.key)) holder.bind(product)
+        /*if (!productKey.equals(product.key)) holder.bind(product)
 
         if (!cartItem.isNullOrEmpty()){
             for (cartItem in cartItem) {
@@ -83,7 +83,7 @@ class SimilarProductsAdapter(
         if (addToCartClickedItemPosition == position) {
             holder.binding.btnAddToCart.visibility = View.GONE
             holder.binding.quantityLayout.visibility = View.VISIBLE
-        }
+        }*/
     }
 
     override fun getItemCount(): Int = productsList.size

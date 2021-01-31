@@ -9,6 +9,9 @@ interface DatabaseDao {
     @Query("SELECT * from cart_item_table")
     fun getAllCartItem(): LiveData<List<CartItem>>
 
+    @Query("SELECT * FROM cart_item_table")
+    suspend fun getCartItems(): List<CartItem>
+
     @Query("SELECT EXISTS(SELECT * FROM cart_item_table WHERE productKey = :productKey AND packagingSize = :packagingSize)")
     suspend fun isAlreadyAdded(productKey: String, packagingSize: String): Boolean
 
