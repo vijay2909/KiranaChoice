@@ -1,6 +1,7 @@
 package com.app.kiranachoice
 
 import android.net.Uri
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,7 +17,7 @@ import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val dataRepository: DataRepository) : ViewModel() {
+class MainViewModel @ViewModelInject constructor(private val dataRepository: DataRepository) : ViewModel() {
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val dbFire: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var storage: FirebaseStorage? = null

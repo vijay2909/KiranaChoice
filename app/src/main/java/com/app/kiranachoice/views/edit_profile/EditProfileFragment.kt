@@ -13,6 +13,7 @@ import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.app.kiranachoice.MainViewModel
@@ -27,9 +28,11 @@ import com.bumptech.glide.signature.ObjectKey
 import com.google.firebase.auth.FirebaseAuth
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
+import dagger.hilt.android.AndroidEntryPoint
 
 private const val PICK_IMAGE_REQUEST = 1
 
+@AndroidEntryPoint
 class EditProfileFragment : Fragment(), View.OnClickListener {
 
     private var _bindingEdit: FragmentEditProfileBinding? = null
@@ -38,6 +41,8 @@ class EditProfileFragment : Fragment(), View.OnClickListener {
     private var imageUri: Uri? = null
 
     private lateinit var mAuth : FirebaseAuth
+
+    private val viewModel : MainViewModel by viewModels()
 
     private lateinit var userPreferences: UserPreferences
 
@@ -53,7 +58,7 @@ class EditProfileFragment : Fragment(), View.OnClickListener {
     }
 
 
-    private val viewModel : MainViewModel by activityViewModels()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

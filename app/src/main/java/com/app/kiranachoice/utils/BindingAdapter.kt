@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.R
 import com.app.kiranachoice.data.AddressModel
-import com.app.kiranachoice.data.ProductModel
 import com.app.kiranachoice.data.SearchWord
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.recyclerView_adapters.SearchResultsAdapter
@@ -64,21 +63,23 @@ fun setProductMRP(view: TextView, text: String?) {
 }
 
 @BindingAdapter("sizes")
-fun setSizes(spinner: Spinner, product: Product) {
-    val packagingSize = arrayOfNulls<String>(product.packagingSize.size)
+fun setSizes(spinner: Spinner, product: Product?) {
+    product?.let {
+        val packagingSize = arrayOfNulls<String>(product.packagingSize.size)
 
-    for (i in product.packagingSize.indices) {
-        packagingSize[i] = product.packagingSize[i].size.toString()
+        for (i in product.packagingSize.indices) {
+            packagingSize[i] = product.packagingSize[i].size.toString()
+        }
+
+        val arrayAdapter = ArrayAdapter(
+            spinner.context,
+            R.layout.spinner_item,
+            packagingSize
+        )
+
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = arrayAdapter
     }
-
-    val arrayAdapter = ArrayAdapter(
-        spinner.context,
-        R.layout.spinner_item,
-        packagingSize
-    )
-
-    arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-    spinner.adapter = arrayAdapter
 }
 
 
@@ -122,7 +123,7 @@ fun setUnixToDate(view: TextView, unix: Long) {
 
 @BindingAdapter("title")
 fun setTitle(view: TextView, title: String) {
-    view.text = title.split(' ').joinToString(" ") { it.capitalize() }
+    view.text = title.split(' ').joinToString(" ") { it.capitalize(Locale.getDefault()) }
 }
 
 @BindingAdapter("searchWords")

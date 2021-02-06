@@ -234,9 +234,7 @@
             app:argType="string" />
         <argument
             android:name="product"
-            app:argType="com.app.kiranachoice.data.domain.Product"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:argType="com.app.kiranachoice.data.domain.Product" />
         <action
             android:id="@+id/action_productDetailsFragment_self"
             app:destination="@id/productDetailsFragment"

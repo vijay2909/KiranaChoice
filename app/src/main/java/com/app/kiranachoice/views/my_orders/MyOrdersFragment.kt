@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.app.kiranachoice.databinding.FragmentMyOrdersBinding
 import com.app.kiranachoice.data.BookItemOrderModel
 import com.app.kiranachoice.recyclerView_adapters.MyOrdersAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MyOrdersFragment : Fragment(), MyOrdersAdapter.OrderClickListener {
 
     private var _bindingMyOrder: FragmentMyOrdersBinding? = null
@@ -22,7 +24,7 @@ class MyOrdersFragment : Fragment(), MyOrdersAdapter.OrderClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _bindingMyOrder = FragmentMyOrdersBinding.inflate(inflater, container, false)
         return binding.root
     }

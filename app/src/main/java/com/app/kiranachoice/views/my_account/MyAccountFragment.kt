@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
@@ -20,8 +21,9 @@ import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentMyAccountBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.theartofdev.edmodo.cropper.CropImage
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MyAccountFragment : Fragment(), View.OnClickListener {
 
     private var _bindingAccount: FragmentMyAccountBinding? = null
@@ -29,6 +31,7 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
     private lateinit var navController: NavController
     private lateinit var mAuth: FirebaseAuth
 
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +44,6 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
     }
 
 
-    private val viewModel : MainViewModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
@@ -69,7 +71,7 @@ class MyAccountFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    
+
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.textEditProfile.id -> navController.navigate(R.id.action_myAccountFragment_to_editProfileFragment)

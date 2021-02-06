@@ -6,20 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
-import com.app.kiranachoice.data.db.CartDatabase
 import com.app.kiranachoice.data.domain.SubCategory
 import com.app.kiranachoice.databinding.FragmentCategoryBinding
 import com.app.kiranachoice.recyclerView_adapters.SubCategoryAdapter
-import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.themeColor
 import com.google.android.material.transition.MaterialContainerTransform
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener {
 
     private var _bindingCategory: FragmentCategoryBinding? = null
@@ -27,7 +25,8 @@ class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener
     private lateinit var navController: NavController
 
     private val args: CategoryFragmentArgs by navArgs()
-    private lateinit var viewModel : CategoryViewModel
+
+    private val viewModel : CategoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,9 +43,9 @@ class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener
         savedInstanceState: Bundle?
     ): View {
         _bindingCategory = FragmentCategoryBinding.inflate(inflater, container, false)
-        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
+        /*val localDatabase = AppDatabase.getInstance(requireContext().applicationContext)
         val factory = CategoryViewModelFactory(args.categoryName, DataRepository(localDatabase.databaseDao))
-        viewModel = ViewModelProvider(this, factory).get(CategoryViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory).get(CategoryViewModel::class.java)*/
         return binding.root
     }
 
@@ -87,15 +86,5 @@ class CategoryFragment : Fragment(), SubCategoryAdapter.SubCategoryClickListener
         navController.navigate(
             CategoryFragmentDirections.actionCategoryFragmentToProductsFragment(subCategory.name)
         )
-    }
-}
-
-class CategoryViewModelFactory(private val categoryName: String, private val dataRepository: DataRepository): ViewModelProvider.Factory{
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CategoryViewModel::class.java)){
-            return CategoryViewModel(categoryName, dataRepository) as T
-        }
-        throw IllegalArgumentException ("Unknown ViewModel")
     }
 }

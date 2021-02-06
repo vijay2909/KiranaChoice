@@ -14,31 +14,30 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.app.kiranachoice.App
 import com.app.kiranachoice.MainActivity
 import com.app.kiranachoice.R
-import com.app.kiranachoice.data.db.CartDatabase
 import com.app.kiranachoice.databinding.DialogBookingConfirmedBinding
 import com.app.kiranachoice.databinding.FragmentPaymentBinding
-import com.app.kiranachoice.network.DateTimeApi
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.DELIVERY_FREE
 import com.app.kiranachoice.utils.Mailer
 import com.app.kiranachoice.utils.getDateTimeFromUnix
 import com.app.kiranachoice.utils.toPriceAmount
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 
+@AndroidEntryPoint
 class PaymentFragment : Fragment() {
 
     private var bindingPayment: FragmentPaymentBinding? = null
     private val binding get() = bindingPayment!!
-    private lateinit var viewModel: PaymentViewModel
+    private val viewModel: PaymentViewModel by viewModels()
 
     private lateinit var dataRepository: DataRepository
 
@@ -48,11 +47,11 @@ class PaymentFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
+        /*val localDatabase = AppDatabase.getInstance(requireContext().applicationContext)
         dataRepository = DataRepository(localDatabase.databaseDao)
         val apiService = (requireActivity().applicationContext as App).getApiService()
         val factory = PaymentViewModelFactory(apiService, dataRepository)
-        viewModel = ViewModelProvider(this, factory).get(PaymentViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory).get(PaymentViewModel::class.java)*/
 
         bindingPayment = FragmentPaymentBinding.inflate(inflater, container, false)
 
@@ -70,8 +69,7 @@ class PaymentFragment : Fragment() {
         binding.totalAmount = args.totalAmount
         binding.couponDescription = args.couponDescription
 
-        viewModel.allProducts.observe(viewLifecycleOwner, {
-            viewModel.cartItems = it
+        viewModel.cartItems.observe(viewLifecycleOwner, {
             setProductListTextWithPrice()
         })
 
@@ -179,26 +177,26 @@ class PaymentFragment : Fragment() {
 
     private fun setProductListTextWithPrice() {
         bindingPayment?.productLayout?.removeAllViews()
-        viewModel.cartItems?.forEach { cartItem ->
+        viewModel.cartItems.value?.forEach { cartItem ->
             val relativeLayout = RelativeLayout(requireContext())
 
             val textProductName = TextView(requireContext())
             textProductName.setTextColor(Color.BLACK)
             textProductName.id = View.generateViewId()
             textProductName.textSize = 15f
-            textProductName.text = cartItem.productName
+            textProductName.text = cartItem.name
 
             val textSellingPriceAndQuantity = TextView(requireContext())
             textSellingPriceAndQuantity.textSize = 12f
             textSellingPriceAndQuantity.text =
-                getString(R.string.quantity).plus(" ${cartItem.quantity}")
+                getString(R.string.quantity).plus(" ${cartItem.orderQuantity}")
                     .plus(" ${getString(R.string.multiply)}")
                     .plus(" ${getString(R.string.rupee)}")
-                    .plus(" ${cartItem.productPrice}")
+                    .plus(" ${cartItem.packagingSize[cartItem.packagingIndex].price}")
 
             val textProductPrice = TextView(requireContext())
             val totalPrice =
-                cartItem.quantity.toInt().times(cartItem.productPrice.toInt())
+                cartItem.orderQuantity.times(cartItem.packagingSize[cartItem.packagingIndex].price!!.toInt())
             textProductPrice.id = View.generateViewId()
             textProductPrice.setTextColor(Color.BLACK)
             textProductPrice.textSize = 15f
@@ -251,14 +249,4 @@ class PaymentFragment : Fragment() {
         bindingPayment = null
     }
 
-}
-
-@Suppress("UNCHECKED_CAST")
-class PaymentViewModelFactory(private val apiService: DateTimeApi, private val dataRepository: DataRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(PaymentViewModel::class.java)){
-            return PaymentViewModel(apiService, dataRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel")
-    }
 }

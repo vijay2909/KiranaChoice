@@ -6,26 +6,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.app.kiranachoice.R
-import com.app.kiranachoice.databinding.FragmentCartBinding
-import com.app.kiranachoice.data.db.CartDatabase
-import com.app.kiranachoice.data.db.CartItem
-import com.app.kiranachoice.listeners.CartListener
 import com.app.kiranachoice.data.CouponModel
+import com.app.kiranachoice.data.db.AppDatabase
+import com.app.kiranachoice.data.db.asDomainModel
+import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.databinding.FragmentCartBinding
+import com.app.kiranachoice.listeners.CartListener
 import com.app.kiranachoice.recyclerView_adapters.CartItemAdapter
 import com.app.kiranachoice.recyclerView_adapters.CouponsAdapter
 import com.app.kiranachoice.repositories.DataRepository
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListener {
 
     private var _bindingCart: FragmentCartBinding? = null
@@ -37,9 +39,7 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
 
     private var couponPosition: Int = -1
 
-    private lateinit var viewModel: CartViewModel
-
-    private lateinit var dialog: AlertDialog
+    private val viewModel: CartViewModel by viewModels()
 
     private var couponCode : String? = null
 
@@ -48,9 +48,9 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
         savedInstanceState: Bundle?
     ): View {
         // initialize viewModel
-        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
+        /*val localDatabase = AppDatabase.getInstance(requireContext().applicationContext)
         val cartViewModelFactory = CartViewModelFactory(DataRepository(localDatabase.databaseDao))
-        viewModel = ViewModelProvider(this, cartViewModelFactory).get(CartViewModel::class.java)
+        viewModel = ViewModelProvider(this, cartViewModelFactory).get(CartViewModel::class.java)*/
 
         _bindingCart = FragmentCartBinding.inflate(inflater, container, false)
 
@@ -100,10 +100,10 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
         }
 
         viewModel.allCartItems.observe(viewLifecycleOwner, { list ->
-            list?.let { cartItems ->
-                binding.isListEmpty = cartItems.isEmpty()
-                setupText(cartItems.count())
-                cartItemAdapter.submitList(cartItems)
+            list?.let { products ->
+                binding.isListEmpty = products.isEmpty()
+                setupText(products.count())
+                cartItemAdapter.submitList(products.asDomainModel())
             }
         })
 
@@ -137,11 +137,6 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
         })
     }
 
-    override fun onStart() {
-        super.onStart()
-        (activity as AppCompatActivity).supportActionBar?.show()
-    }
-
 
     private fun setupText(totalProducts: Int) {
         val itemFound =
@@ -155,29 +150,26 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
     }
 
 
-    override fun removeCartItem(cartItem: CartItem) {
+    override fun removeCartItem(product: Product) {
         // show delete confirmation dialog before remove product from cart
-        if (!this::dialog.isInitialized) {
-            dialog = AlertDialog.Builder(requireContext())
-                .setTitle("Delete Item")
-                .setMessage("Are you sure to remove product from cart?")
-                .setPositiveButton(
-                    "Yes"
-                ) { dialog, _ ->
-                    viewModel.removeCartItem(cartItem)
-                    dialog.dismiss()
-                }
-                .setNegativeButton("No") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .create()
-        }
-        dialog.show()
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Item")
+            .setMessage("Are you sure to remove product from cart?")
+            .setPositiveButton(
+                "Yes"
+            ) { dialog, _ ->
+                viewModel.removeCartItem(product)
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
 
-    override fun onQuantityChange(cartItem: CartItem, quantity: Int) {
-        viewModel.updateQuantity(cartItem, quantity)
+    override fun onQuantityChange(product: Product) {
+        viewModel.updateQuantity(product)
     }
 
 

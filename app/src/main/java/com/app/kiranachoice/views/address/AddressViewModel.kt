@@ -8,10 +8,12 @@ import com.app.kiranachoice.utils.USER_ADDRESSES_REFERENCE
 import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
+import javax.inject.Inject
 
-
-class AddressViewModel : ViewModel() {
+@HiltViewModel
+class AddressViewModel @Inject constructor() : ViewModel() {
 
     private var dbFire: FirebaseFirestore? = null
     private var mAuth: FirebaseAuth? = null

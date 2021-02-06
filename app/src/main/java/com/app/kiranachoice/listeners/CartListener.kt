@@ -1,11 +1,8 @@
 package com.app.kiranachoice.listeners
 
-import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.data.domain.Product
 
 interface CartListener {
-    fun removeCartItem(cartItem: CartItem)
-    fun onQuantityChange(
-        cartItem: CartItem,
-        quantity : Int
-    )
+    fun removeCartItem(product: Product)
+    fun onQuantityChange(product: Product)
 }

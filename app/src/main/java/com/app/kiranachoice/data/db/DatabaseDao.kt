@@ -6,29 +6,37 @@ import androidx.room.*
 @Dao
 interface DatabaseDao {
 
-    @Query("SELECT * from cart_item_table")
-    fun getAllCartItem(): LiveData<List<CartItem>>
+    /**
+     * Get Cart Items
+     * */
+    @Query("SELECT * FROM productitem WHERE addedInCart = 1")
+    fun getCartItems() : LiveData<List<ProductItem>>
 
-    @Query("SELECT * FROM cart_item_table")
-    suspend fun getCartItems(): List<CartItem>
+    /**
+     * Add To Cart
+     * */
+    @Query("UPDATE productitem SET addedInCart = 1 WHERE `key` = :productKey")
+    suspend fun addToCart(productKey: String)
 
-    @Query("SELECT EXISTS(SELECT * FROM cart_item_table WHERE productKey = :productKey AND packagingSize = :packagingSize)")
-    suspend fun isAlreadyAdded(productKey: String, packagingSize: String): Boolean
+    /**
+     * Delete Product From Cart
+     * */
+    @Query("UPDATE productitem SET addedInCart = 0 WHERE `key` = :productKey")
+    suspend fun removeFromCart(productKey: String)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(cartItem: CartItem): Long
 
-    @Query("DELETE FROM cart_item_table WHERE productKey = :productKey")
-    suspend fun delete(productKey: String)
+    /**
+     * Update Cart Product Quantity
+     * */
+    @Query("UPDATE productitem SET orderQuantity = :quantity WHERE `key` = :productKey")
+    suspend fun updateCartItemQuantity(productKey: String, quantity: Int)
 
-    @Delete
-    suspend fun delete(cartItem: CartItem)
+    /**
+     * Get Total Cart Items Size
+     * */
+    @Query("SELECT COUNT(*) FROM productitem WHERE addedInCart = 1")
+    fun getTotalCartItems(): LiveData<Int>
 
-    @Update
-    suspend fun update(cartItem: CartItem): Int
-
-    @Query("UPDATE cart_item_table SET quantity= :quantity WHERE productKey = :productKey")
-    suspend fun update(productKey: String, quantity: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSearchItems(searchItems: List<SearchItem>)
@@ -39,6 +47,7 @@ interface DatabaseDao {
     @Query("SELECT * FROM searchitem  WHERE productName LIKE :query OR categoryName LIKE :query OR tag Like :query")
     fun getSearchWords(query: String): LiveData<List<SearchItem>>
 
+
     @Query("select * from bannerimage")
     fun getBanners(): LiveData<List<BannerImage>>
 
@@ -46,7 +55,7 @@ interface DatabaseDao {
     suspend fun insertBanners(banners: List<BannerImage>)
 
     @Query("select * from categoryitem WHERE `index` = :index")
-    fun getCategories(index : Int): LiveData<List<CategoryItem>>
+    fun getCategories(index: Int): LiveData<List<CategoryItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategories(categories: List<CategoryItem>)
@@ -63,17 +72,14 @@ interface DatabaseDao {
     @Query("SELECT * FROM productitem WHERE `key`=:productKey")
     fun getProduct(productKey: String): LiveData<ProductItem>
 
-    @Query("SELECT * FROM productitem WHERE subCategoryName =:subCategoryName AND isAvailable = :value ORDER BY id ASC")
-    fun getProductBySubCategoryName(subCategoryName: String, value: Boolean = true): LiveData<List<ProductItem>>
+    @Query("SELECT * FROM productitem WHERE subCategoryName =:subCategoryName AND isAvailable = 1 ORDER BY id ASC")
+    fun getProductBySubCategoryName(subCategoryName: String): LiveData<List<ProductItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSubCategories(subCategories: List<SubCategoryItem>)
 
     @Query("SELECT * FROM subcategoryitem WHERE categoryName =:categoryName ")
     fun getSubCategories(categoryName: String): LiveData<List<SubCategoryItem>>
-
-    @Query("SELECT COUNT(*) FROM cart_item_table")
-    fun getTotalCartItems(): LiveData<Int>
 
     @Query("DELETE FROM productitem")
     suspend fun deleteAllProducts()

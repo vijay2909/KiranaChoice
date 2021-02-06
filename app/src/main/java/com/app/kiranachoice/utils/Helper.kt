@@ -4,7 +4,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import com.app.kiranachoice.data.PackagingSizeModel
-import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.repositories.DataRepository
 import com.google.android.material.textfield.TextInputEditText
@@ -24,19 +23,7 @@ suspend fun addToCart(
     product: Product,
     packagingSizeModel: PackagingSizeModel
 ) {
-    val cartItem = CartItem(
-        product.key,
-        product.id,
-        product.product_sku,
-        product.name,
-        product.image,
-        packagingSizeModel.mrp.toString(),
-        packagingSizeModel.price.toString(),
-        packagingSizeModel.size.toString(),
-        product.minOrderQty,
-        product.userQuantity.toString()
-    )
-    dataRepository.insert(cartItem)
+    dataRepository.addToCart(product.key)
 }
 
 

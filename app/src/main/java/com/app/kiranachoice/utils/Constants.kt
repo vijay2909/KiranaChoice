@@ -4,6 +4,12 @@ package com.app.kiranachoice.utils
 const val EMAIL = "kiranachoice@gmail.com"
 const val PASSWORD = "iuosuohgqcugpmmc"
 
+const val APP_DATABASE_NAME = "App_Database"
+
+const val DATE_TIME_API_KEY = "3K01ECC74C9F"
+const val DATE_TIME_RESPONSE_FORMAT = "json"
+const val DATE_TIME_COUNTRY_CODE = "IN"
+
 const val DEVICE_TOKEN = "Device Token"
 
 const val HOME_TOP_BANNER = "Home Top Banner"

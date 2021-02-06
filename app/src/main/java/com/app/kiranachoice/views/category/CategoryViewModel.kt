@@ -1,24 +1,20 @@
 package com.app.kiranachoice.views.category
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.app.kiranachoice.data.SubCategoryModel
 import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.repositories.DataRepository
-import com.app.kiranachoice.utils.CATEGORY_REFERENCE
-import com.app.kiranachoice.utils.SUB_CATEGORY_REFERENCE
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.async
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CategoryViewModel(private val categoryName: String, private val dataRepository: DataRepository) : ViewModel() {
+@HiltViewModel
+class CategoryViewModel @Inject constructor(
+    private val dataRepository: DataRepository,
+    private val state: SavedStateHandle
+) : ViewModel() {
 
-    val subCategories = dataRepository.getSubCategories(categoryName)
+    val subCategories = dataRepository.getSubCategories(state.get<String>("categoryName") ?: "")
 
     init {
         viewModelScope.launch { dataRepository.refreshSubCategories() }

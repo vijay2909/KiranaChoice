@@ -15,7 +15,9 @@ import com.app.kiranachoice.MessagingService
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentUserDetailsBinding
 import com.app.kiranachoice.utils.UserPreferences
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class UserDetailsFragment : Fragment() {
 
     private var _bindingUserDetails: FragmentUserDetailsBinding? = null

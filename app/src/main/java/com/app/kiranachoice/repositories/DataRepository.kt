@@ -5,12 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.app.kiranachoice.data.*
-import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.db.DatabaseDao
 import com.app.kiranachoice.data.db.asDomainModel
 import com.app.kiranachoice.data.domain.Banner
 import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.network.DateTimeApi
 import com.app.kiranachoice.utils.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -21,10 +21,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-class DataRepository(private val databaseDao: DatabaseDao) {
+class DataRepository @Inject constructor(private val databaseDao: DatabaseDao, private val apiService: DateTimeApi) {
 
 
     private val dbRef = FirebaseDatabase.getInstance()
@@ -49,32 +53,32 @@ class DataRepository(private val databaseDao: DatabaseDao) {
 
 
     val totalCartItems = databaseDao.getTotalCartItems()
-    val allCartItems = databaseDao.getAllCartItem()
+
+    val allCartItems = databaseDao.getCartItems()
 
 
-    suspend fun insert(cartItem: CartItem) = withContext(Dispatchers.IO) {
-        databaseDao.insert(cartItem)
+    suspend fun addToCart(productKey: String) = withContext(Dispatchers.IO) {
+        databaseDao.addToCart(productKey)
     }
 
 
-    suspend fun isAlreadyAdded(productKey: String, packagingSize: String) =
-        withContext(Dispatchers.IO) {
-            databaseDao.isAlreadyAdded(productKey, packagingSize)
-        }
+    suspend fun removeFromCart(productKey: String) = withContext(Dispatchers.IO){
+        databaseDao.removeFromCart(productKey)
+    }
 
 
-    suspend fun delete(productKey: String) = withContext(Dispatchers.IO) {
+    /*suspend fun delete(productKey: String) = withContext(Dispatchers.IO) {
         databaseDao.delete(productKey)
-    }
+    }*/
 
 
-    suspend fun delete(cartItem: CartItem) = withContext(Dispatchers.IO) {
-        databaseDao.delete(cartItem)
-    }
+    /*suspend fun delete(cartItem: CartItem) = withContext(Dispatchers.IO) {
+        databaseDao.delete(cartItem.productKey)
+    }*/
 
 
-    suspend fun update(productKey: String, quantity: String) = withContext(Dispatchers.IO) {
-        databaseDao.update(productKey, quantity)
+    suspend fun updateCartItemQuantity(productKey: String, quantity: Int) = withContext(Dispatchers.IO) {
+        databaseDao.updateCartItemQuantity(productKey, quantity)
     }
 
 
@@ -218,7 +222,7 @@ class DataRepository(private val databaseDao: DatabaseDao) {
         }
     }
 
-    suspend fun getCartItems() = databaseDao.getCartItems()
+    fun getCartItems() = databaseDao.getCartItems()
 
     val bestOfferProducts: LiveData<List<Product>> =
         Transformations.map(databaseDao.getBestOfferProducts()) {
@@ -250,10 +254,10 @@ class DataRepository(private val databaseDao: DatabaseDao) {
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         Log.d(TAG, "generateOrderId sequence: ${snapshot.value} ")
-                        if (snapshot.exists()){
-                            sequence = snapshot.children.elementAt(0).value.toString().toInt().plus(1)
+                        sequence = if (snapshot.exists()){
+                            snapshot.children.elementAt(0).value.toString().toInt().plus(1)
                         }else{
-                            sequence = 1
+                            1
                         }
                         orderId = "KC" + (1000 + sequence!!)
                     }
@@ -317,6 +321,32 @@ class DataRepository(private val databaseDao: DatabaseDao) {
             override fun onCancelled(error: DatabaseError) {
             }
 
+        })
+    }
+
+    private var _orderPlacedDate = MutableLiveData<Long>()
+    val orderPlacedDate : LiveData<Long> get() = _orderPlacedDate
+
+    fun getTime() {
+        apiService.getTime(
+            DATE_TIME_API_KEY,
+            DATE_TIME_RESPONSE_FORMAT,
+            DATE_TIME_COUNTRY_CODE
+        ).enqueue(object :
+            Callback<CurrentDateTime> {
+            override fun onResponse(
+                call: Call<CurrentDateTime>,
+                response: Response<CurrentDateTime>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+
+                    val timestamp = response.body()!!.zones[0].timestamp
+                    _orderPlacedDate.value = (timestamp * 1_000).toLong()
+                }
+            }
+
+            override fun onFailure(call: Call<CurrentDateTime>, t: Throwable) {
+            }
         })
     }
 

@@ -1,19 +1,21 @@
 package com.app.kiranachoice.views.home
 
-import androidx.lifecycle.*
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.app.kiranachoice.data.PackagingSizeModel
-import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.addToCart
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
-
-    private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
+@HiltViewModel
+class HomeViewModel @Inject constructor(private val dataRepository: DataRepository) : ViewModel() {
 
     val totalCartItems = dataRepository.totalCartItems
 
@@ -57,9 +59,6 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
         }
     }*/
 
-    suspend fun getCartItems() = withContext(Dispatchers.IO){
-        dataRepository.getCartItems()
-    }
 
     val bestOfferProducts = dataRepository.bestOfferProducts
 
@@ -122,14 +121,14 @@ class HomeViewModel(private val dataRepository: DataRepository) : ViewModel() {
 
 
     fun removeProductFromCart(productKey: String) = viewModelScope.launch {
-        dataRepository.delete(productKey)
+        dataRepository.removeFromCart(productKey)
     }
 
 
     /**
      * update product quantity
      * */
-    fun updateQuantity(productKey: String, quantity: String) = viewModelScope.launch {
-        dataRepository.update(productKey, quantity)
+    fun updateCartItemQuantity(productKey: String, quantity: Int) = viewModelScope.launch {
+        dataRepository.updateCartItemQuantity(productKey, quantity)
     }
 }

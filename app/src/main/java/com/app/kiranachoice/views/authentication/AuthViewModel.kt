@@ -7,8 +7,11 @@ import com.app.kiranachoice.data.User
 import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class AuthViewModel : ViewModel() {
+@HiltViewModel
+class AuthViewModel @Inject constructor(): ViewModel() {
     private var dbFire = FirebaseFirestore.getInstance().collection(USER_REFERENCE)
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 

@@ -18,12 +18,15 @@ data class ProductModel constructor(
     var packagingSize: List<PackagingSizeModel> = emptyList(),
     var aboutTheProduct: List<AboutProductModel> = emptyList(),
     var tag: List<String> = emptyList(),
-    var totalQty: Long = 0,
-    var minOrderQty: Long = 5,
+    var totalQty: Int = 0,
+    var minOrderQty: Int = 5,
     var makeBestOffer: Boolean = false,
     var makeBestSelling: Boolean = false,
     var makeRecommendedProduct: Boolean = false,
-    var isAvailable: Boolean = true
+    var isAvailable: Boolean = true,
+    var addedInCart : Boolean = false,
+    var orderQuantity: Int = 1,
+    var packagingIndex : Int = 0
 )
 
 
@@ -56,7 +59,10 @@ fun List<ProductModel>.asProductDatabaseModel(): List<ProductItem> {
             makeBestOffer = it.makeBestOffer,
             makeBestSelling = it.makeBestSelling,
             makeRecommendedProduct = it.makeRecommendedProduct,
-            isAvailable = it.isAvailable
+            isAvailable = it.isAvailable,
+            orderQuantity = it.orderQuantity,
+            addedInCart = it.addedInCart,
+            packagingIndex = it.packagingIndex
         )
     }
 }

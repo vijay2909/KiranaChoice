@@ -8,43 +8,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.app.kiranachoice.data.db.CartDatabase
+import com.app.kiranachoice.BuildConfig
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.FragmentProductDetailsBinding
 import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.recyclerView_adapters.AboutProductAdapter
 import com.app.kiranachoice.recyclerView_adapters.PackagingSizeAdapter
 import com.app.kiranachoice.recyclerView_adapters.SimilarProductsAdapter
-import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.themeColor
-import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ProductDetailsFragment : Fragment(), ProductClickListener {
 
     private var _bindingProductDetails: FragmentProductDetailsBinding? = null
     private val binding get() = _bindingProductDetails!!
 
-    private lateinit var navController: NavController
-
     private val mAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     private lateinit var similarProductsAdapter: SimilarProductsAdapter
+    private lateinit var packagingSizeAdapter: PackagingSizeAdapter
 
     private val args: ProductDetailsFragmentArgs by navArgs()
 
-    private val viewModel: ProductDetailsViewModel by lazy {
-        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
-        val factory = ProductViewModelFactory(args.title, DataRepository(localDatabase.databaseDao))
-        ViewModelProvider(this, factory).get(ProductDetailsViewModel::class.java)
-    }
+    private val viewModel: ProductDetailsViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +56,16 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
         savedInstanceState: Bundle?
     ): View {
         _bindingProductDetails = FragmentProductDetailsBinding.inflate(inflater, container, false)
+
+        similarProductsAdapter = SimilarProductsAdapter(args.product.key, this)
+        binding.recyclerViewSimilarProducts.apply {
+            setHasFixedSize(true)
+            adapter = similarProductsAdapter
+        }
+
+        packagingSizeAdapter = PackagingSizeAdapter()
+        binding.recyclerPackagingSize.adapter = packagingSizeAdapter
+
         return binding.root
     }
 
@@ -68,44 +73,34 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        navController = Navigation.findNavController(view)
+        binding.product = args.product
+        packagingSizeAdapter.list = args.product.packagingSize
 
-        val packagingSizeAdapter = PackagingSizeAdapter()
-        binding.recyclerPackagingSize.adapter = packagingSizeAdapter
-
-        args.product?.let {
-            binding.product = it
-            packagingSizeAdapter.list = it.packagingSize
-
-            if (!it.aboutTheProduct.isNullOrEmpty()) {
-                binding.isListEmpty = false
-                val aboutProductAdapter = AboutProductAdapter()
-                binding.recyclerViewAboutProduct.apply {
-                    aboutProductAdapter.list = it.aboutTheProduct
-                    setHasFixedSize(true)
-                    adapter = aboutProductAdapter
-                }
-            } else {
-                binding.isListEmpty = true
+        if (!args.product.aboutTheProduct.isNullOrEmpty()) {
+            binding.isListEmpty = false
+            val aboutProductAdapter = AboutProductAdapter()
+            binding.recyclerViewAboutProduct.apply {
+                aboutProductAdapter.list = args.product.aboutTheProduct
+                setHasFixedSize(true)
+                adapter = aboutProductAdapter
             }
+        } else {
+            binding.isListEmpty = true
         }
 
         viewModel.getProducts.observe(viewLifecycleOwner, {
-            binding.recyclerViewSimilarProducts.apply {
-                similarProductsAdapter = SimilarProductsAdapter(it.second, args.product?.key,it.first,this@ProductDetailsFragment)
-                adapter = similarProductsAdapter
-                setHasFixedSize(true)
-            }
+            binding.isSimilarProductsListEmpty = it.isEmpty()
+            similarProductsAdapter.productsList = it
         })
 
 
         binding.shareButton.setOnClickListener {
-            val productId = args.product?.id
+            val productId = args.product.id
 
             Firebase.dynamicLinks.shortLinkAsync {
                 link = Uri.parse("https://www.kiranachoice.com/refer.php?productId=$productId")
                 domainUriPrefix = "https://kiranachoice.page.link"
-                androidParameters("com.app.kiranachoice") {
+                androidParameters(BuildConfig.APPLICATION_ID) {
                     minimumVersion = 1
                 }
                 socialMetaTagParameters {
@@ -140,7 +135,7 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
     }
 
     override fun onItemClick(view: View, product: Product) {
-        navController.navigate(
+        findNavController().navigate(
             ProductDetailsFragmentDirections.actionProductDetailsFragmentSelf(
                 product.name,
                 product

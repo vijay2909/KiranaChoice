@@ -5,20 +5,16 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.ConnectivityManager.*
-import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.*
 import android.os.Build
 import android.provider.Settings
+import androidx.databinding.library.BuildConfig
 import com.app.kiranachoice.listeners.InternetConnectionListener
 import com.app.kiranachoice.network.DateTimeApi
-import com.app.kiranachoice.utils.NetworkConnectionInterceptor
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
+import dagger.hilt.android.HiltAndroidApp
+import timber.log.Timber
 
-
+@HiltAndroidApp
 class App : Application() {
 
     private var apiService: DateTimeApi? = null
@@ -31,6 +27,10 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        if (BuildConfig.DEBUG){
+            Timber.plant(Timber.DebugTree())
+        }
         /* val name = UserPreferences(this).getUserName()
 
          FirebaseMessaging.getInstance().subscribeToTopic("user_$name")*/
@@ -74,30 +74,18 @@ class App : Application() {
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val activeNetwork = connectivityManager.activeNetwork ?: return false
-            val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-            return when {
-                capabilities.hasTransport(TRANSPORT_WIFI) -> true
-                capabilities.hasTransport(TRANSPORT_CELLULAR) -> true
-                capabilities.hasTransport(TRANSPORT_ETHERNET) -> true
-                else -> false
-            }
-        } else {
-            connectivityManager.activeNetworkInfo?.run {
-                return when(type){
-                    TYPE_WIFI -> true
-                    TYPE_MOBILE -> true
-                    TYPE_ETHERNET -> true
-                    else -> false
-                }
-            }
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return when {
+            capabilities.hasTransport(TRANSPORT_WIFI) -> true
+            capabilities.hasTransport(TRANSPORT_CELLULAR) -> true
+            capabilities.hasTransport(TRANSPORT_ETHERNET) -> true
+            else -> false
         }
-        return false
     }
 
 
-    fun getApiService(): DateTimeApi {
+    /*fun getApiService(): DateTimeApi {
         if (apiService == null) {
             apiService = Retrofit.Builder()
                 .baseUrl(DateTimeApi.BASE_URL)
@@ -124,5 +112,5 @@ class App : Application() {
                 }
             })
             .build()
-    }
+    }*/
 }

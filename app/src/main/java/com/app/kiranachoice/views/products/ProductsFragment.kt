@@ -2,48 +2,51 @@ package com.app.kiranachoice.views.products
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.app.kiranachoice.data.db.CartDatabase
+import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.FragmentProductsBinding
 import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
-import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.firebase.auth.FirebaseAuth
+import dagger.Binds
+import dagger.Provides
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProductsFragment : Fragment(), ProductClickListener {
 
     private var _bindingProduct: FragmentProductsBinding? = null
     private val binding get() = _bindingProduct!!
-    private lateinit var viewModel: ProductsViewModel
-
     private lateinit var verticalProductsAdapter: VerticalProductsAdapter
 
     private lateinit var mAuth: FirebaseAuth
+
+    //    @delegate:Inject
     private val args: ProductsFragmentArgs by navArgs()
+
+
+    val viewModel: ProductsViewModel by viewModels()
+
+    private var cartItems: List<CartItem>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
-        val productViewModelFactory =
-            ProductViewModelFactory(args.title, DataRepository(localDatabase.databaseDao))
-        viewModel =
-            ViewModelProvider(this, productViewModelFactory).get(ProductsViewModel::class.java)
         _bindingProduct = FragmentProductsBinding.inflate(inflater, container, false)
         mAuth = FirebaseAuth.getInstance()
 
-        verticalProductsAdapter = VerticalProductsAdapter(this)
+        verticalProductsAdapter = VerticalProductsAdapter(cartItems, this)
         binding.recyclerViewProductList.setHasFixedSize(true)
         binding.recyclerViewProductList.adapter = verticalProductsAdapter
 
@@ -75,11 +78,8 @@ class ProductsFragment : Fragment(), ProductClickListener {
             }
         })
 
-        viewModel.getProducts.observe(viewLifecycleOwner, {
-            Log.d("Products", "products: ${it.second}")
-            verticalProductsAdapter.submitCartItem(it.first)
-            verticalProductsAdapter.submitList(it.second)
-
+        viewModel.products.observe(viewLifecycleOwner, { products ->
+            verticalProductsAdapter.submitList(products)
         })
     }
 
@@ -111,7 +111,7 @@ class ProductsFragment : Fragment(), ProductClickListener {
     }
 
     override fun onQuantityChanged(product: Product) {
-        viewModel.updateQuantity(product.key, product.userQuantity.toString())
+        viewModel.updateQuantity(product.key, product.orderQuantity)
     }
 
 }

@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -31,16 +32,18 @@ import com.app.kiranachoice.recyclerView_adapters.AddressAdapter
 import com.app.kiranachoice.utils.isNotNullOrEmpty
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 private const val REQUEST_PERMISSION_CODE = 1
 
+@AndroidEntryPoint
 class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
 
     private var _bindingAddress: FragmentAddressBinding? = null
     private val binding get() = _bindingAddress!!
 
-    private lateinit var viewModel: AddressViewModel
+    private val viewModel: AddressViewModel by viewModels()
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
@@ -54,8 +57,8 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = ViewModelProvider(this).get(AddressViewModel::class.java)
-        (requireActivity() as AppCompatActivity).supportActionBar?.hide()
+        /*viewModel = ViewModelProvider(this).get(AddressViewModel::class.java)
+        (requireActivity() as AppCompatActivity).supportActionBar?.hide()*/
         _bindingAddress = FragmentAddressBinding.inflate(inflater, container, false)
         binding.isAddressListEmpty = true
 

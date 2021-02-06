@@ -3,7 +3,7 @@ package com.app.kiranachoice.repositories
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.app.kiranachoice.data.db.CartDatabase
+import com.app.kiranachoice.data.db.AppDatabase
 import com.app.kiranachoice.data.db.asDomainModel
 import com.app.kiranachoice.data.ProductModel
 import com.app.kiranachoice.data.ProductsList
@@ -17,8 +17,9 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class SearchRepository(private val database: CartDatabase) {
+class SearchRepository @Inject constructor(private val database: AppDatabase) {
 
     private val dbRef = FirebaseDatabase.getInstance()
 

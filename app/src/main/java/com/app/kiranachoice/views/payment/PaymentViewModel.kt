@@ -3,10 +3,7 @@ package com.app.kiranachoice.views.payment
 import androidx.lifecycle.*
 import com.app.kiranachoice.data.AdminOrder
 import com.app.kiranachoice.data.BookItemOrderModel
-import com.app.kiranachoice.data.CurrentDateTime
 import com.app.kiranachoice.data.Product
-import com.app.kiranachoice.data.db.CartItem
-import com.app.kiranachoice.network.DateTimeApi
 import com.app.kiranachoice.network.SendNotificationAPI
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.*
@@ -14,22 +11,24 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.JsonObject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-
-class PaymentViewModel(private val apiService: DateTimeApi, private val dataRepository: DataRepository) : ViewModel() {
+@HiltViewModel
+class PaymentViewModel @Inject constructor(private val dataRepository: DataRepository) : ViewModel() {
 
     private val dbFire: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val dbRef: FirebaseDatabase = FirebaseDatabase.getInstance()
 
-    val allProducts = dataRepository.allCartItems
+    val cartItems = dataRepository.allCartItems
 
 
     val user = dataRepository.user
@@ -43,15 +42,15 @@ class PaymentViewModel(private val apiService: DateTimeApi, private val dataRepo
     }
 
 
-    var cartItems: List<CartItem>? = null
+//    var cartItems: List<CartItem>? = null
 
-    var totalProductsAmount: LiveData<String> = Transformations.map(allProducts) { items ->
+    var totalProductsAmount: LiveData<String> = Transformations.map(cartItems) { items ->
         var tAmount = 0
         items.forEach { item ->
-            tAmount += if (item.quantity.toInt() > 1) {
-                item.quantity.toInt().times(item.productPrice.toInt())
+            tAmount += if (item.orderQuantity > 1) {
+                item.orderQuantity.times(item.packagingSize[item.packagingIndex].price!!.toInt())
             } else {
-                item.productPrice.toInt()
+                item.packagingSize[item.packagingIndex].price!!.toInt()
             }
         }
         tAmount.toString().toPriceAmount()
@@ -80,15 +79,15 @@ class PaymentViewModel(private val apiService: DateTimeApi, private val dataRepo
     fun saveUserOrder(deliveryAddress: String, couponCode: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             val itemList = ArrayList<Product>()
-            cartItems?.forEach {
+            cartItems.value?.forEach {
                 val item = Product(
-                    productSKU = it.productSKU,
-                    productName = it.productName,
-                    productImage = it.productImage,
-                    productSize = it.packagingSize,
-                    productQuantity = it.quantity,
-                    productMRP = it.productMRP,
-                    productPrice = it.productPrice,
+                    productSKU = it.product_sku,
+                    productName = it.name,
+                    productImage = it.image,
+                    productSize = it.packagingSize[it.packagingIndex].size,
+                    productQuantity = it.orderQuantity,
+                    productMRP = it.packagingSize[it.packagingIndex].mrp,
+                    productPrice = it.packagingSize[it.packagingIndex].price,
                 )
                 itemList.add(item)
             }
@@ -165,11 +164,14 @@ class PaymentViewModel(private val apiService: DateTimeApi, private val dataRepo
         return payload
     }
 
-    private var _orderPlacedDate = MutableLiveData<Long>()
-    val orderPlacedDate : LiveData<Long> get() = _orderPlacedDate
+    /*private var _orderPlacedDate = MutableLiveData<Long>()
+    val orderPlacedDate : LiveData<Long> get() = _orderPlacedDate*/
+
+    val orderPlacedDate = dataRepository.orderPlacedDate
 
     private fun getTime() {
-        apiService.getTime("3K01ECC74C9F", "json", "IN").enqueue(object :
+        dataRepository.getTime()
+        /*apiService.getTime("3K01ECC74C9F", "json", "IN").enqueue(object :
             Callback<CurrentDateTime> {
             override fun onResponse(
                 call: Call<CurrentDateTime>,
@@ -184,7 +186,7 @@ class PaymentViewModel(private val apiService: DateTimeApi, private val dataRepo
 
             override fun onFailure(call: Call<CurrentDateTime>, t: Throwable) {
             }
-        })
+        })*/
     }
 
 
@@ -195,8 +197,8 @@ class PaymentViewModel(private val apiService: DateTimeApi, private val dataRepo
 
     fun removeCartItems() {
         viewModelScope.launch(Dispatchers.IO) {
-            cartItems?.forEach { cartItem ->
-                dataRepository.delete(cartItem.productKey)
+            cartItems.value?.forEach { product ->
+                dataRepository.removeFromCart(product.key)
             }
         }
     }

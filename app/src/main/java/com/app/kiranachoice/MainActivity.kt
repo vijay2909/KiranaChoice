@@ -8,6 +8,7 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -17,20 +18,22 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
-import com.app.kiranachoice.data.db.CartDatabase
 import com.app.kiranachoice.databinding.ActivityMainBinding
 import com.app.kiranachoice.databinding.NavHeaderMainBinding
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
-class MainActivity : AppCompatActivity()/*BaseActivity()*/, NavigationView.OnNavigationItemSelectedListener {
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: MainViewModel
+
+    private val viewModel: MainViewModel by viewModels()
 
     private lateinit var navController: NavController
 
@@ -43,10 +46,6 @@ class MainActivity : AppCompatActivity()/*BaseActivity()*/, NavigationView.OnNav
         setContentView(binding.root)
 
         setSupportActionBar(binding.appBarMain.toolbar)
-
-        val localDatabase = CartDatabase.getInstance(applicationContext)
-        val mainViewModelFactory = MainViewModelFactory(DataRepository(localDatabase.databaseDao))
-        viewModel = ViewModelProvider(this, mainViewModelFactory).get(MainViewModel::class.java)
 
         mAuth = FirebaseAuth.getInstance()
 
@@ -134,7 +133,6 @@ class MainActivity : AppCompatActivity()/*BaseActivity()*/, NavigationView.OnNav
     }
 
 
-
     private fun onShareClicked() {
 
         try {
@@ -165,7 +163,10 @@ class MainActivity : AppCompatActivity()/*BaseActivity()*/, NavigationView.OnNav
 
     override fun onStart() {
         super.onStart()
-        registerReceiver(networkErrorBroadCast, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        registerReceiver(
+            networkErrorBroadCast,
+            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        )
     }
 
     override fun onStop() {
@@ -176,7 +177,8 @@ class MainActivity : AppCompatActivity()/*BaseActivity()*/, NavigationView.OnNav
 
     private val networkErrorBroadCast = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val notConnected = intent?.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false) ?: return
+            val notConnected =
+                intent?.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false) ?: return
             if (notConnected) {
                 disconnected()
             } else {
@@ -193,7 +195,7 @@ class MainActivity : AppCompatActivity()/*BaseActivity()*/, NavigationView.OnNav
         binding.appBarMain.imgNoInternet.visibility = View.VISIBLE
     }
 
-    companion object{
+    companion object {
         private const val TAG = "MainActivity"
     }
 }

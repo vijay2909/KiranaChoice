@@ -8,14 +8,16 @@ import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentSearchBinding
 import com.app.kiranachoice.recyclerView_adapters.SearchResultsAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
-
+@AndroidEntryPoint
 class SearchFragment : Fragment() {
 
     private var _bindingSearch: FragmentSearchBinding? = null
@@ -23,10 +25,10 @@ class SearchFragment : Fragment() {
 
     private var searchView: SearchView? = null
 
-    private val viewModel: SearchViewModel by lazy {
+    private val viewModel: SearchViewModel by viewModels() /*by lazy {
         val factory = SearchViewModelFactory(requireActivity().application)
         ViewModelProvider(this, factory).get(SearchViewModel::class.java)
-    }
+    }*/
 
     private lateinit var searchResultsAdapter: SearchResultsAdapter
 

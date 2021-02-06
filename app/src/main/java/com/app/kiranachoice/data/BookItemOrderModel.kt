@@ -8,7 +8,7 @@ data class Product(
     val productName : String? = null,
     val productImage: String? = null,
     val productSize : String? = null,
-    val productQuantity : String? = null,
+    val productQuantity : Int? = null,
     val productMRP: String? = null,
     val productPrice: String? = null,
     val status : String = AWAITING_PICKUP

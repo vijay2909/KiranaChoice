@@ -6,18 +6,18 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [CartItem::class, SearchItem::class, BannerImage::class, CategoryItem::class, ProductItem::class, SubCategoryItem::class], version = 2, exportSchema = false)
+@Database(entities = [SearchItem::class, BannerImage::class, CategoryItem::class, ProductItem::class, SubCategoryItem::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
-abstract class CartDatabase : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
 
     abstract val databaseDao: DatabaseDao
 
-    companion object {
+   /* companion object {
 
         @Volatile
-        private var INSTANCE: CartDatabase? = null
+        private var INSTANCE: AppDatabase? = null
 
-        fun getInstance(context: Context): CartDatabase {
+        fun getInstance(context: Context): AppDatabase {
             val tempInstance = INSTANCE
             if (tempInstance != null) {
                 return tempInstance
@@ -26,12 +26,12 @@ abstract class CartDatabase : RoomDatabase() {
             synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    CartDatabase::class.java,
+                    AppDatabase::class.java,
                     "Cart Database"
                 ).build()
                 INSTANCE = instance
                 return instance
             }
         }
-    }
+    }*/
 }

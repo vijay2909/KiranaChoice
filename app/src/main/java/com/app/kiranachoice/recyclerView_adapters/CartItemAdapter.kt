@@ -2,104 +2,77 @@ package com.app.kiranachoice.recyclerView_adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.app.kiranachoice.R
+import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.ItemCartProductBinding
-import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.listeners.CartListener
-import com.google.android.material.snackbar.Snackbar
 
-class CartItemAdapter(private val listener: CartListener) : ListAdapter<CartItem, CartItemAdapter.CartItemViewHolder>(DiffUtilsCallBack()) {
+class CartItemAdapter(private val listener: CartListener) :
+    ListAdapter<Product, CartItemAdapter.CartItemViewHolder>(DiffUtilsCallBack()) {
 
-    class DiffUtilsCallBack : DiffUtil.ItemCallback<CartItem>() {
-        override fun areItemsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
-            return oldItem.productId == newItem.productId && oldItem.packagingSize == newItem.packagingSize
+    class DiffUtilsCallBack : DiffUtil.ItemCallback<Product>() {
+        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
+            return oldItem.key == newItem.key
         }
 
-        override fun areContentsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
+        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
             return oldItem == newItem
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartItemViewHolder {
-        return CartItemViewHolder.from(parent)
+        return CartItemViewHolder(
+            ItemCartProductBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
 
     override fun onBindViewHolder(holder: CartItemViewHolder, position: Int) {
-        val cartItem = getItem(position)
-        holder.bind(cartItem, listener)
-
-        /*if (cartItem.quantity == "1"){
-            holder.binding.btnDecrease.setImageDrawable(ResourcesCompat.getDrawable(holder.itemView.context.resources, R.drawable.ic_delete, null))
-        } else{
-            holder.binding.btnDecrease.setImageDrawable(ResourcesCompat.getDrawable(holder.itemView.context.resources, R.drawable.ic_minus_box_32, null))
-        }*/
-
-        holder.binding.btnDecrease.setOnClickListener {
-            var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
-            --quantity
-            if (quantity <= 0) {
-                listener.removeCartItem(cartItem)
-            } else {
-                listener.onQuantityChange(
-                    cartItem = cartItem,
-                    quantity = quantity
-                )
-                holder.binding.userQuantity.text = quantity.toString()
-            }
-        }
-
-
-        holder.binding.btnIncrease.setOnClickListener {
-            var quantity = holder.binding.userQuantity.text.toString().toInt()
-            if (!holder.binding.btnDecrease.isEnabled) holder.binding.btnDecrease.isEnabled = true
-            if (quantity < 5) {
-                ++quantity
-                listener.onQuantityChange(
-                    cartItem = cartItem,
-                    quantity = quantity
-                )
-                holder.binding.userQuantity.text = quantity.toString()
-            } else {
-                Snackbar.make(
-                    holder.binding.root,
-                    "You can get maximum 5 quantity.",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            }
-        }
+        holder.bind(getItem(position))
     }
 
-    class CartItemViewHolder(val binding: ItemCartProductBinding) :
+
+    inner class CartItemViewHolder(val binding: ItemCartProductBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(cartItem: CartItem, listener: CartListener) {
-            binding.listener = listener
-            binding.cartItem = cartItem
+        fun bind(product: Product) {
+            binding.product = product
             binding.executePendingBindings()
         }
 
         init {
-            with(binding){
+            with(binding) {
                 btnDecrease.setOnClickListener {
-
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        getItem(adapterPosition)?.let { product ->
+                            if (product.orderQuantity == 1) {
+                                listener.removeCartItem(product)
+                            } else {
+                                --product.orderQuantity
+                                notifyItemChanged(adapterPosition)
+                                listener.onQuantityChange(product)
+                            }
+                        }
+                    }
                 }
-            }
-        }
 
-        companion object {
-            fun from(parent: ViewGroup): CartItemViewHolder {
-                val view =
-                    ItemCartProductBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
-                    )
-                return CartItemViewHolder(view)
+                btnIncrease.setOnClickListener {
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        getItem(adapterPosition)?.let { product ->
+                            if (product.orderQuantity < product.minOrderQty) {
+                                ++product.orderQuantity
+                                notifyItemChanged(adapterPosition)
+                                listener.onQuantityChange(product)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

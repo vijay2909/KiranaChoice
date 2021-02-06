@@ -6,14 +6,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.BR
-import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.ItemHorizontolProductItemBinding
 import com.app.kiranachoice.listeners.ProductClickListener
 
 
 class HorizontalProductsAdapter(
-    private val cartItems: List<CartItem>?,
     private val listener: ProductClickListener,
 ) :
     ListAdapter<Product, HorizontalProductsAdapter.HorizontalProductsViewHolder>(DiffUtilCallback()) {
@@ -45,15 +43,19 @@ class HorizontalProductsAdapter(
     override fun onBindViewHolder(holder: HorizontalProductsViewHolder, position: Int) {
         val product = getItem(position)
 
-        if (cartItems != null && cartItems.isNotEmpty()) {
+        /*if (cartItems != null && cartItems.isNotEmpty()) {
             // here find lambda return cartItem or return null
             cartItems.singleOrNull { cartItem ->
                 cartItem.productName.equals(product.name, true)
             }?.let { cartItem ->
                 product.added = true
-                product.userQuantity = cartItem.quantity.toInt()
+                product.userQuantity = cartItem.quantity
+                // disable increment button if product quantity equals to minimum order quantity
+                if (product.userQuantity == product.minOrderQty){
+                    product.isEnable = false
+                }
             }
-        }
+        }*/
 
         holder.bind(product)
 
@@ -75,7 +77,7 @@ class HorizontalProductsAdapter(
                 btnAddToCart.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         getItem(adapterPosition)?.let { product ->
-                            product.added = !product.added
+                            product.addedInCart = !product.addedInCart
                             notifyItemChanged(adapterPosition)
                             listener?.addItemToCart(
                                 product,
@@ -89,10 +91,9 @@ class HorizontalProductsAdapter(
                 btnIncrease.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         getItem(adapterPosition)?.let { product ->
-                            if (product.userQuantity < product.minOrderQty) {
-                                ++product.userQuantity
-                                if (product.userQuantity.toLong() == product.minOrderQty)
-                                    product.isEnable = !product.isEnable
+                            if (product.orderQuantity < product.minOrderQty) {
+                                ++product.orderQuantity
+                                if (product.orderQuantity == product.minOrderQty)
                                 notifyItemChanged(adapterPosition)
                                 listener?.onQuantityChanged(product)
                             }
@@ -104,14 +105,13 @@ class HorizontalProductsAdapter(
                 btnDecrease.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         getItem(adapterPosition)?.let { product ->
-                            if (product.userQuantity == 1) {
-                                product.added = !product.added
+                            if (product.orderQuantity == 1) {
+                                product.addedInCart = !product.addedInCart
                                 notifyItemChanged(adapterPosition)
                                 listener?.onRemoveProduct(product.key)
                             } else {
-                                --product.userQuantity
+                                --product.orderQuantity
                                 // enable button increase
-                                product.isEnable = true
                                 notifyItemChanged(adapterPosition)
                                 listener?.onQuantityChanged(product)
                             }

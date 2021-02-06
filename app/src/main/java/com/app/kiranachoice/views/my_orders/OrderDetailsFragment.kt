@@ -13,8 +13,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.app.kiranachoice.databinding.DialogCancelOrderConfirmationBinding
 import com.app.kiranachoice.databinding.FragmentOrderDetailsBinding
 import com.app.kiranachoice.recyclerView_adapters.ProductDetailAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class OrderDetailsFragment : Fragment(), ProductDetailAdapter.CancelOrderListener {
 
     private var _bindingOrder: FragmentOrderDetailsBinding? = null

@@ -1,23 +1,22 @@
 package com.app.kiranachoice.recyclerView_adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.ItemHorizontolProductItemBinding
 import com.app.kiranachoice.listeners.ProductClickListener
-import com.google.android.material.snackbar.Snackbar
 
 class SimilarProductsAdapter(
-    private val productsList : List<Product>,
-    private val productKey: String?,
-    private val cartItem: List<CartItem>,
+    private val productKey : String,
     private val listener: ProductClickListener
 ) : RecyclerView.Adapter<SimilarProductsAdapter.SimilarProductsViewHolder>() {
 
-    private var addToCartClickedItemPosition = -1
+    var productsList = listOf<Product>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimilarProductsViewHolder {
         val view = ItemHorizontolProductItemBinding.inflate(
@@ -31,6 +30,9 @@ class SimilarProductsAdapter(
 
     override fun onBindViewHolder(holder: SimilarProductsViewHolder, position: Int) {
         val product = productsList[position]
+        if (product.key != productKey){
+            holder.bind(product)
+        }
 
         // skip the current product
         /*if (!productKey.equals(product.key)) holder.bind(product)

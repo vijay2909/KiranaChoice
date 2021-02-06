@@ -13,13 +13,13 @@ data class Product constructor(
     var name: String,
     var packagingSize: List<PackagingSizeModel>,
     var aboutTheProduct: List<AboutProductModel>,
-    var totalQty: Long,
-    var minOrderQty: Long,
+    var totalQty: Int,
+    var minOrderQty: Int,
     var makeBestOffer: Boolean,
     var makeBestSelling: Boolean,
     var makeRecommendedProduct: Boolean,
     var isAvailable: Boolean,
-    var added : Boolean = false,
-    var userQuantity : Int = 1,
-    var isEnable: Boolean = true
+    var addedInCart : Boolean,
+    var orderQuantity: Int,
+    var packagingIndex : Int = 0
 ): Serializable

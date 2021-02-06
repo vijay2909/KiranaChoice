@@ -2,7 +2,6 @@ package com.app.kiranachoice.recyclerView_adapters
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -14,6 +13,7 @@ import com.app.kiranachoice.listeners.ProductClickListener
 
 
 class VerticalProductsAdapter(
+    private val cartItems : List<CartItem>?,
     private val listener: ProductClickListener
 ) :
     ListAdapter<Product, VerticalProductsAdapter.VerticalProductViewHolder>(DiffUtilCallback()) {
@@ -28,11 +28,6 @@ class VerticalProductsAdapter(
         }
     }
 
-    private lateinit var cartItems: List<CartItem>
-
-    fun submitCartItem(cartItems: List<CartItem>) {
-        this.cartItems = cartItems
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VerticalProductViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -46,7 +41,21 @@ class VerticalProductsAdapter(
         val product = getItem(position)
         holder.bind(product)
 
-        if (this::cartItems.isInitialized) {
+        /*if (cartItems != null && cartItems.isNotEmpty()) {
+            // here find lambda return cartItem or return null
+            cartItems.singleOrNull { cartItem ->
+                cartItem.productName.equals(product.name, true)
+            }?.let { cartItem ->
+                product.addedInCart = true
+                product.orderQuantity = cartItem.quantity
+                // disable increment button if product quantity equals to minimum order quantity
+                if (product.userQuantity == product.minOrderQty){
+                    product.isEnable = false
+                }
+            }
+        }*/
+
+        /*if (this::cartItems.isInitialized) {
             for (cartItem in cartItems) {
                 if (cartItem.productKey == product.key) {
                     holder.binding.btnAddToCart.visibility = View.GONE
@@ -55,7 +64,7 @@ class VerticalProductsAdapter(
                     break
                 }
             }
-        }
+        }*/
 
         /*holder.binding.btnIncrease.setOnClickListener {
             var quantity = Integer.parseInt(holder.binding.userQuantity.text.toString())
@@ -96,7 +105,7 @@ class VerticalProductsAdapter(
                 btnAddToCart.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         getItem(adapterPosition)?.let { product ->
-                            product.added = !product.added
+                            product.addedInCart= !product.addedInCart
                             notifyItemChanged(adapterPosition)
                             Log.d("VerticalProductsAdapter", "btnAddToCart called ")
                             listener.addItemToCart(
@@ -111,8 +120,8 @@ class VerticalProductsAdapter(
                 btnIncrease.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         getItem(adapterPosition)?.let { product ->
-                            if (product.userQuantity < product.minOrderQty) {
-                                product.userQuantity += 1
+                            if (product.orderQuantity < product.minOrderQty) {
+                                product.orderQuantity += 1
                                 notifyItemChanged(adapterPosition)
                             }
                             listener.onQuantityChanged(product/*.key, quantity = qty*/)
@@ -124,12 +133,12 @@ class VerticalProductsAdapter(
                 btnDecrease.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         getItem(adapterPosition)?.let { product ->
-                            if (product.userQuantity == 1) {
-                                product.added = !product.added
+                            if (product.orderQuantity == 1) {
+                                product.addedInCart = !product.addedInCart
                                 notifyItemChanged(adapterPosition)
                                 listener.onRemoveProduct(product.key)
                             } else {
-                                --product.userQuantity
+                                --product.orderQuantity
                                 notifyItemChanged(adapterPosition)
                                 listener.onQuantityChanged(product)
                             }

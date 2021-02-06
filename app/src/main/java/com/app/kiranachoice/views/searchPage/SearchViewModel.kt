@@ -1,19 +1,20 @@
 package com.app.kiranachoice.views.searchPage
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.kiranachoice.data.db.CartDatabase
 import com.app.kiranachoice.data.SearchWord
 import com.app.kiranachoice.repositories.SearchRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.io.IOException
+import javax.inject.Inject
 
-class SearchViewModel(application: Application) : ViewModel() {
+@HiltViewModel
+class SearchViewModel @Inject constructor(searchRepository: SearchRepository) : ViewModel() {
 
-    private val searchRepo = SearchRepository(CartDatabase.getInstance(application))
+    private val searchRepo = searchRepository
 
     val allSearchWords = searchRepo.allSearchWords
 

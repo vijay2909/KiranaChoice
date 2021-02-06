@@ -1,19 +1,23 @@
 package com.app.kiranachoice.views.cart
 
 import androidx.lifecycle.*
-import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.CouponModel
+import com.app.kiranachoice.data.db.ProductItem
+import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.DELIVERY_CHARGE
 import com.app.kiranachoice.utils.DELIVERY_FREE
 import com.app.kiranachoice.utils.MAXIMUM_AMOUNT_TO_AVOID_DELIVERY_CHARGE
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
-class CartViewModel(val dataRepository: DataRepository) : ViewModel() {
+@HiltViewModel
+class CartViewModel @Inject constructor(val dataRepository: DataRepository) : ViewModel() {
 
 
-    val allCartItems: LiveData<List<CartItem>> = dataRepository.allCartItems
+    val allCartItems: LiveData<List<ProductItem>> = dataRepository.allCartItems
 
 
     private var _savedAmount = MutableLiveData("0")
@@ -23,15 +27,17 @@ class CartViewModel(val dataRepository: DataRepository) : ViewModel() {
     /**
      * calculate subTotal and saved amount
      * */
-    val subTotalAmount: LiveData<String> = Transformations.map(allCartItems) { cartItems ->
+    val subTotalAmount: LiveData<String> = Transformations.map(allCartItems) { products ->
         var subTotal = 0
         var savedAmount = 0
-        cartItems.forEach { cartItem ->
-            subTotal += cartItem.quantity.toInt().times(cartItem.productPrice.toInt())
+        products.forEach { product ->
+            subTotal += product.orderQuantity.times(product.packagingSize[product.packagingIndex].price!!.toInt())
 
-            savedAmount += if (cartItem.productMRP.toInt() > cartItem.productPrice.toInt()) {
-                (cartItem.productMRP.toInt()
-                    .minus(cartItem.productPrice.toInt())).times(cartItem.quantity.toInt())
+            val mrp = product.packagingSize[product.packagingIndex].mrp!!.toInt()
+            val price = product.packagingSize[product.packagingIndex].price!!.toInt()
+
+            savedAmount += if (mrp > price) {
+                (mrp.minus(price)).times(product.orderQuantity)
             } else {
                 0
             }
@@ -63,21 +69,9 @@ class CartViewModel(val dataRepository: DataRepository) : ViewModel() {
      * this function actually not update the item
      * hence, this function replace current product to exist product
      * */
-    fun updateQuantity(cartItem: CartItem, quantity: Int) {
+    fun updateQuantity(product: Product) {
         viewModelScope.launch {
-            val item = CartItem(
-                productKey = cartItem.productKey,
-                productId = cartItem.productId,
-                productSKU = cartItem.productSKU,
-                productName = cartItem.productName,
-                productImage = cartItem.productImage,
-                productMRP = cartItem.productMRP,
-                productPrice = cartItem.productPrice,
-                packagingSize = cartItem.packagingSize,
-                minOrderQuantity = cartItem.minOrderQuantity,
-                quantity = quantity.toString()
-            )
-            dataRepository.insert(item)
+            dataRepository.addToCart(product.key)
         }
     }
 
@@ -85,8 +79,8 @@ class CartViewModel(val dataRepository: DataRepository) : ViewModel() {
     /**
      * Remove product from cart
      * */
-    fun removeCartItem(cartItem: CartItem) = viewModelScope.launch {
-        dataRepository.delete(cartItem)
+    fun removeCartItem(product: Product) = viewModelScope.launch {
+        dataRepository.removeFromCart(product.key)
     }
 
 

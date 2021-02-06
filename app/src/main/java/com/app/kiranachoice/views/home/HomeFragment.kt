@@ -10,16 +10,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.app.kiranachoice.R
-import com.app.kiranachoice.data.db.CartDatabase
-import com.app.kiranachoice.data.db.CartItem
 import com.app.kiranachoice.data.domain.Banner
 import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.data.domain.Product
@@ -29,7 +25,6 @@ import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.recyclerView_adapters.Category1Adapter
 import com.app.kiranachoice.recyclerView_adapters.HorizontalProductsAdapter
 import com.app.kiranachoice.recyclerView_adapters.SmallBannerCategoryAdapter
-import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.INDEX_ONE_CATEGORY
 import com.app.kiranachoice.utils.INDEX_TWO_CATEGORY
 import com.app.kiranachoice.viewpager_adapters.HomeTopBannerAdapter
@@ -39,17 +34,16 @@ import com.google.android.material.transition.MaterialElevationScale
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.runBlocking
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 
     private var _bindingHome: FragmentHomeBinding? = null
     private val binding get() = _bindingHome!!
 
-    private lateinit var viewModel: HomeViewModel
+    private val viewModel: HomeViewModel by viewModels()
 
-    private lateinit var navController: NavController
     private lateinit var mAuth: FirebaseAuth
 
     private lateinit var viewPager1: ViewPager2
@@ -72,8 +66,6 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 
     private var totalCartItem = 0
 
-    private var cartItems : List<CartItem>? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -86,10 +78,6 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         savedInstanceState: Bundle?
     ): View {
         _bindingHome = FragmentHomeBinding.inflate(inflater, container, false)
-
-        val localDatabase = CartDatabase.getInstance(requireContext().applicationContext)
-        val factory = HomeViewModelFactory(DataRepository(localDatabase.databaseDao))
-        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
         homeTopBannerImageList = ArrayList()
         homeMiddleBannerImageList = ArrayList()
@@ -115,12 +103,8 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         // Category [[ END ]] >>>>>>>>>>>>>>>
 
 
-        runBlocking {
-            cartItems = viewModel.getCartItems()
-        }
-
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
-        bestSellingProductsAdapter = HorizontalProductsAdapter(cartItems, this)
+        bestSellingProductsAdapter = HorizontalProductsAdapter( this)
         binding.recyclerViewBestSelling.apply {
             adapter = bestSellingProductsAdapter
             setHasFixedSize(true)
@@ -128,13 +112,14 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         }
         // Best Selling Products [[ END ]] >>>>>>>>>>>>>>>>>>>>>
 
-
-        bestOfferProductsAdapter = HorizontalProductsAdapter(cartItems, this)
+        // Best Offer Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
+        bestOfferProductsAdapter = HorizontalProductsAdapter( this)
         binding.recyclerViewBestOffers.apply {
             adapter = bestOfferProductsAdapter
             setHasFixedSize(true)
             itemAnimator?.changeDuration = 0
         }
+        // Best Offer Products [[ END ]] >>>>>>>>>>>>>>>>>>>>>
 
         return binding.root
     }
@@ -166,7 +151,7 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
                     val productId = deepLink.toString().substringAfter("=")
                     viewModel.getProduct(productId).observe(viewLifecycleOwner, {
                         it?.let { product ->
-                            navController.navigate(
+                            findNavController().navigate(
                                 HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
                                     product.name,
                                     product
@@ -183,9 +168,6 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
             totalCartItem = it
             requireActivity().invalidateOptionsMenu()
         })
-
-
-        navController = Navigation.findNavController(view)
 
 
         viewModel.eventNetworkError.observe(viewLifecycleOwner, {
@@ -350,7 +332,7 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.cartFragment) {
-            navController.navigate(R.id.action_homeFragment_to_cartFragment)
+            findNavController().navigate(R.id.action_homeFragment_to_cartFragment)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -384,13 +366,13 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
             val extras = FragmentNavigatorExtras(view to categoryDetailTransitionName)
             val categoryDirection =
                 HomeFragmentDirections.actionNavHomeToCategoryFragment(category.name)
-            navController.navigate(categoryDirection, extras)
+            findNavController().navigate(categoryDirection, extras)
         } else if (category.index == INDEX_TWO_CATEGORY) {
             val categoryProductTransitionName = getString(R.string.category_product_transition_name)
             val extras = FragmentNavigatorExtras(view to categoryProductTransitionName)
             val productDirection =
                 HomeFragmentDirections.actionHomeFragmentToProductsFragment(category.name)
-            navController.navigate(productDirection, extras)
+            findNavController().navigate(productDirection, extras)
         }
     }
 
@@ -415,10 +397,10 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         val productDetailTransitionName = getString(R.string.product_detail_transition_name)
         val extras = FragmentNavigatorExtras(view to productDetailTransitionName)
         val directions = HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
-            product.name,
+            product.subCategoryName,
             product
         )
-        navController.navigate(directions, extras)
+        findNavController().navigate(directions, extras)
     }
 
     override fun onRemoveProduct(productKey: String) {
@@ -426,17 +408,6 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
     }
 
     override fun onQuantityChanged(product: Product) {
-        viewModel.updateQuantity(product.key, product.userQuantity.toString())
+        viewModel.updateCartItemQuantity(product.key, product.orderQuantity)
     }
-}
-
-@Suppress("UNCHECKED_CAST")
-class HomeViewModelFactory(private val dataRepository: DataRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(dataRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-
 }

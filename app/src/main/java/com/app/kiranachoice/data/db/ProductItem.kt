@@ -17,12 +17,15 @@ data class ProductItem constructor(
     var name: String,
     var packagingSize: List<PackagingSizeModel>,
     var aboutTheProduct: List<AboutProductModel>,
-    var totalQty: Long,
-    var minOrderQty: Long,
+    var totalQty: Int,
+    var minOrderQty: Int,
     var makeBestOffer: Boolean,
     var makeBestSelling: Boolean,
     var makeRecommendedProduct: Boolean,
-    var isAvailable: Boolean
+    var isAvailable: Boolean,
+    var addedInCart : Boolean,
+    var orderQuantity: Int,
+    var packagingIndex : Int = 0
 )
 
 fun ProductItem.asDomainModel(): Product {
@@ -40,7 +43,10 @@ fun ProductItem.asDomainModel(): Product {
         makeBestOffer = this.makeBestOffer,
         makeBestSelling = this.makeBestSelling,
         makeRecommendedProduct = this.makeRecommendedProduct,
-        isAvailable = this.isAvailable
+        isAvailable = this.isAvailable,
+        addedInCart = this.addedInCart,
+        orderQuantity = this.orderQuantity,
+        packagingIndex = this.packagingIndex
     )
 }
 
@@ -63,7 +69,10 @@ fun List<ProductItem>.asDomainModel(): List<Product> {
             makeBestOffer = it.makeBestOffer,
             makeBestSelling = it.makeBestSelling,
             makeRecommendedProduct = it.makeRecommendedProduct,
-            isAvailable = it.isAvailable
+            isAvailable = it.isAvailable,
+            addedInCart = it.addedInCart,
+            orderQuantity = it.orderQuantity,
+            packagingIndex = it.packagingIndex
         )
     }
 }

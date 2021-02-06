@@ -22,11 +22,13 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 
 
 private const val RC_HINT = 1
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private var _bindingLogin: FragmentLoginBinding? = null

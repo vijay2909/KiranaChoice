@@ -10,10 +10,13 @@ import com.app.kiranachoice.utils.USER_MY_ORDERS_REFERENCE
 import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class OrderDetailsViewModel : ViewModel() {
+@HiltViewModel
+class OrderDetailsViewModel @Inject constructor() : ViewModel() {
     private val dbFire = FirebaseFirestore.getInstance()
     private val mAuth = FirebaseAuth.getInstance()
 

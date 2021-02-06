@@ -3,9 +3,9 @@ package com.app.kiranachoice.data.db
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "cart_item_table")
+//@Entity(tableName = "cart_item_table")
 data class CartItem(
-    @PrimaryKey
+//    @PrimaryKey
     var productKey: String,
     var productId: Int,
     var productSKU: String,
@@ -14,6 +14,7 @@ data class CartItem(
     var productMRP: String,
     var productPrice: String,
     var packagingSize: String,
-    var minOrderQuantity: Long,
-    var quantity: String
+    var minOrderQuantity: Int,
+    var quantity: Int,
+    var isEnabled: Boolean = true
 )
