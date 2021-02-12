@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemPackagingSizeCardBinding
-import com.app.kiranachoice.data.PackagingSizeModel
+import com.app.kiranachoice.data.network_models.PackagingSizeModel
 
 private var lastCheckedPosition = 0
 

@@ -104,9 +104,11 @@
                                 android:layout_alignParentEnd="true"
                                 android:textColor="@android:color/black"
                                 android:textSize="16sp"
-                                app:priceFormatted="@{viewModel.subTotalAmount}"
+                                app:priceFormatted="@{viewModel.cartSubTotal}"
                                 tools:ignore="RelativeOverlap"
                                 tools:text="₹99" />
+
+                            <!--app:priceFormatted="@{viewModel.subTotalAmount}"-->
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -129,6 +131,8 @@
                                 android:textSize="16sp"
                                 app:priceFormatted="@{viewModel.deliveryFee}"
                                 tools:text="₹40" />
+
+
                         </RelativeLayout>
 
                         <RelativeLayout

@@ -1,12 +1,11 @@
 package com.app.kiranachoice.views.products
 
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.kiranachoice.data.PackagingSizeModel
-import com.app.kiranachoice.data.db.ProductItem
+import com.app.kiranachoice.data.network_models.PackagingSizeModel
 import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.data.domain.toCartItem
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.addToCart
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,40 +20,27 @@ class ProductDetailsViewModel @Inject constructor(
 ) : ViewModel() {
 
     init {
-        Timber.d("categoryName: ${state.get<String>("title")}")
+        Timber.d("categoryName: ${state.get<Product>("product")?.subCategoryName}")
     }
 
-    val getProducts = dataRepository.getProductsByCategoryName(state.get<String>("title") ?: "")
+    val getProducts = dataRepository.getProductsByCategoryName(state.get<Product>("product")?.subCategoryName ?: "")
 
-    /*val getProducts = object : MediatorLiveData<Pair<List<ProductItem>, List<Product>>>() {
-        var productsList: List<Product>? = null
-        var cartItems: List<ProductItem>? = null
-
-        init {
-            addSource(
-                dataRepository.getProductsByCategoryName(
-                    state.get<String>("title") ?: ""
-                )
-            ) { products ->
-                productsList = products
-                cartItems?.let {
-                    value = it to products
-                }
-            }
-            addSource(dataRepository.allCartItems) { cartItems ->
-                this.cartItems = cartItems
-                productsList?.let {
-                    value = cartItems to it
-                }
-            }
-        }
-    }*/
 
     fun addItemToCart(
-        product: Product,
-        packagingSizeModel: PackagingSizeModel
+        product: Product
     ) = viewModelScope.launch {
-        addToCart(dataRepository, product, packagingSizeModel)
+        addToCart(dataRepository, product)
+    }
+
+    fun removeProductFromCart(product: Product) = viewModelScope.launch {
+        dataRepository.removeFromCart(product.toCartItem())
+    }
+
+    /**
+     * update product quantity
+     * */
+    fun updateCartItemQuantity(product : Product) = viewModelScope.launch {
+        dataRepository.updateCartItemQuantity(product)
     }
 
 }

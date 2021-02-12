@@ -3,7 +3,6 @@ package com.app.kiranachoice.recyclerView_adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.app.kiranachoice.data.SubCategoryModel
 import com.app.kiranachoice.data.domain.SubCategory
 import com.app.kiranachoice.databinding.ItemSubCategoryBinding
 

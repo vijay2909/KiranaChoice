@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.kiranachoice.R
-import com.app.kiranachoice.data.Chat
+import com.app.kiranachoice.data.network_models.Chat
 import com.app.kiranachoice.databinding.FragmentChatBinding
 import com.app.kiranachoice.network.SendNotificationAPI
 import com.app.kiranachoice.recyclerView_adapters.ChatAdapter

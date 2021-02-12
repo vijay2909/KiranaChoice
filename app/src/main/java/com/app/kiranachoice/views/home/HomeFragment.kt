@@ -16,6 +16,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.app.kiranachoice.R
+import com.app.kiranachoice.data.database_models.CartItem
 import com.app.kiranachoice.data.domain.Banner
 import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.data.domain.Product
@@ -35,6 +36,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
@@ -65,6 +67,10 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
     private lateinit var category1Adapter: Category1Adapter
 
     private var totalCartItem = 0
+
+    private lateinit var cartItems: List<CartItem>
+    private var bestOfferProducts = ArrayList<Product>()
+    private val bestSellingProducts = ArrayList<Product>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,21 +108,23 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         }
         // Category [[ END ]] >>>>>>>>>>>>>>>
 
+        runBlocking {
+            cartItems = viewModel.getCartItems()
+        }
+
 
         // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
-        bestSellingProductsAdapter = HorizontalProductsAdapter( this)
+        bestSellingProductsAdapter = HorizontalProductsAdapter(this)
         binding.recyclerViewBestSelling.apply {
             adapter = bestSellingProductsAdapter
-            setHasFixedSize(true)
             itemAnimator?.changeDuration = 0
         }
         // Best Selling Products [[ END ]] >>>>>>>>>>>>>>>>>>>>>
 
         // Best Offer Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
-        bestOfferProductsAdapter = HorizontalProductsAdapter( this)
+        bestOfferProductsAdapter = HorizontalProductsAdapter(this)
         binding.recyclerViewBestOffers.apply {
             adapter = bestOfferProductsAdapter
-            setHasFixedSize(true)
             itemAnimator?.changeDuration = 0
         }
         // Best Offer Products [[ END ]] >>>>>>>>>>>>>>>>>>>>>
@@ -187,14 +195,29 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         // Category [[ END ]] >>>>>>>>>>>>>
 
 
-        // Best Offer Products [[ START ]] >>>>>>>>>>>>>>
-        viewModel.bestOfferProducts.observe(viewLifecycleOwner, { products ->
-            binding.bestOfferProductsAvailable = products.isNotEmpty()
-//            bestOfferProductsAdapter.submitCartItem(it.first)
-            bestOfferProductsAdapter.submitList(products)
-        })
-        // Best Offer Products [[ END ]] >>>>>>>>>>>>>>
+        // Best Offer And Selling Products [[ START ]] >>>>>>>>>>>>>>
+        runBlocking {
+            bestOfferProducts.addAll(viewModel.bestOfferProducts())
+            bestSellingProducts.addAll(viewModel.bestSellingProducts())
 
+            cartItems.forEach { cartItem ->
+                bestOfferProducts.singleOrNull { it.key == cartItem.productKey }?.let {
+                    it.addedInCart = true
+                    it.userOrderQuantity = cartItem.quantity
+                }
+                bestSellingProducts.singleOrNull { it.key == cartItem.productKey }?.let {
+                    it.addedInCart = true
+                    it.userOrderQuantity = cartItem.quantity
+                }
+            }
+
+            binding.bestSellingProductAvailable = bestSellingProducts.isNotEmpty()
+            binding.bestOfferProductsAvailable = bestOfferProducts.isNotEmpty()
+
+            bestOfferProductsAdapter.productsList = bestOfferProducts
+            bestSellingProductsAdapter.productsList = bestSellingProducts
+        }
+        // Best Offer And Selling Products [[ END ]] >>>>>>>>>>>>>>
 
 
         // Category 2 [[ START ]] >>>>>>>>>>>>>>>
@@ -204,16 +227,6 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
             binding.recyclerViewCategory2.adapter = smallBannerCategoryAdapter
         })
         // Category [[ END ]] >>>>>>>>>>>>>>>
-
-
-        // Best Selling Products >>>>>>>>>>>>>>>>>>>>>
-        viewModel.bestSellingProducts.observe(viewLifecycleOwner, { products ->
-            binding.bestSellingProductAvailable = products.isNotEmpty()
-//            bestSellingProductsAdapter.submitCartItem(it.first)
-            bestSellingProductsAdapter.submitList(products)
-
-        })
-        // Best Selling Products [[ START ]] >>>>>>>>>>>>>>>>>>>>>
 
 
         /*binding.recyclerViewCategory3.apply {
@@ -377,12 +390,8 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
     }
 
 
-    override fun addItemToCart(
-        product: Product,
-        packagingIndex: Int // spinner adapter position
-    ) {
-        val packagingSizeModel = product.packagingSize[packagingIndex]
-        viewModel.addItemToCart(product, packagingSizeModel)
+    override fun addItemToCart(product: Product) {
+        viewModel.addItemToCart(product)
     }
 
 
@@ -397,17 +406,17 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
         val productDetailTransitionName = getString(R.string.product_detail_transition_name)
         val extras = FragmentNavigatorExtras(view to productDetailTransitionName)
         val directions = HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(
-            product.subCategoryName,
+            product.name,
             product
         )
         findNavController().navigate(directions, extras)
     }
 
-    override fun onRemoveProduct(productKey: String) {
-        viewModel.removeProductFromCart(productKey)
+    override fun onRemoveProduct(product: Product) {
+        viewModel.removeProductFromCart(product)
     }
 
     override fun onQuantityChanged(product: Product) {
-        viewModel.updateCartItemQuantity(product.key, product.orderQuantity)
+        viewModel.updateCartItemQuantity(product)
     }
 }

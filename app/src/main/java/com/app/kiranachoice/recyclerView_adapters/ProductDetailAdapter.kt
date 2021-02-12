@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.ItemOrderDetailBinding
-import com.app.kiranachoice.data.Product
+import com.app.kiranachoice.data.network_models.Product
 import com.app.kiranachoice.utils.CANCELED
 
 class ProductDetailAdapter(val listener : CancelOrderListener) : RecyclerView.Adapter<ProductDetailAdapter.ProductViewHolder>() {

@@ -1,6 +1,6 @@
 package com.app.kiranachoice.network
 
-import com.app.kiranachoice.data.CurrentDateTime
+import com.app.kiranachoice.data.network_models.CurrentDateTime
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

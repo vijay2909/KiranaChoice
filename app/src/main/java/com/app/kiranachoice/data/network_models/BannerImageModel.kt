@@ -1,6 +1,6 @@
-package com.app.kiranachoice.data
+package com.app.kiranachoice.data.network_models
 
-import com.app.kiranachoice.data.db.BannerImage
+import com.app.kiranachoice.data.database_models.BannerImage
 
 
 data class BannerImageModel(

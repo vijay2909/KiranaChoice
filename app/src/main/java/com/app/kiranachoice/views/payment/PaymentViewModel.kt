@@ -1,9 +1,9 @@
 package com.app.kiranachoice.views.payment
 
 import androidx.lifecycle.*
-import com.app.kiranachoice.data.AdminOrder
-import com.app.kiranachoice.data.BookItemOrderModel
-import com.app.kiranachoice.data.Product
+import com.app.kiranachoice.data.network_models.AdminOrder
+import com.app.kiranachoice.data.network_models.BookItemOrderModel
+import com.app.kiranachoice.data.network_models.Product
 import com.app.kiranachoice.network.SendNotificationAPI
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.*
@@ -14,6 +14,7 @@ import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,7 +29,9 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val dbRef: FirebaseDatabase = FirebaseDatabase.getInstance()
 
-    val cartItems = dataRepository.allCartItems
+    suspend fun getCartItems() = withContext(Dispatchers.IO){
+        dataRepository.getCartItems()
+    }
 
 
     val user = dataRepository.user
@@ -44,7 +47,7 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
 
 //    var cartItems: List<CartItem>? = null
 
-    var totalProductsAmount: LiveData<String> = Transformations.map(cartItems) { items ->
+    /*var totalProductsAmount: LiveData<String> = Transformations.map(cartItems) { items ->
         var tAmount = 0
         items.forEach { item ->
             tAmount += if (item.orderQuantity > 1) {
@@ -54,12 +57,12 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
             }
         }
         tAmount.toString().toPriceAmount()
-    }
+    }*/
 
     private var _totalAmount = MutableLiveData<String>()
     val totalAmount: LiveData<String> get() = _totalAmount
 
-    val deliveryCharge: LiveData<String> = Transformations.map(totalProductsAmount) { amt ->
+    /*val deliveryCharge: LiveData<String> = Transformations.map(totalProductsAmount) { amt ->
 
         val amount = amt.filter { it.isDigit() }.removeSuffix("00")
 
@@ -70,7 +73,7 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
             _totalAmount.value = amount.toInt().plus(DELIVERY_CHARGE).toString()
             DELIVERY_CHARGE.toString()
         }
-    }
+    }*/
 
 
     private var _orderSaved = MutableLiveData<Boolean>()
@@ -79,7 +82,7 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
     fun saveUserOrder(deliveryAddress: String, couponCode: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             val itemList = ArrayList<Product>()
-            cartItems.value?.forEach {
+            /*cartItems.value?.forEach {
                 val item = Product(
                     productSKU = it.product_sku,
                     productName = it.name,
@@ -117,7 +120,7 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
                     updateOrderIdSequence()
                     saveOrderForAdmin()
                     sendNotificationToAdmin()
-                }
+                }*/
         }
     }
 
@@ -197,9 +200,9 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
 
     fun removeCartItems() {
         viewModelScope.launch(Dispatchers.IO) {
-            cartItems.value?.forEach { product ->
+            /*cartItems.value?.forEach { product ->
                 dataRepository.removeFromCart(product.key)
-            }
+            }*/
         }
     }
 }

@@ -1,13 +1,15 @@
 package com.app.kiranachoice.views.products
 
-import android.util.Log
 import androidx.lifecycle.*
-import com.app.kiranachoice.data.PackagingSizeModel
+import com.app.kiranachoice.data.network_models.PackagingSizeModel
 import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.data.domain.toCartItem
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.addToCart
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,7 +25,7 @@ class ProductsViewModel @Inject constructor(
 
 //    private val products = dataRepository.getProductsByCategoryName(subCategoryName)
 
-    fun getCartItems() = dataRepository.getCartItems()
+    suspend fun getCartItems() = withContext(Dispatchers.IO) { dataRepository.getCartItems() }
 
     val products = dataRepository.getProductsByCategoryName(state.get<String>("title") ?: "")
 
@@ -57,14 +59,8 @@ class ProductsViewModel @Inject constructor(
     val alreadyAddedMsg: LiveData<String> get() = _alreadyAddedMsg
 
 
-    fun addItemToCart(
-        product: Product,
-        packagingSizeModel: PackagingSizeModel
-    ) {
-        viewModelScope.launch {
-            addToCart(dataRepository, product, packagingSizeModel)
-        }
-    }
+    fun addItemToCart(product: Product) =
+        viewModelScope.launch { addToCart(dataRepository, product) }
 
 
     fun authActivityNavigated() {
@@ -75,14 +71,14 @@ class ProductsViewModel @Inject constructor(
         _productAdded.value = false
     }
 
-    fun deleteCartItem(productKey: String) = viewModelScope.launch {
-        dataRepository.removeFromCart(productKey)
+    fun deleteCartItem(product: Product) = viewModelScope.launch {
+        dataRepository.removeFromCart(product.toCartItem())
     }
 
     /**
      * update product quantity
      * */
-    fun updateQuantity(productKey: String, quantity: Int) = viewModelScope.launch {
-        dataRepository.updateCartItemQuantity(productKey, quantity)
+    fun updateQuantity(product: Product) = viewModelScope.launch {
+        dataRepository.updateCartItemQuantity(product)
     }
 }

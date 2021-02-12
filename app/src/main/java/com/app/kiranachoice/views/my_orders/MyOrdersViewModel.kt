@@ -3,7 +3,7 @@ package com.app.kiranachoice.views.my_orders
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.app.kiranachoice.data.BookItemOrderModel
+import com.app.kiranachoice.data.network_models.BookItemOrderModel
 import com.app.kiranachoice.utils.USER_MY_ORDERS_REFERENCE
 import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth

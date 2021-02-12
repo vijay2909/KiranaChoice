@@ -11,7 +11,7 @@
 
         <variable
             name="product"
-            type="com.app.kiranachoice.data.Product" />
+            type="com.app.kiranachoice.data.network_models.Product" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -13,11 +13,11 @@ import retrofit2.http.POST
 interface SendNotificationAPI {
 
     companion object {
-        private const val BASE_URL = "https://fcm.googleapis.com/"
+        const val BASE_URL = "https://fcm.googleapis.com/"
 
-        private var sendNotificationAPI: SendNotificationAPI? = null
+//        private var sendNotificationAPI: SendNotificationAPI? = null
 
-        fun getInstance(): SendNotificationAPI {
+        /*fun getInstance(): SendNotificationAPI {
             if (sendNotificationAPI == null) {
                 sendNotificationAPI = Retrofit.Builder()
                     .baseUrl(BASE_URL)
@@ -26,7 +26,7 @@ interface SendNotificationAPI {
                     .create(SendNotificationAPI::class.java)
             }
             return sendNotificationAPI!!
-        }
+        }*/
     }
 
     @Headers(

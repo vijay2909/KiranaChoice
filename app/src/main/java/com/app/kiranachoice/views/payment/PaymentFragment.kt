@@ -47,12 +47,6 @@ class PaymentFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        /*val localDatabase = AppDatabase.getInstance(requireContext().applicationContext)
-        dataRepository = DataRepository(localDatabase.databaseDao)
-        val apiService = (requireActivity().applicationContext as App).getApiService()
-        val factory = PaymentViewModelFactory(apiService, dataRepository)
-        viewModel = ViewModelProvider(this, factory).get(PaymentViewModel::class.java)*/
-
         bindingPayment = FragmentPaymentBinding.inflate(inflater, container, false)
 
         notificationManager = requireActivity().getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -69,9 +63,9 @@ class PaymentFragment : Fragment() {
         binding.totalAmount = args.totalAmount
         binding.couponDescription = args.couponDescription
 
-        viewModel.cartItems.observe(viewLifecycleOwner, {
+        /*viewModel.cartItems.observe(viewLifecycleOwner, {
             setProductListTextWithPrice()
-        })
+        })*/
 
         binding.btnPlaceOrder.setOnClickListener {
             binding.btnPlaceOrder.isEnabled = false
@@ -101,17 +95,17 @@ class PaymentFragment : Fragment() {
 
 
     private fun sendConfirmationMail() {
-        val amountWithDeliveryCharge = if (viewModel.deliveryCharge.value == DELIVERY_FREE) {
+        /*val amountWithDeliveryCharge = if (viewModel.deliveryCharge.value == DELIVERY_FREE) {
             viewModel.totalProductsAmount.value
         } else {
             val amount = viewModel.totalProductsAmount.value.toString().filter { it.isDigit() }.removeSuffix("00")
             amount.toInt().plus(viewModel.deliveryCharge.value?.toInt()!!)
                 .toString().toPriceAmount()
-        }
+        }*/
 
         val orderPlacedDate = getDateTimeFromUnix(viewModel.orderPlacedDate.value)
 
-        Mailer.sendMail(
+        /*Mailer.sendMail(
             requireContext(),
             viewModel.user.value?.email.toString(),
             viewModel.user.value?.name.toString(),
@@ -122,7 +116,7 @@ class PaymentFragment : Fragment() {
             amountWithDeliveryCharge.toString()
         ).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { showBookingConfirmDialog(); showNotification() }
+            .subscribe { showBookingConfirmDialog(); showNotification() }*/
     }
 
 
@@ -177,7 +171,7 @@ class PaymentFragment : Fragment() {
 
     private fun setProductListTextWithPrice() {
         bindingPayment?.productLayout?.removeAllViews()
-        viewModel.cartItems.value?.forEach { cartItem ->
+        /*viewModel.cartItems.value?.forEach { cartItem ->
             val relativeLayout = RelativeLayout(requireContext())
 
             val textProductName = TextView(requireContext())
@@ -241,7 +235,7 @@ class PaymentFragment : Fragment() {
             relativeLayout.addView(textProductPrice)
 
             bindingPayment?.productLayout?.addView(relativeLayout)
-        }
+        }*/
     }
 
     override fun onDestroyView() {

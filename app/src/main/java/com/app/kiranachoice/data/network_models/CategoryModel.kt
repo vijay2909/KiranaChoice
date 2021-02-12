@@ -1,6 +1,6 @@
-package com.app.kiranachoice.data
+package com.app.kiranachoice.data.network_models
 
-import com.app.kiranachoice.data.db.CategoryItem
+import com.app.kiranachoice.data.database_models.CategoryItem
 import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties

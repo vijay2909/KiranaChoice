@@ -1,4 +1,4 @@
-package com.app.kiranachoice.data
+package com.app.kiranachoice.data.network_models
 
 data class AdminOrder (
     var key : String? = null,

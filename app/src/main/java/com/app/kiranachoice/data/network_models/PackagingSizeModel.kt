@@ -1,4 +1,4 @@
-package com.app.kiranachoice.data
+package com.app.kiranachoice.data.network_models
 
 import com.google.firebase.database.IgnoreExtraProperties
 import java.io.Serializable

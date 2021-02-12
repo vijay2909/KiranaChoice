@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.data.database_models.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.ItemVerticalProductListBinding
 import com.app.kiranachoice.listeners.ProductClickListener
@@ -108,10 +108,8 @@ class VerticalProductsAdapter(
                             product.addedInCart= !product.addedInCart
                             notifyItemChanged(adapterPosition)
                             Log.d("VerticalProductsAdapter", "btnAddToCart called ")
-                            listener.addItemToCart(
-                                product,
-                                spinnerPackaging.selectedItemPosition,
-                            )
+                            product.packagingIndex = spinnerPackaging.selectedItemPosition
+                            listener.addItemToCart(product)
                         }
                     }
                 }
@@ -120,8 +118,8 @@ class VerticalProductsAdapter(
                 btnIncrease.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         getItem(adapterPosition)?.let { product ->
-                            if (product.orderQuantity < product.minOrderQty) {
-                                product.orderQuantity += 1
+                            if (product.userOrderQuantity < product.minOrderQty) {
+                                ++product.userOrderQuantity
                                 notifyItemChanged(adapterPosition)
                             }
                             listener.onQuantityChanged(product/*.key, quantity = qty*/)
@@ -133,12 +131,12 @@ class VerticalProductsAdapter(
                 btnDecrease.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         getItem(adapterPosition)?.let { product ->
-                            if (product.orderQuantity == 1) {
+                            if (product.userOrderQuantity == 1) {
                                 product.addedInCart = !product.addedInCart
                                 notifyItemChanged(adapterPosition)
-                                listener.onRemoveProduct(product.key)
+                                listener.onRemoveProduct(product)
                             } else {
-                                --product.orderQuantity
+                                --product.userOrderQuantity
                                 notifyItemChanged(adapterPosition)
                                 listener.onQuantityChanged(product)
                             }

@@ -1,9 +1,8 @@
-package com.app.kiranachoice.data.db
+package com.app.kiranachoice.data.database_models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.app.kiranachoice.data.domain.SubCategory
-import java.io.Serializable
 
 /*
 data class SubCategoryModel(

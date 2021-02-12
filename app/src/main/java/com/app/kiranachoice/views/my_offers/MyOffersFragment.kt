@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.app.kiranachoice.databinding.FragmentMyOffersBinding
-import com.app.kiranachoice.data.OfferModel
+import com.app.kiranachoice.data.network_models.OfferModel
 import com.app.kiranachoice.recyclerView_adapters.OffersAdapter
 import dagger.hilt.android.AndroidEntryPoint
 

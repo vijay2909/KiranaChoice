@@ -1,7 +1,7 @@
 package com.app.kiranachoice.views.category
 
 import androidx.lifecycle.*
-import com.app.kiranachoice.data.SubCategoryModel
+import com.app.kiranachoice.data.network_models.SubCategoryModel
 import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.repositories.DataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

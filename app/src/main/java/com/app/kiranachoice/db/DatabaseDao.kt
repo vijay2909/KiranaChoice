@@ -1,7 +1,8 @@
-package com.app.kiranachoice.data.db
+package com.app.kiranachoice.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.app.kiranachoice.data.database_models.*
 
 @Dao
 interface DatabaseDao {
@@ -9,34 +10,33 @@ interface DatabaseDao {
     /**
      * Get Cart Items
      * */
-    @Query("SELECT * FROM productitem WHERE addedInCart = 1")
-    fun getCartItems() : LiveData<List<ProductItem>>
+    @Query("SELECT * FROM cartitem")
+    suspend fun getCartItems() : List<CartItem>
 
     /**
      * Add To Cart
      * */
-    @Query("UPDATE productitem SET addedInCart = 1 WHERE `key` = :productKey")
-    suspend fun addToCart(productKey: String)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addToCart(cartItem: CartItem)
 
     /**
      * Delete Product From Cart
      * */
-    @Query("UPDATE productitem SET addedInCart = 0 WHERE `key` = :productKey")
-    suspend fun removeFromCart(productKey: String)
+    @Delete
+    suspend fun removeFromCart(cartItem: CartItem)
 
-
-    /**
-     * Update Cart Product Quantity
-     * */
-    @Query("UPDATE productitem SET orderQuantity = :quantity WHERE `key` = :productKey")
-    suspend fun updateCartItemQuantity(productKey: String, quantity: Int)
 
     /**
      * Get Total Cart Items Size
      * */
-    @Query("SELECT COUNT(*) FROM productitem WHERE addedInCart = 1")
+    @Query("SELECT COUNT(*) FROM cartitem")
     fun getTotalCartItems(): LiveData<Int>
 
+    @Query("SELECT SUM(productPrice * quantity) FROM cartitem")
+    fun getSubTotal() : LiveData<String>
+
+    @Query("SELECT SUM((productMRP - productPrice) * quantity) FROM cartitem WHERE productMRP > productPrice")
+    fun getSavedPrice() : LiveData<Int>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSearchItems(searchItems: List<SearchItem>)
@@ -60,11 +60,11 @@ interface DatabaseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategories(categories: List<CategoryItem>)
 
-    @Query("select * from productitem WHERE makeBestOffer = :value AND isAvailable = :value ORDER BY id ASC")
-    fun getBestOfferProducts(value: Boolean = true): LiveData<List<ProductItem>>
+    @Query("select * from productitem WHERE makeBestOffer = 1 AND isAvailable = 1 ORDER BY id ASC")
+    suspend fun getBestOfferProducts(): List<ProductItem>
 
-    @Query("select * from productitem WHERE makeBestSelling = :value AND isAvailable = :value ORDER BY id ASC")
-    fun getBestSellingProducts(value: Boolean = true): LiveData<List<ProductItem>>
+    @Query("select * from productitem WHERE makeBestSelling = 1 AND isAvailable = 1 ORDER BY id ASC")
+    suspend fun getBestSellingProducts(): List<ProductItem>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProducts(products: List<ProductItem>)

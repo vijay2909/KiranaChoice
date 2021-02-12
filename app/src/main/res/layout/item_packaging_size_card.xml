@@ -7,7 +7,7 @@
 
         <variable
             name="packaging"
-            type="com.app.kiranachoice.data.PackagingSizeModel" />
+            type="com.app.kiranachoice.data.network_models.PackagingSizeModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

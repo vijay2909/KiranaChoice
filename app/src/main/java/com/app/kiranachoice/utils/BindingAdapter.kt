@@ -9,9 +9,9 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.R
-import com.app.kiranachoice.data.AddressModel
-import com.app.kiranachoice.data.SearchWord
 import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.data.network_models.AddressModel
+import com.app.kiranachoice.data.network_models.SearchWord
 import com.app.kiranachoice.recyclerView_adapters.SearchResultsAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions

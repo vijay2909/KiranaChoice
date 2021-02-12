@@ -2,8 +2,9 @@ package com.app.kiranachoice.di
 
 import android.content.Context
 import androidx.room.Room
-import com.app.kiranachoice.data.db.AppDatabase
+import com.app.kiranachoice.db.AppDatabase
 import com.app.kiranachoice.network.DateTimeApi
+import com.app.kiranachoice.network.SendNotificationAPI
 import com.app.kiranachoice.utils.APP_DATABASE_NAME
 import dagger.Module
 import dagger.Provides
@@ -14,17 +15,40 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DatabaseModule {
+object AppModule {
 
-    /*@Singleton
+    @Qualifier  // define qualifier for DateTimeHttpClient
+    @Retention(AnnotationRetention.BINARY)
+    annotation class DateTimeHttpClient
+
+    @Qualifier  // define qualifier for NotificationHttpClient
+    @Retention(AnnotationRetention.BINARY)
+    annotation class NotificationHttpClient
+
+    @Singleton
+    @NotificationHttpClient
     @Provides
-    fun provideCategory(): String {
-        return "Aata"
-    }*/
+    fun provideNotificationRetrofitClient(
+        okHttpClient: OkHttpClient,
+        gsonConverterFactory: GsonConverterFactory
+    ) : Retrofit{
+        return Retrofit.Builder()
+            .baseUrl(SendNotificationAPI.BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(gsonConverterFactory)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideNotificationApiService(@NotificationHttpClient retrofit: Retrofit): SendNotificationAPI {
+        return retrofit.create(SendNotificationAPI::class.java)
+    }
 
     @Singleton
     @Provides
@@ -44,6 +68,7 @@ object DatabaseModule {
 
 
     @Singleton
+    @DateTimeHttpClient
     @Provides
     fun provideRetrofitClient(
         okHttpClient: OkHttpClient,
@@ -58,7 +83,7 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideDateTimeApiService(retrofit: Retrofit): DateTimeApi {
+    fun provideDateTimeApiService(@DateTimeHttpClient retrofit: Retrofit): DateTimeApi {
         return retrofit.create(DateTimeApi::class.java)
     }
 

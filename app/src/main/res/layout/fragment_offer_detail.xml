@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="com.app.kiranachoice.data.OfferModel" />
+            type="com.app.kiranachoice.data.network_models.OfferModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView

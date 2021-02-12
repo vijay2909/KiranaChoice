@@ -18,9 +18,10 @@ import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.recyclerView_adapters.AboutProductAdapter
 import com.app.kiranachoice.recyclerView_adapters.PackagingSizeAdapter
 import com.app.kiranachoice.recyclerView_adapters.SimilarProductsAdapter
+import com.app.kiranachoice.utils.SOCIAL_META_TAG_KIRANA_CHOICE_IMAGE
+import com.app.kiranachoice.utils.SOCIAL_META_TAG_TITLE
 import com.app.kiranachoice.utils.themeColor
 import com.google.android.material.transition.MaterialContainerTransform
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,8 +32,6 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
     private var _bindingProductDetails: FragmentProductDetailsBinding? = null
     private val binding get() = _bindingProductDetails!!
 
-    private val mAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-
     private lateinit var similarProductsAdapter: SimilarProductsAdapter
     private lateinit var packagingSizeAdapter: PackagingSizeAdapter
 
@@ -40,6 +39,7 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
 
     private val viewModel: ProductDetailsViewModel by viewModels()
 
+    private val productsList = ArrayList<Product>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,7 +90,10 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
 
         viewModel.getProducts.observe(viewLifecycleOwner, {
             binding.isSimilarProductsListEmpty = it.isEmpty()
-            similarProductsAdapter.productsList = it
+            productsList.clear()
+            productsList.addAll(it)
+            productsList.remove(args.product)
+            similarProductsAdapter.productsList = productsList
         })
 
 
@@ -104,9 +107,8 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
                     minimumVersion = 1
                 }
                 socialMetaTagParameters {
-                    title = "Kirana Choice - Online Shopping App"
-                    imageUrl = Uri.parse("https://firebasestorage.googleapis.com/v0/b/kirana-choice-a1e20.appspot.com/o/kiran%20choice%20logo.png?alt=media&token=73ad2448-72a5-4935-b0f6-98286eb03b26")
-//                    description = "This link works whether the app is installed or not!"
+                    title = SOCIAL_META_TAG_TITLE
+                    imageUrl = Uri.parse(SOCIAL_META_TAG_KIRANA_CHOICE_IMAGE)
                 }
             }.addOnSuccessListener { (shortLink, _) ->
                 // Short link created
@@ -127,11 +129,9 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
     }
 
     override fun addItemToCart(
-        product: Product,
-        packagingIndex: Int
+        product: Product
     ) {
-        val packagingSizeModel = product.packagingSize[packagingIndex]
-        viewModel.addItemToCart(product, packagingSizeModel)
+        viewModel.addItemToCart(product)
     }
 
     override fun onItemClick(view: View, product: Product) {
@@ -144,11 +144,11 @@ class ProductDetailsFragment : Fragment(), ProductClickListener {
     }
 
 
-    override fun onRemoveProduct(productKey: String) {
-
+    override fun onRemoveProduct(product: Product) {
+        viewModel.removeProductFromCart(product)
     }
 
-    override fun onQuantityChanged(product: Product/*productKey: String, quantity: String*/) {
-
+    override fun onQuantityChanged(product: Product) {
+        viewModel.updateCartItemQuantity(product)
     }
 }

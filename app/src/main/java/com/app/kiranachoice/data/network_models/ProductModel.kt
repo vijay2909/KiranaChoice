@@ -1,7 +1,7 @@
-package com.app.kiranachoice.data
+package com.app.kiranachoice.data.network_models
 
-import com.app.kiranachoice.data.db.ProductItem
-import com.app.kiranachoice.data.db.SearchItem
+import com.app.kiranachoice.data.database_models.ProductItem
+import com.app.kiranachoice.data.database_models.SearchItem
 import com.google.firebase.database.IgnoreExtraProperties
 import java.util.*
 
@@ -24,8 +24,6 @@ data class ProductModel constructor(
     var makeBestSelling: Boolean = false,
     var makeRecommendedProduct: Boolean = false,
     var isAvailable: Boolean = true,
-    var addedInCart : Boolean = false,
-    var orderQuantity: Int = 1,
     var packagingIndex : Int = 0
 )
 
@@ -60,8 +58,6 @@ fun List<ProductModel>.asProductDatabaseModel(): List<ProductItem> {
             makeBestSelling = it.makeBestSelling,
             makeRecommendedProduct = it.makeRecommendedProduct,
             isAvailable = it.isAvailable,
-            orderQuantity = it.orderQuantity,
-            addedInCart = it.addedInCart,
             packagingIndex = it.packagingIndex
         )
     }

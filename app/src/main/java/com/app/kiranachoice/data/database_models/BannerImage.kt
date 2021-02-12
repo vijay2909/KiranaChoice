@@ -1,4 +1,4 @@
-package com.app.kiranachoice.data.db
+package com.app.kiranachoice.data.database_models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

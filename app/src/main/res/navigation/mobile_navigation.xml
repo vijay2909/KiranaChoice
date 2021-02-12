@@ -308,7 +308,7 @@
         tools:layout="@layout/fragment_order_details">
         <argument
             android:name="bookItemOrderModel"
-            app:argType="com.app.kiranachoice.data.BookItemOrderModel" />
+            app:argType="com.app.kiranachoice.data.network_models.BookItemOrderModel" />
     </fragment>
     <fragment
         android:id="@+id/offerDetailFragment"
@@ -317,7 +317,7 @@
         tools:layout="@layout/fragment_offer_detail" >
         <argument
             android:name="offerModel"
-            app:argType="com.app.kiranachoice.data.OfferModel" />
+            app:argType="com.app.kiranachoice.data.network_models.OfferModel" />
     </fragment>
     <fragment
         android:id="@+id/cameraFragment"

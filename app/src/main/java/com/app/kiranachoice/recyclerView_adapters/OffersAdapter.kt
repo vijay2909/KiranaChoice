@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.kiranachoice.databinding.RecyclerViewOfferCardBinding
-import com.app.kiranachoice.data.OfferModel
+import com.app.kiranachoice.data.network_models.OfferModel
 
 class OffersAdapter(private val listener: OfferClickListener) :
     RecyclerView.Adapter<OffersAdapter.OffersViewHolder>() {

@@ -5,19 +5,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.data.database_models.CartItem
 import com.app.kiranachoice.databinding.ItemCartProductBinding
 import com.app.kiranachoice.listeners.CartListener
 
 class CartItemAdapter(private val listener: CartListener) :
-    ListAdapter<Product, CartItemAdapter.CartItemViewHolder>(DiffUtilsCallBack()) {
+    ListAdapter<CartItem, CartItemAdapter.CartItemViewHolder>(DiffUtilsCallBack()) {
 
-    class DiffUtilsCallBack : DiffUtil.ItemCallback<Product>() {
-        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
-            return oldItem.key == newItem.key
+    class DiffUtilsCallBack : DiffUtil.ItemCallback<CartItem>() {
+        override fun areItemsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
+            return oldItem === newItem
         }
 
-        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+        override fun areContentsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
             return oldItem == newItem
         }
     }
@@ -41,8 +41,8 @@ class CartItemAdapter(private val listener: CartListener) :
     inner class CartItemViewHolder(val binding: ItemCartProductBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(product: Product) {
-            binding.product = product
+        fun bind(cartItem: CartItem) {
+            binding.cartItem = cartItem
             binding.executePendingBindings()
         }
 
@@ -50,13 +50,13 @@ class CartItemAdapter(private val listener: CartListener) :
             with(binding) {
                 btnDecrease.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
-                        getItem(adapterPosition)?.let { product ->
-                            if (product.orderQuantity == 1) {
-                                listener.removeCartItem(product)
+                        getItem(adapterPosition)?.let { cartItem ->
+                            if (cartItem.quantity == 1) {
+                                listener.removeCartItem(cartItem)
                             } else {
-                                --product.orderQuantity
+                                --cartItem.quantity
                                 notifyItemChanged(adapterPosition)
-                                listener.onQuantityChange(product)
+                                listener.onQuantityChange(cartItem)
                             }
                         }
                     }
@@ -64,11 +64,11 @@ class CartItemAdapter(private val listener: CartListener) :
 
                 btnIncrease.setOnClickListener {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
-                        getItem(adapterPosition)?.let { product ->
-                            if (product.orderQuantity < product.minOrderQty) {
-                                ++product.orderQuantity
+                        getItem(adapterPosition)?.let { cartItem ->
+                            if (cartItem.quantity < cartItem.minOrderQuantity) {
+                                ++cartItem.quantity
                                 notifyItemChanged(adapterPosition)
-                                listener.onQuantityChange(product)
+                                listener.onQuantityChange(cartItem)
                             }
                         }
                     }

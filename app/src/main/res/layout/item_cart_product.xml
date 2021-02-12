@@ -8,8 +8,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="product"
-            type="com.app.kiranachoice.data.domain.Product" />
+            name="cartItem"
+            type="com.app.kiranachoice.data.database_models.CartItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,7 +22,7 @@
             android:layout_width="90dp"
             android:layout_height="90dp"
             android:contentDescription="@string/product_image"
-            app:imageUrl="@{product.image}"
+            app:imageUrl="@{cartItem.productImage}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:text="@{product.name}"
+            android:text="@{cartItem.productName}"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/productImage"
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@{@string/rupee_with_text(product.packagingSize.get(product.packagingIndex))}"
+            android:text="@{@string/rupee_with_text(cartItem.productPrice)}"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="15sp"
             android:textStyle="bold"
@@ -63,11 +63,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:textColor="@android:color/holo_red_dark"
-            android:visibility="@{product.packagingSize.get(product.packagingIndex).mrp.equals(product.packagingSize.get(product.packagingIndex).price) ? View.INVISIBLE : View.VISIBLE}"
+            android:visibility="@{cartItem.productMRP== cartItem.productPrice? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@+id/productPrice"
             app:layout_constraintStart_toEndOf="@+id/productPrice"
             app:layout_constraintTop_toTopOf="@+id/productPrice"
-            app:productMRP="@{product.packagingSize.get(product.packagingIndex).mrp}"
+            app:productMRP="@{String.valueOf(cartItem.productMRP)}"
             tools:text="₹90.00" />
 
         <TextView
@@ -81,7 +81,7 @@
             android:paddingTop="4dp"
             android:paddingEnd="8dp"
             android:paddingBottom="4dp"
-            android:text="@{product.packagingSize.get(product.packagingIndex).size}"
+            android:text="@{cartItem.packagingSize}"
             android:textAlignment="center"
             app:layout_constraintStart_toStartOf="@+id/productPrice"
             app:layout_constraintTop_toBottomOf="@+id/productPrice"
@@ -101,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:contentDescription="@string/quantity_decrease_button"
-                android:src='@{product.orderQuantity==1 ? @drawable/ic_delete : @drawable/ic_minus_box_32}'
+                android:src='@{cartItem.quantity==1 ? @drawable/ic_delete : @drawable/ic_minus_box_32}'
                 tools:src="@drawable/ic_minus_box_32" />
 
             <TextView
@@ -112,7 +112,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@{String.valueOf(product.orderQuantity)}"
+                android:text="@{String.valueOf(cartItem.quantity)}"
                 tools:text="@string/one" />
 
             <ImageButton
@@ -120,8 +120,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:enabled="@{product.orderQuantity == product.minOrderQty ? false : true}"
                 android:contentDescription="@string/quantity_increase_button"
+                android:enabled="@{cartItem.quantity == cartItem.minOrderQuantity ? false : true}"
                 android:src="@drawable/ic_add_box_32" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

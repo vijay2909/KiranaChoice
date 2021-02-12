@@ -6,6 +6,9 @@ const val PASSWORD = "iuosuohgqcugpmmc"
 
 const val APP_DATABASE_NAME = "App_Database"
 
+const val SOCIAL_META_TAG_TITLE = "Kirana Choice - Online Grocery Shopping App"
+const val SOCIAL_META_TAG_KIRANA_CHOICE_IMAGE = "https://firebasestorage.googleapis.com/v0/b/kirana-choice-a1e20.appspot.com/o/kiran%20choice%20logo.png?alt=media&token=73ad2448-72a5-4935-b0f6-98286eb03b26"
+
 const val DATE_TIME_API_KEY = "3K01ECC74C9F"
 const val DATE_TIME_RESPONSE_FORMAT = "json"
 const val DATE_TIME_COUNTRY_CODE = "IN"

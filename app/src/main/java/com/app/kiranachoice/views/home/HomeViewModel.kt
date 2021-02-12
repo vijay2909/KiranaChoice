@@ -1,17 +1,18 @@
 package com.app.kiranachoice.views.home
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.kiranachoice.data.PackagingSizeModel
+import com.app.kiranachoice.data.database_models.asDomainModel
 import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.data.domain.toCartItem
 import com.app.kiranachoice.repositories.DataRepository
 import com.app.kiranachoice.utils.addToCart
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,10 +21,7 @@ class HomeViewModel @Inject constructor(private val dataRepository: DataReposito
     val totalCartItems = dataRepository.totalCartItems
 
     init {
-
         refreshDataFromRepository()
-        /*getCategory2()*/
-//        dataRepository.getCategories()
     }
 
 
@@ -38,7 +36,9 @@ class HomeViewModel @Inject constructor(private val dataRepository: DataReposito
 
 //    val bestOfferProducts = dataRepository.bestOfferProducts
 
-    val bestSellingProducts = dataRepository.bestSellingProducts
+    suspend fun bestSellingProducts() = withContext(Dispatchers.IO) {
+        dataRepository.bestSellingProducts().asDomainModel()
+    }
 
     /*val bestSellingProducts = object : MediatorLiveData<Pair<List<CartItem>, List<Product>>>(){
         var cartItems : List<CartItem>? = null
@@ -60,7 +60,9 @@ class HomeViewModel @Inject constructor(private val dataRepository: DataReposito
     }*/
 
 
-    val bestOfferProducts = dataRepository.bestOfferProducts
+    suspend fun bestOfferProducts() = withContext(Dispatchers.IO) {
+        dataRepository.bestOfferProducts().asDomainModel()
+    }
 
     /*val bestOfferProducts = object : MediatorLiveData<Pair<List<CartItem>, List<Product>>>(){
         var cartItems : List<CartItem>? = null
@@ -98,13 +100,8 @@ class HomeViewModel @Inject constructor(private val dataRepository: DataReposito
     private var _alreadyAddedMsg = MutableLiveData<String>()
     val alreadyAddedMsg: LiveData<String> get() = _alreadyAddedMsg
 
-    fun addItemToCart(
-        product: Product,
-        packagingSizeModel: PackagingSizeModel
-    ) {
-        viewModelScope.launch {
-            addToCart(dataRepository, product, packagingSizeModel)
-        }
+    fun addItemToCart(product: Product) {
+        viewModelScope.launch { addToCart(dataRepository, product) }
     }
 
 
@@ -116,19 +113,22 @@ class HomeViewModel @Inject constructor(private val dataRepository: DataReposito
         _productAdded.value = false
     }
 
+    suspend fun getCartItems() = withContext(Dispatchers.IO) {
+        dataRepository.getCartItems()
+    }
 
-    fun getProduct(productId: String)= dataRepository.getProduct(productId)
+    fun getProduct(productId: String) = dataRepository.getProduct(productId)
 
 
-    fun removeProductFromCart(productKey: String) = viewModelScope.launch {
-        dataRepository.removeFromCart(productKey)
+    fun removeProductFromCart(product: Product) = viewModelScope.launch {
+        dataRepository.removeFromCart(product.toCartItem())
     }
 
 
     /**
      * update product quantity
      * */
-    fun updateCartItemQuantity(productKey: String, quantity: Int) = viewModelScope.launch {
-        dataRepository.updateCartItemQuantity(productKey, quantity)
+    fun updateCartItemQuantity(product: Product) = viewModelScope.launch {
+        dataRepository.updateCartItemQuantity(product)
     }
 }

@@ -4,12 +4,14 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.app.kiranachoice.data.*
-import com.app.kiranachoice.data.db.DatabaseDao
-import com.app.kiranachoice.data.db.asDomainModel
+import com.app.kiranachoice.data.database_models.CartItem
+import com.app.kiranachoice.data.database_models.asDomainModel
 import com.app.kiranachoice.data.domain.Banner
 import com.app.kiranachoice.data.domain.Category
 import com.app.kiranachoice.data.domain.Product
+import com.app.kiranachoice.data.domain.toCartItem
+import com.app.kiranachoice.data.network_models.*
+import com.app.kiranachoice.db.DatabaseDao
 import com.app.kiranachoice.network.DateTimeApi
 import com.app.kiranachoice.utils.*
 import com.google.firebase.auth.FirebaseAuth
@@ -26,9 +28,14 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.collections.ArrayList
 
-class DataRepository @Inject constructor(private val databaseDao: DatabaseDao, private val apiService: DateTimeApi) {
+@Singleton
+class DataRepository @Inject constructor(
+    private val databaseDao: DatabaseDao,
+    private val apiService: DateTimeApi
+) {
 
 
     private val dbRef = FirebaseDatabase.getInstance()
@@ -54,31 +61,21 @@ class DataRepository @Inject constructor(private val databaseDao: DatabaseDao, p
 
     val totalCartItems = databaseDao.getTotalCartItems()
 
-    val allCartItems = databaseDao.getCartItems()
+    val cartSubTotal = databaseDao.getSubTotal()
 
 
-    suspend fun addToCart(productKey: String) = withContext(Dispatchers.IO) {
-        databaseDao.addToCart(productKey)
+    suspend fun addToCart(cartItem: CartItem) = withContext(Dispatchers.IO) {
+        databaseDao.addToCart(cartItem)
     }
 
 
-    suspend fun removeFromCart(productKey: String) = withContext(Dispatchers.IO){
-        databaseDao.removeFromCart(productKey)
+    suspend fun removeFromCart(cartItem: CartItem) = withContext(Dispatchers.IO) {
+        databaseDao.removeFromCart(cartItem)
     }
 
 
-    /*suspend fun delete(productKey: String) = withContext(Dispatchers.IO) {
-        databaseDao.delete(productKey)
-    }*/
-
-
-    /*suspend fun delete(cartItem: CartItem) = withContext(Dispatchers.IO) {
-        databaseDao.delete(cartItem.productKey)
-    }*/
-
-
-    suspend fun updateCartItemQuantity(productKey: String, quantity: Int) = withContext(Dispatchers.IO) {
-        databaseDao.updateCartItemQuantity(productKey, quantity)
+    suspend fun updateCartItemQuantity(product: Product) = withContext(Dispatchers.IO) {
+        databaseDao.addToCart(product.toCartItem())
     }
 
 
@@ -222,20 +219,14 @@ class DataRepository @Inject constructor(private val databaseDao: DatabaseDao, p
         }
     }
 
-    fun getCartItems() = databaseDao.getCartItems()
+    suspend fun getCartItems() = databaseDao.getCartItems()
 
-    val bestOfferProducts: LiveData<List<Product>> =
-        Transformations.map(databaseDao.getBestOfferProducts()) {
-            it.asDomainModel()
-        }
+    suspend fun bestOfferProducts() = databaseDao.getBestOfferProducts()
 
 
-    val bestSellingProducts: LiveData<List<Product>> =
-        Transformations.map(databaseDao.getBestSellingProducts()) {
-            it.asDomainModel()
-        }
+    suspend fun bestSellingProducts() = databaseDao.getBestSellingProducts()
 
-    fun getProduct(productId: String) = Transformations.map(databaseDao.getProduct(productId)){
+    fun getProduct(productId: String) = Transformations.map(databaseDao.getProduct(productId)) {
         it.asDomainModel()
     }
 
@@ -254,9 +245,9 @@ class DataRepository @Inject constructor(private val databaseDao: DatabaseDao, p
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         Log.d(TAG, "generateOrderId sequence: ${snapshot.value} ")
-                        sequence = if (snapshot.exists()){
+                        sequence = if (snapshot.exists()) {
                             snapshot.children.elementAt(0).value.toString().toInt().plus(1)
-                        }else{
+                        } else {
                             1
                         }
                         orderId = "KC" + (1000 + sequence!!)
@@ -325,7 +316,7 @@ class DataRepository @Inject constructor(private val databaseDao: DatabaseDao, p
     }
 
     private var _orderPlacedDate = MutableLiveData<Long>()
-    val orderPlacedDate : LiveData<Long> get() = _orderPlacedDate
+    val orderPlacedDate: LiveData<Long> get() = _orderPlacedDate
 
     fun getTime() {
         apiService.getTime(
@@ -349,6 +340,8 @@ class DataRepository @Inject constructor(private val databaseDao: DatabaseDao, p
             }
         })
     }
+
+    fun getSavedAmount() = databaseDao.getSavedPrice()
 
     companion object {
         private const val TAG = "DataRepository"

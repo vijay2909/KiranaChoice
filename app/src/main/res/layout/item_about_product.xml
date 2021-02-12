@@ -6,7 +6,7 @@
     <data>
         <variable
             name="aboutProductModel"
-            type="com.app.kiranachoice.data.AboutProductModel" />
+            type="com.app.kiranachoice.data.network_models.AboutProductModel" />
     </data>
 
     <TextView

@@ -1,9 +1,9 @@
-package com.app.kiranachoice.data.db
+package com.app.kiranachoice.data.database_models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.app.kiranachoice.data.AboutProductModel
-import com.app.kiranachoice.data.PackagingSizeModel
+import com.app.kiranachoice.data.network_models.AboutProductModel
+import com.app.kiranachoice.data.network_models.PackagingSizeModel
 import com.app.kiranachoice.data.domain.Product
 
 @Entity
@@ -23,8 +23,6 @@ data class ProductItem constructor(
     var makeBestSelling: Boolean,
     var makeRecommendedProduct: Boolean,
     var isAvailable: Boolean,
-    var addedInCart : Boolean,
-    var orderQuantity: Int,
     var packagingIndex : Int = 0
 )
 
@@ -33,19 +31,13 @@ fun ProductItem.asDomainModel(): Product {
         key = this.key,
         id = this.id,
         subCategoryName = this.subCategoryName,
-        product_sku = this.product_sku,
         image = this.image,
         name = this.name,
         packagingSize = this.packagingSize,
         aboutTheProduct = this.aboutTheProduct,
         totalQty = this.totalQty,
         minOrderQty = this.minOrderQty,
-        makeBestOffer = this.makeBestOffer,
-        makeBestSelling = this.makeBestSelling,
-        makeRecommendedProduct = this.makeRecommendedProduct,
         isAvailable = this.isAvailable,
-        addedInCart = this.addedInCart,
-        orderQuantity = this.orderQuantity,
         packagingIndex = this.packagingIndex
     )
 }
@@ -59,19 +51,13 @@ fun List<ProductItem>.asDomainModel(): List<Product> {
             key = it.key,
             id = it.id,
             subCategoryName = it.subCategoryName,
-            product_sku = it.product_sku,
             image = it.image,
             name = it.name,
             packagingSize = it.packagingSize,
             aboutTheProduct = it.aboutTheProduct,
             totalQty = it.totalQty,
             minOrderQty = it.minOrderQty,
-            makeBestOffer = it.makeBestOffer,
-            makeBestSelling = it.makeBestSelling,
-            makeRecommendedProduct = it.makeRecommendedProduct,
             isAvailable = it.isAvailable,
-            addedInCart = it.addedInCart,
-            orderQuantity = it.orderQuantity,
             packagingIndex = it.packagingIndex
         )
     }

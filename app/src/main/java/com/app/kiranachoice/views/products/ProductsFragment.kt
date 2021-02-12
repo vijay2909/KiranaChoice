@@ -10,17 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.app.kiranachoice.data.db.CartItem
+import com.app.kiranachoice.data.database_models.CartItem
 import com.app.kiranachoice.data.domain.Product
 import com.app.kiranachoice.databinding.FragmentProductsBinding
 import com.app.kiranachoice.listeners.ProductClickListener
 import com.app.kiranachoice.recyclerView_adapters.VerticalProductsAdapter
 import com.app.kiranachoice.views.authentication.AuthActivity
 import com.google.firebase.auth.FirebaseAuth
-import dagger.Binds
-import dagger.Provides
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductsFragment : Fragment(), ProductClickListener {
@@ -31,9 +28,7 @@ class ProductsFragment : Fragment(), ProductClickListener {
 
     private lateinit var mAuth: FirebaseAuth
 
-    //    @delegate:Inject
     private val args: ProductsFragmentArgs by navArgs()
-
 
     val viewModel: ProductsViewModel by viewModels()
 
@@ -91,11 +86,9 @@ class ProductsFragment : Fragment(), ProductClickListener {
 
 
     override fun addItemToCart(
-        product: Product,
-        packagingIndex: Int
+        product: Product
     ) {
-        val packagingSizeModel = product.packagingSize[packagingIndex]
-        viewModel.addItemToCart(product, packagingSizeModel)
+        viewModel.addItemToCart(product)
     }
 
     override fun onItemClick(view: View, product: Product) {
@@ -106,12 +99,12 @@ class ProductsFragment : Fragment(), ProductClickListener {
         )
     }
 
-    override fun onRemoveProduct(productKey: String) {
-        viewModel.deleteCartItem(productKey)
+    override fun onRemoveProduct(product: Product) {
+        viewModel.deleteCartItem(product)
     }
 
     override fun onQuantityChanged(product: Product) {
-        viewModel.updateQuantity(product.key, product.orderQuantity)
+        viewModel.updateQuantity(product)
     }
 
 }

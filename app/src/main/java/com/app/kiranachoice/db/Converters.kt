@@ -1,8 +1,8 @@
-package com.app.kiranachoice.data.db
+package com.app.kiranachoice.db
 
 import androidx.room.TypeConverter
-import com.app.kiranachoice.data.AboutProductModel
-import com.app.kiranachoice.data.PackagingSizeModel
+import com.app.kiranachoice.data.network_models.AboutProductModel
+import com.app.kiranachoice.data.network_models.PackagingSizeModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type

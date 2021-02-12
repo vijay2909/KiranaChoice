@@ -3,7 +3,7 @@ package com.app.kiranachoice.views.address
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.app.kiranachoice.data.AddressModel
+import com.app.kiranachoice.data.network_models.AddressModel
 import com.app.kiranachoice.utils.USER_ADDRESSES_REFERENCE
 import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth

@@ -1,18 +1,17 @@
-package com.app.kiranachoice.data.db
+package com.app.kiranachoice.data.database_models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-//@Entity(tableName = "cart_item_table")
+@Entity
 data class CartItem(
-//    @PrimaryKey
+    @PrimaryKey(autoGenerate = false)
     var productKey: String,
     var productId: Int,
-    var productSKU: String,
     var productName: String,
     var productImage: String,
-    var productMRP: String,
-    var productPrice: String,
+    var productMRP: Int,
+    var productPrice: Int,
     var packagingSize: String,
     var minOrderQuantity: Int,
     var quantity: Int,
