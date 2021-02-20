@@ -9,19 +9,17 @@ import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.*
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class AddressViewModel @Inject constructor() : ViewModel() {
+class AddressViewModel @Inject constructor(
+    private val dbFire: FirebaseFirestore,
+    val mAuth: FirebaseAuth
+) : ViewModel() {
 
-    private var dbFire: FirebaseFirestore? = null
-    private var mAuth: FirebaseAuth? = null
 
     init {
-        dbFire = FirebaseFirestore.getInstance()
-        mAuth = FirebaseAuth.getInstance()
-
         getAddresses()
     }
 
@@ -29,37 +27,46 @@ class AddressViewModel @Inject constructor() : ViewModel() {
     var flatNumberOrBuildingName: String? = null
     var area: String? = null
     var city: String? = null
-    var pincode: String? = null
+    var pinCode: String? = null
     var state: String? = null
 
-    fun saveAddress() {
-        val key = UUID.randomUUID().toString()
-        val addressModel = AddressModel(
-            key, flatNumberOrBuildingName, area, city, pincode, state
-        )
+    private val _navigateToAuthentication = MutableLiveData<Boolean>()
+    val navigateToAuthentication: LiveData<Boolean> get() = _navigateToAuthentication
 
-        mAuth?.currentUser?.let { user ->
-            dbFire?.collection(USER_REFERENCE)
-                ?.document(user.uid)
-                ?.collection(USER_ADDRESSES_REFERENCE)
-                ?.document(key)
-                ?.set(addressModel)
-                ?.addOnSuccessListener {
-                    getAddresses()
-                }
+    fun navigateToAuthenticationComplete() {
+        _navigateToAuthentication.value = false
+    }
+
+
+    fun saveAddress() {
+        mAuth.currentUser?.let { user ->
+            val addressFirestoreReference = dbFire.collection(USER_REFERENCE)
+                .document(user.uid)
+                .collection(USER_ADDRESSES_REFERENCE)
+
+            val key = addressFirestoreReference.id
+            Timber.i("key: $key")
+
+            val addressModel = AddressModel(
+                key, flatNumberOrBuildingName, area, city, pinCode, state
+            )
+
+            addressFirestoreReference.document(key)
+                .set(addressModel)
+                .addOnSuccessListener { getAddresses() }
         }
     }
 
-    
+
     private var _addressList = MutableLiveData<List<AddressModel>>()
     val addressList: LiveData<List<AddressModel>> get() = _addressList
 
     private fun getAddresses() {
-        mAuth?.currentUser?.let { user ->
-            dbFire?.collection(USER_REFERENCE)
-                ?.document(user.uid)?.collection(USER_ADDRESSES_REFERENCE)
-                ?.get()
-                ?.addOnSuccessListener {
+        mAuth.currentUser?.let { user ->
+            dbFire.collection(USER_REFERENCE)
+                .document(user.uid).collection(USER_ADDRESSES_REFERENCE)
+                .get()
+                .addOnSuccessListener {
                     val addresses = it.toObjects(AddressModel::class.java)
                     _addressList.postValue(addresses)
                 }
@@ -74,16 +81,16 @@ class AddressViewModel @Inject constructor() : ViewModel() {
             "flat_num_or_building_name" to flatNumberOrBuildingName,
             "area" to area,
             "city" to city,
-            "pincode" to pincode,
+            "pincode" to pinCode,
             "state" to state
         )
 
-        dbFire?.collection(USER_REFERENCE)
-            ?.document(mAuth?.currentUser!!.uid)
-            ?.collection(USER_ADDRESSES_REFERENCE)
-            ?.document(addressModel.key.toString())
-            ?.update(updatedDetails)
-            ?.addOnSuccessListener {
+        dbFire.collection(USER_REFERENCE)
+            .document(mAuth.currentUser!!.uid)
+            .collection(USER_ADDRESSES_REFERENCE)
+            .document(addressModel.key.toString())
+            .update(updatedDetails)
+            .addOnSuccessListener {
                 _updatedDetails.postValue(true)
                 getAddresses()
             }
@@ -97,12 +104,12 @@ class AddressViewModel @Inject constructor() : ViewModel() {
     val deletedAddress: LiveData<Boolean> get() = _deletedAddress
 
     fun deleteAddress(addressModel: AddressModel) {
-        dbFire?.collection(USER_REFERENCE)
-            ?.document(mAuth?.currentUser!!.uid)
-            ?.collection(USER_ADDRESSES_REFERENCE)
-            ?.document(addressModel.key.toString())
-            ?.delete()
-            ?.addOnSuccessListener {
+        dbFire.collection(USER_REFERENCE)
+            .document(mAuth.currentUser!!.uid)
+            .collection(USER_ADDRESSES_REFERENCE)
+            .document(addressModel.key.toString())
+            .delete()
+            .addOnSuccessListener {
                 _deletedAddress.postValue(true)
                 getAddresses()
             }

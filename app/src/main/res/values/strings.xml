@@ -225,4 +225,5 @@
     <string name="category_transition_name">category_%1$s</string>
     <string name="category_detail_transition_name">category_detail</string>
     <string name="category_product_transition_name">category_product</string>
+    <string name="location_rational">To get your current location you have to give location permission.</string>
 </resources>

@@ -3,10 +3,14 @@ package com.app.kiranachoice.utils
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val USER_PREFERENCES_KEY = "User Preferences Key"
 
-class UserPreferences(val context: Context) {
+@Singleton
+class UserPreferences @Inject constructor(@ApplicationContext context: Context) {
 
     private var sharedPreferences: SharedPreferences =
         context.getSharedPreferences(USER_PREFERENCES_KEY, MODE_PRIVATE)

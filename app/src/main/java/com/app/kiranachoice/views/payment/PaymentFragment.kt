@@ -31,6 +31,8 @@ import com.app.kiranachoice.utils.toPriceAmount
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PaymentFragment : Fragment() {
@@ -39,7 +41,8 @@ class PaymentFragment : Fragment() {
     private val binding get() = bindingPayment!!
     private val viewModel: PaymentViewModel by viewModels()
 
-    private lateinit var dataRepository: DataRepository
+    @Inject
+    lateinit var dataRepository: DataRepository
 
     private lateinit var notificationManager: NotificationManager
 
@@ -50,6 +53,8 @@ class PaymentFragment : Fragment() {
         bindingPayment = FragmentPaymentBinding.inflate(inflater, container, false)
 
         notificationManager = requireActivity().getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        binding.lifecycleOwner = this
+        binding.paymentViewModel = viewModel
 
         return binding.root
     }
@@ -58,14 +63,11 @@ class PaymentFragment : Fragment() {
     private val args: PaymentFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.lifecycleOwner = this
-        binding.paymentViewModel = viewModel
+
         binding.totalAmount = args.totalAmount
         binding.couponDescription = args.couponDescription
 
-        /*viewModel.cartItems.observe(viewLifecycleOwner, {
-            setProductListTextWithPrice()
-        })*/
+        setProductListTextWithPrice()
 
         binding.btnPlaceOrder.setOnClickListener {
             binding.btnPlaceOrder.isEnabled = false
@@ -95,17 +97,17 @@ class PaymentFragment : Fragment() {
 
 
     private fun sendConfirmationMail() {
-        /*val amountWithDeliveryCharge = if (viewModel.deliveryCharge.value == DELIVERY_FREE) {
+        val amountWithDeliveryCharge = if (viewModel.deliveryCharge.value == DELIVERY_FREE) {
             viewModel.totalProductsAmount.value
         } else {
             val amount = viewModel.totalProductsAmount.value.toString().filter { it.isDigit() }.removeSuffix("00")
             amount.toInt().plus(viewModel.deliveryCharge.value?.toInt()!!)
                 .toString().toPriceAmount()
-        }*/
+        }
 
         val orderPlacedDate = getDateTimeFromUnix(viewModel.orderPlacedDate.value)
 
-        /*Mailer.sendMail(
+        Mailer.sendMail(
             requireContext(),
             viewModel.user.value?.email.toString(),
             viewModel.user.value?.name.toString(),
@@ -116,7 +118,7 @@ class PaymentFragment : Fragment() {
             amountWithDeliveryCharge.toString()
         ).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { showBookingConfirmDialog(); showNotification() }*/
+            .subscribe { showBookingConfirmDialog(); showNotification() }
     }
 
 
@@ -144,7 +146,7 @@ class PaymentFragment : Fragment() {
 
         val pendingIntent = NavDeepLinkBuilder(requireContext())
             .setComponentName(MainActivity::class.java)
-            .setGraph(R.navigation.mobile_navigation)
+            .setGraph(R.navigation.nav_graph)
             .setDestination(R.id.myOrdersFragment)
             .createPendingIntent()
 
@@ -171,71 +173,73 @@ class PaymentFragment : Fragment() {
 
     private fun setProductListTextWithPrice() {
         bindingPayment?.productLayout?.removeAllViews()
-        /*viewModel.cartItems.value?.forEach { cartItem ->
-            val relativeLayout = RelativeLayout(requireContext())
+        runBlocking {
+            viewModel.getCartItems().forEach { cartItem ->
+                val relativeLayout = RelativeLayout(requireContext())
 
-            val textProductName = TextView(requireContext())
-            textProductName.setTextColor(Color.BLACK)
-            textProductName.id = View.generateViewId()
-            textProductName.textSize = 15f
-            textProductName.text = cartItem.name
+                val textProductName = TextView(requireContext())
+                textProductName.setTextColor(Color.BLACK)
+                textProductName.id = View.generateViewId()
+                textProductName.textSize = 15f
+                textProductName.text = cartItem.productName
 
-            val textSellingPriceAndQuantity = TextView(requireContext())
-            textSellingPriceAndQuantity.textSize = 12f
-            textSellingPriceAndQuantity.text =
-                getString(R.string.quantity).plus(" ${cartItem.orderQuantity}")
-                    .plus(" ${getString(R.string.multiply)}")
-                    .plus(" ${getString(R.string.rupee)}")
-                    .plus(" ${cartItem.packagingSize[cartItem.packagingIndex].price}")
+                val textSellingPriceAndQuantity = TextView(requireContext())
+                textSellingPriceAndQuantity.textSize = 12f
+                textSellingPriceAndQuantity.text =
+                    getString(R.string.quantity).plus(" ${cartItem.quantity}")
+                        .plus(" ${getString(R.string.multiply)}")
+                        .plus(" ${getString(R.string.rupee)}")
+                        .plus(" ${cartItem.productPrice}")
 
-            val textProductPrice = TextView(requireContext())
-            val totalPrice =
-                cartItem.orderQuantity.times(cartItem.packagingSize[cartItem.packagingIndex].price!!.toInt())
-            textProductPrice.id = View.generateViewId()
-            textProductPrice.setTextColor(Color.BLACK)
-            textProductPrice.textSize = 15f
-            textProductPrice.text = getString(R.string.rupee).plus(" $totalPrice")
+                val textProductPrice = TextView(requireContext())
+                val totalPrice =
+                    cartItem.quantity.times(cartItem.productPrice)
+                textProductPrice.id = View.generateViewId()
+                textProductPrice.setTextColor(Color.BLACK)
+                textProductPrice.textSize = 15f
+                textProductPrice.text = getString(R.string.rupee).plus(" $totalPrice")
 
-            val param0 = RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-            )
-            param0.setMargins(0, 0, 0, 24)
+                val param0 = RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                )
+                param0.setMargins(0, 0, 0, 24)
 
-            val param1 = RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-            )
-            param1.setMargins(0, 0, 16, 0)
-            param1.addRule(RelativeLayout.ALIGN_PARENT_START)
-            param1.addRule(RelativeLayout.START_OF, textProductPrice.id)
+                val param1 = RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                )
+                param1.setMargins(0, 0, 16, 0)
+                param1.addRule(RelativeLayout.ALIGN_PARENT_START)
+                param1.addRule(RelativeLayout.START_OF, textProductPrice.id)
 
-            val param2 = RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-            )
-            param2.setMargins(32, 0, 0, 0)
-            param2.addRule(RelativeLayout.BELOW, textProductName.id)
+                val param2 = RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                )
+                param2.setMargins(32, 0, 0, 0)
+                param2.addRule(RelativeLayout.BELOW, textProductName.id)
 
-            val param3 = RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-            )
-            param3.addRule(RelativeLayout.ALIGN_PARENT_END)
-
-
-            relativeLayout.layoutParams = param0
-            textProductName.layoutParams = param1
-            textSellingPriceAndQuantity.layoutParams = param2
-            textProductPrice.layoutParams = param3
+                val param3 = RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                )
+                param3.addRule(RelativeLayout.ALIGN_PARENT_END)
 
 
-            relativeLayout.addView(textProductName)
-            relativeLayout.addView(textSellingPriceAndQuantity)
-            relativeLayout.addView(textProductPrice)
+                relativeLayout.layoutParams = param0
+                textProductName.layoutParams = param1
+                textSellingPriceAndQuantity.layoutParams = param2
+                textProductPrice.layoutParams = param3
 
-            bindingPayment?.productLayout?.addView(relativeLayout)
-        }*/
+
+                relativeLayout.addView(textProductName)
+                relativeLayout.addView(textSellingPriceAndQuantity)
+                relativeLayout.addView(textProductPrice)
+
+                bindingPayment?.productLayout?.addView(relativeLayout)
+            }
+        }
     }
 
     override fun onDestroyView() {

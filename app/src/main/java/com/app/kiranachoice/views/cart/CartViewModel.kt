@@ -22,41 +22,16 @@ class CartViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
     suspend fun getCartItems() = withContext(Dispatchers.IO) { dataRepository.getCartItems() }
 
 
-//    private var _savedAmount = MutableLiveData("0")
-//    val savedAmount: LiveData<String> get() = _savedAmount
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             Timber.d("Saved amount: ${dataRepository.getSavedAmount().value}")
         }
     }
 
-    val cartSubTotal = dataRepository.cartSubTotal
+    val cartSubTotal = dataRepository.getTotalInvoiceAmount()
 
 
     val savedAmount = dataRepository.getSavedAmount()
-
-    /**
-     * calculate subTotal and saved amount
-     * */
-   /* val subTotalAmount: LiveData<String> = Transformations.map(allCartItems) { products ->
-        var subTotal = 0
-        var savedAmount = 0
-        products.forEach { product ->
-            subTotal += product.orderQuantity.times(product.packagingSize[product.packagingIndex].price!!.toInt())
-
-            val mrp = product.packagingSize[product.packagingIndex].mrp!!.toInt()
-            val price = product.packagingSize[product.packagingIndex].price!!.toInt()
-
-            savedAmount += if (mrp > price) {
-                (mrp.minus(price)).times(product.orderQuantity)
-            } else {
-                0
-            }
-        }
-        _savedAmount.postValue(savedAmount.toString())
-        subTotal.toString()
-    }*/
 
 
     private var _totalAmount = MutableLiveData<String>()
@@ -71,7 +46,7 @@ class CartViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
             _totalAmount.value = subTotal.toInt().plus(DELIVERY_CHARGE).toString()
             DELIVERY_CHARGE.toString()
         } else {
-            _totalAmount.value = subTotal
+            _totalAmount.value = subTotal.toString()
             DELIVERY_FREE
         }
     }

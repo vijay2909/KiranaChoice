@@ -37,6 +37,7 @@ import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
@@ -46,7 +47,8 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 
     private val viewModel: HomeViewModel by viewModels()
 
-    private lateinit var mAuth: FirebaseAuth
+    @Inject
+    lateinit var mAuth: FirebaseAuth
 
     private lateinit var viewPager1: ViewPager2
 
@@ -91,7 +93,6 @@ class HomeFragment : Fragment(), CategoryClickListener, ProductClickListener {
 //        viewPager2 = binding.homeBanner2
         handler1 = Handler(Looper.getMainLooper())
 //        handler2 = Handler(Looper.getMainLooper())
-        mAuth = FirebaseAuth.getInstance()
 
         // Home Top Banner [[START]] >>>>>>>>>>>>>
         homeBannerAdapter = HomeTopBannerAdapter()

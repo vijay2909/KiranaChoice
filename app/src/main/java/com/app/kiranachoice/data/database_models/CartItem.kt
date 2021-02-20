@@ -2,6 +2,7 @@ package com.app.kiranachoice.data.database_models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.app.kiranachoice.data.network_models.Product
 
 @Entity
 data class CartItem(
@@ -17,3 +18,15 @@ data class CartItem(
     var quantity: Int,
     var isEnabled: Boolean = true
 )
+
+fun CartItem.asNetworkProduct() : Product {
+    return Product(
+        null,
+        productName = this.productName,
+        productImage = this.productImage,
+        productSize = this.packagingSize,
+        productQuantity = this.quantity,
+        productMRP = this.productMRP.toString(),
+        productPrice = this.productPrice.toString()
+    )
+}

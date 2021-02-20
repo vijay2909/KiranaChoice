@@ -5,7 +5,6 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,13 +27,15 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.gson.JsonObject
-import com.vmadalin.easypermissions.EasyPermissions
-import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
-import com.vmadalin.easypermissions.dialogs.SettingsDialog
-import com.vmadalin.easypermissions.models.PermissionRequest
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
+import pub.devrel.easypermissions.PermissionRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import timber.log.Timber
+import javax.inject.Inject
 
 
 class ChatFragment : Fragment(), EasyPermissions.PermissionCallbacks,
@@ -53,9 +54,13 @@ class ChatFragment : Fragment(), EasyPermissions.PermissionCallbacks,
 
     private lateinit var dbRef: DatabaseReference
 
-    private lateinit var userPreferences: UserPreferences
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     private var totalChild = 0L
+
+    @Inject
+    lateinit var sendChatNotificationAPI: SendNotificationAPI
 
     var count = 0L
 
@@ -65,8 +70,6 @@ class ChatFragment : Fragment(), EasyPermissions.PermissionCallbacks,
     ): View {
         _binding = FragmentChatBinding.inflate(inflater, container, false)
         mAuth = FirebaseAuth.getInstance()
-
-        userPreferences = UserPreferences(requireContext())
 
         mLinearLayoutManager = LinearLayoutManager(requireContext())
         mLinearLayoutManager.stackFromEnd = true
@@ -158,15 +161,15 @@ class ChatFragment : Fragment(), EasyPermissions.PermissionCallbacks,
 
 
                     override fun onChildRemoved(snapshot: DataSnapshot) {
-                        Log.e(TAG, "onChildRemoved: called")
+                        Timber.e( "onChildRemoved: called")
                     }
 
                     override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                        Log.w(TAG, "onChildMoved: called")
+                        Timber.w( "onChildMoved: called")
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Log.i(TAG, "onCancelled: called: ${error.message}")
+                        Timber.i( "onCancelled: called: ${error.message}")
                     }
                 }
 
@@ -186,39 +189,38 @@ class ChatFragment : Fragment(), EasyPermissions.PermissionCallbacks,
             // Already have permission, do the thing
             findNavController().navigate(R.id.action_chatFragment_to_cameraFragment)
         } else {
-            val request = PermissionRequest.Builder(requireContext())
-                .code(REQUEST_CODE_PERMISSIONS)
-                .perms(CAMERA_ARRAY_PERMISSION)
-                /*.theme(R.style.my_fancy_style)*/
-                .rationale(R.string.rationale_camera)
-                .positiveButtonText(R.string.rationale_ok)
+            val request = PermissionRequest.Builder(
+                this, REQUEST_CODE_PERMISSIONS, CAMERA_PERMISSION)
+//                .setTheme(R.style.my_fancy_style)
+                .setRationale(R.string.rationale_camera)
+                .setPositiveButtonText(R.string.rationale_ok)
                 .build()
             // Do not have permissions, request them now
-            EasyPermissions.requestPermissions(this, request)
+            EasyPermissions.requestPermissions(request)
         }
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        Log.d(TAG, "onPermissionsDenied: called")
+        Timber.d( "onPermissionsDenied: called")
         hasPermissionAllowed()
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        Log.w(TAG, "onPermissionsGranted: called")
+        Timber.w( "onPermissionsGranted: called")
         hasPermissionAllowed()
     }
 
     override fun onRationaleAccepted(requestCode: Int) {
-        Log.i(TAG, "onRationaleAccepted: called")
+        Timber.i( "onRationaleAccepted: called")
         hasPermissionAllowed()
     }
 
     override fun onRationaleDenied(requestCode: Int) {
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, CAMERA_PERMISSION)) {
-            Log.d(TAG, "onRationaleDenied: if block")
-            SettingsDialog.Builder(requireContext()).build().show()
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, CAMERA_ARRAY_PERMISSION)) {
+            Timber.d( "onRationaleDenied: if block")
+            AppSettingsDialog.Builder(this).build().show()
         }else{
-            Log.e(TAG, "onRationaleDenied: called")
+            Timber.e( "onRationaleDenied: called")
             hasPermissionAllowed()
         }
     }
@@ -237,7 +239,7 @@ class ChatFragment : Fragment(), EasyPermissions.PermissionCallbacks,
 
     private fun sendNotificationToAdmin(payload: JsonObject) {
 
-        SendNotificationAPI.getInstance().sendChatNotification(payload)
+        sendChatNotificationAPI.sendChatNotification(payload)
             .enqueue(object : Callback<JsonObject> {
                 override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {}
 
@@ -268,12 +270,12 @@ class ChatFragment : Fragment(), EasyPermissions.PermissionCallbacks,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
+        Timber.d( "onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
         if (requestCode == REQUEST_IMAGE) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     val uri = data.data
-                    Log.d(TAG, "Uri: " + uri.toString())
+                    Timber.d( "Uri: %s", uri.toString())
                     val tempMessage = Chat(
                         null, System.currentTimeMillis(), LOADING_IMAGE_URL,
                         USER
@@ -308,7 +310,7 @@ class ChatFragment : Fragment(), EasyPermissions.PermissionCallbacks,
                     }
                 }
                 .addOnFailureListener {
-                    Log.w(TAG, "Image upload task was not successful. ${it.message}")
+                    Timber.w( "Image upload task was not successful. ${it.message}")
                 }
         }
     }
@@ -332,14 +334,13 @@ class ChatFragment : Fragment(), EasyPermissions.PermissionCallbacks,
     }
 
     companion object {
-        private const val TAG = "ChatFragment"
         private const val REQUEST_IMAGE = 2
         private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
 
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
-        private val CAMERA_ARRAY_PERMISSION = arrayOf(Manifest.permission.CAMERA)
+//        private val CAMERA_ARRAY_PERMISSION = arrayOf(Manifest.permission.CAMERA)
+        private val CAMERA_ARRAY_PERMISSION = listOf(Manifest.permission.CAMERA)
 
     }
 

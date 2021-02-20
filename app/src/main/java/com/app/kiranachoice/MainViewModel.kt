@@ -1,7 +1,6 @@
 package com.app.kiranachoice
 
 import android.net.Uri
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,10 +13,13 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel @ViewModelInject constructor(private val dataRepository: DataRepository) : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(private val dataRepository: DataRepository) : ViewModel() {
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val dbFire: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var storage: FirebaseStorage? = null

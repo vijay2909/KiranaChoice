@@ -1,6 +1,7 @@
 package com.app.kiranachoice.db
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 import com.app.kiranachoice.data.database_models.*
 
@@ -25,16 +26,21 @@ interface DatabaseDao {
     @Delete
     suspend fun removeFromCart(cartItem: CartItem)
 
-
     /**
      * Get Total Cart Items Size
      * */
     @Query("SELECT COUNT(*) FROM cartitem")
     fun getTotalCartItems(): LiveData<Int>
 
+    /**
+     * Get Sub Total Of Cart Items
+     * */
     @Query("SELECT SUM(productPrice * quantity) FROM cartitem")
     fun getSubTotal() : LiveData<String>
 
+    /**
+     * Get Saved Amount of Cart Items
+     * */
     @Query("SELECT SUM((productMRP - productPrice) * quantity) FROM cartitem WHERE productMRP > productPrice")
     fun getSavedPrice() : LiveData<Int>
 

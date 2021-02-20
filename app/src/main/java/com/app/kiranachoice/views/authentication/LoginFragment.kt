@@ -24,6 +24,7 @@ import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
 private const val RC_HINT = 1
@@ -36,8 +37,12 @@ class LoginFragment : Fragment() {
 
     private val viewModel: AuthViewModel by activityViewModels()
 
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var dbFireStore: FirebaseFirestore
+    @Inject
+    lateinit var mAuth: FirebaseAuth
+
+    @Inject
+    lateinit var dbFireStore: FirebaseFirestore
+
     private var storedVerificationId: String? = ""
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private var phoneNumber: String? = null
@@ -54,8 +59,6 @@ class LoginFragment : Fragment() {
         _bindingLogin = FragmentLoginBinding.inflate(inflater, container, false)
 
         mCredentialsClient = Credentials.getClient(requireActivity())
-        mAuth = FirebaseAuth.getInstance()
-        dbFireStore = FirebaseFirestore.getInstance()
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -188,9 +191,6 @@ class LoginFragment : Fragment() {
 
     }
 
-    companion object {
-        private const val TAG = "LoginFragment"
-    }
 
     private fun startPhoneNumberVerification(phoneNumber: String) {
         val options = PhoneAuthOptions.newBuilder(mAuth)
@@ -239,9 +239,8 @@ class LoginFragment : Fragment() {
                     viewModel.onAuthSuccess(MessagingService.getToken(requireContext())!!)
                 } else {
                     // Sign in failed, display a message and update the UI
-                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
-//                        binding.etOtpCode.error = getString(R.string.invalid_code)
-                    }
+                    Toast.makeText(requireContext(), task.exception?.message, Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
     }

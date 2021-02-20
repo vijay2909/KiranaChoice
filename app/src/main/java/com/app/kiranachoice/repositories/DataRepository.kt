@@ -1,6 +1,5 @@
 package com.app.kiranachoice.repositories
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -19,13 +18,14 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.CollectionReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,10 +37,15 @@ class DataRepository @Inject constructor(
     private val apiService: DateTimeApi
 ) {
 
+    @Inject
+    lateinit var dbRef: FirebaseDatabase
 
-    private val dbRef = FirebaseDatabase.getInstance()
-    private val mAuth = FirebaseAuth.getInstance()
-    private val dbFire = FirebaseFirestore.getInstance().collection(USER_REFERENCE)
+    @Inject
+    lateinit var mAuth: FirebaseAuth
+
+    @Inject
+    lateinit var dbFire : CollectionReference
+
 
     private var _user = MutableLiveData<User>()
     val user: LiveData<User> get() = _user
@@ -58,10 +63,11 @@ class DataRepository @Inject constructor(
         }
     }
 
+    fun getTotalInvoiceAmount() = databaseDao.getSubTotal()
 
     val totalCartItems = databaseDao.getTotalCartItems()
 
-    val cartSubTotal = databaseDao.getSubTotal()
+//    val cartSubTotal = databaseDao.getSubTotal()
 
 
     suspend fun addToCart(cartItem: CartItem) = withContext(Dispatchers.IO) {
@@ -204,7 +210,7 @@ class DataRepository @Inject constructor(
                             val categoryModel = it.getValue(CategoryModel::class.java)
                             categoryModel?.let { model -> categoryList.add(model) }
                         }
-                        Log.d(TAG, "categoryList: $categoryList")
+                        Timber.d("categoryList: $categoryList")
                         runBlocking {
                             withContext(Dispatchers.IO) {
                                 databaseDao.deleteAllCategories()
@@ -244,7 +250,7 @@ class DataRepository @Inject constructor(
             dbRef.getReference(SEQUENCE)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        Log.d(TAG, "generateOrderId sequence: ${snapshot.value} ")
+                        Timber.d("generateOrderId sequence: ${snapshot.value} ")
                         sequence = if (snapshot.exists()) {
                             snapshot.children.elementAt(0).value.toString().toInt().plus(1)
                         } else {
@@ -294,10 +300,10 @@ class DataRepository @Inject constructor(
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val productList = ArrayList<ProductModel>()
-                Log.d(TAG, "outer product: ${snapshot.value}")
+                Timber.d("outer product: ${snapshot.value}")
                 snapshot.children.forEach {
                     it.getValue(ProductModel::class.java)?.let { productModel ->
-                        Log.d(TAG, "inner product: $productModel")
+                        Timber.d("inner product: $productModel")
                         productList.add(productModel)
                     }
                 }
@@ -342,9 +348,5 @@ class DataRepository @Inject constructor(
     }
 
     fun getSavedAmount() = databaseDao.getSavedPrice()
-
-    companion object {
-        private const val TAG = "DataRepository"
-    }
 
 }

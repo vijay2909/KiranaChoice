@@ -3,8 +3,6 @@ package com.app.kiranachoice.network
 
 import com.google.gson.JsonObject
 import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
@@ -14,19 +12,6 @@ interface SendNotificationAPI {
 
     companion object {
         const val BASE_URL = "https://fcm.googleapis.com/"
-
-//        private var sendNotificationAPI: SendNotificationAPI? = null
-
-        /*fun getInstance(): SendNotificationAPI {
-            if (sendNotificationAPI == null) {
-                sendNotificationAPI = Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-                    .create(SendNotificationAPI::class.java)
-            }
-            return sendNotificationAPI!!
-        }*/
     }
 
     @Headers(

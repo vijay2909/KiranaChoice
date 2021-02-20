@@ -1,6 +1,7 @@
 package com.app.kiranachoice.views.payment
 
 import androidx.lifecycle.*
+import com.app.kiranachoice.data.database_models.asNetworkProduct
 import com.app.kiranachoice.data.network_models.AdminOrder
 import com.app.kiranachoice.data.network_models.BookItemOrderModel
 import com.app.kiranachoice.data.network_models.Product
@@ -18,16 +19,19 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 @HiltViewModel
-class PaymentViewModel @Inject constructor(private val dataRepository: DataRepository) : ViewModel() {
-
-    private val dbFire: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val dbRef: FirebaseDatabase = FirebaseDatabase.getInstance()
+class PaymentViewModel @Inject constructor(
+    val dbFire: FirebaseFirestore,
+    val mAuth: FirebaseAuth,
+    private val dbRef: FirebaseDatabase,
+    val sendNotificationAPI: SendNotificationAPI,
+    private val dataRepository: DataRepository
+    ) : ViewModel() {
 
     suspend fun getCartItems() = withContext(Dispatchers.IO){
         dataRepository.getCartItems()
@@ -45,25 +49,14 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
     }
 
 
-//    var cartItems: List<CartItem>? = null
+    val totalProductsAmount = dataRepository.getTotalInvoiceAmount()
 
-    /*var totalProductsAmount: LiveData<String> = Transformations.map(cartItems) { items ->
-        var tAmount = 0
-        items.forEach { item ->
-            tAmount += if (item.orderQuantity > 1) {
-                item.orderQuantity.times(item.packagingSize[item.packagingIndex].price!!.toInt())
-            } else {
-                item.packagingSize[item.packagingIndex].price!!.toInt()
-            }
-        }
-        tAmount.toString().toPriceAmount()
-    }*/
 
     private var _totalAmount = MutableLiveData<String>()
     val totalAmount: LiveData<String> get() = _totalAmount
 
-    /*val deliveryCharge: LiveData<String> = Transformations.map(totalProductsAmount) { amt ->
-
+    val deliveryCharge: LiveData<String> = Transformations.map(totalProductsAmount) { amt ->
+        Timber.d("amount: %s", amt)
         val amount = amt.filter { it.isDigit() }.removeSuffix("00")
 
         if (amount.toInt() > MAXIMUM_AMOUNT_TO_AVOID_DELIVERY_CHARGE) {
@@ -73,7 +66,7 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
             _totalAmount.value = amount.toInt().plus(DELIVERY_CHARGE).toString()
             DELIVERY_CHARGE.toString()
         }
-    }*/
+    }
 
 
     private var _orderSaved = MutableLiveData<Boolean>()
@@ -82,16 +75,8 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
     fun saveUserOrder(deliveryAddress: String, couponCode: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             val itemList = ArrayList<Product>()
-            /*cartItems.value?.forEach {
-                val item = Product(
-                    productSKU = it.product_sku,
-                    productName = it.name,
-                    productImage = it.image,
-                    productSize = it.packagingSize[it.packagingIndex].size,
-                    productQuantity = it.orderQuantity,
-                    productMRP = it.packagingSize[it.packagingIndex].mrp,
-                    productPrice = it.packagingSize[it.packagingIndex].price,
-                )
+            dataRepository.getCartItems().forEach {
+                val item = it.asNetworkProduct()
                 itemList.add(item)
             }
 
@@ -120,7 +105,7 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
                     updateOrderIdSequence()
                     saveOrderForAdmin()
                     sendNotificationToAdmin()
-                }*/
+                }
         }
     }
 
@@ -139,11 +124,10 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
     }
 
     private fun sendNotificationToAdmin() {
-        val api = SendNotificationAPI.getInstance()
 
         val payload = buildNotificationPayload()
 
-        api.sendChatNotification(payload).enqueue(object : Callback<JsonObject> {
+        sendNotificationAPI.sendChatNotification(payload).enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {}
 
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {}
@@ -167,29 +151,10 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
         return payload
     }
 
-    /*private var _orderPlacedDate = MutableLiveData<Long>()
-    val orderPlacedDate : LiveData<Long> get() = _orderPlacedDate*/
-
     val orderPlacedDate = dataRepository.orderPlacedDate
 
     private fun getTime() {
         dataRepository.getTime()
-        /*apiService.getTime("3K01ECC74C9F", "json", "IN").enqueue(object :
-            Callback<CurrentDateTime> {
-            override fun onResponse(
-                call: Call<CurrentDateTime>,
-                response: Response<CurrentDateTime>
-            ) {
-                if (response.isSuccessful && response.body() != null) {
-
-                    val timestamp = response.body()!!.zones[0].timestamp
-                    _orderPlacedDate.value = (timestamp * 1_000).toLong()
-                }
-            }
-
-            override fun onFailure(call: Call<CurrentDateTime>, t: Throwable) {
-            }
-        })*/
     }
 
 
@@ -200,9 +165,9 @@ class PaymentViewModel @Inject constructor(private val dataRepository: DataRepos
 
     fun removeCartItems() {
         viewModelScope.launch(Dispatchers.IO) {
-            /*cartItems.value?.forEach { product ->
-                dataRepository.removeFromCart(product.key)
-            }*/
+            dataRepository.getCartItems().forEach { cartItem ->
+                dataRepository.removeFromCart(cartItem)
+            }
         }
     }
 }

@@ -6,6 +6,11 @@ import com.app.kiranachoice.db.AppDatabase
 import com.app.kiranachoice.network.DateTimeApi
 import com.app.kiranachoice.network.SendNotificationAPI
 import com.app.kiranachoice.utils.APP_DATABASE_NAME
+import com.app.kiranachoice.utils.USER_REFERENCE
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -100,4 +105,21 @@ object AppModule {
     @Provides
     fun provideDatabaseDao(db: AppDatabase) = db.databaseDao
 
+    @Singleton
+    @Provides
+    fun provideFireStoreInstance() = FirebaseFirestore.getInstance()
+
+    @Singleton
+    @Provides
+    fun provideFirebaseAuthInstance() = FirebaseAuth.getInstance()
+
+    @Singleton
+    @Provides
+    fun provideFirebaseDatabase() = FirebaseDatabase.getInstance()
+
+    @Singleton
+    @Provides
+    fun provideUserFireStoreCollectionReference(firebaseReference: FirebaseFirestore) : CollectionReference {
+        return firebaseReference.collection(USER_REFERENCE)
+    }
 }

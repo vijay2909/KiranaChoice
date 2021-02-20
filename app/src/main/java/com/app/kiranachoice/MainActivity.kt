@@ -37,7 +37,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var navController: NavController
 
-    private lateinit var mAuth: FirebaseAuth
+    @Inject
+    lateinit var mAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,8 +47,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(binding.root)
 
         setSupportActionBar(binding.appBarMain.toolbar)
-
-        mAuth = FirebaseAuth.getInstance()
 
         val navHeader: NavHeaderMainBinding = DataBindingUtil.inflate(
             layoutInflater, R.layout.nav_header_main, binding.navView, false
@@ -195,18 +194,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.appBarMain.imgNoInternet.visibility = View.VISIBLE
     }
 
-    companion object {
-        private const val TAG = "MainActivity"
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
-}
 
-
-class MainViewModelFactory(private val dataRepository: DataRepository) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(dataRepository = dataRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
     }
+
 }

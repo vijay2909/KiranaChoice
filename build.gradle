@@ -83,7 +83,7 @@ buildscript {
                 'id.zelory:compressor:3.0.0', // compress image
                 'com.facebook.shimmer:shimmer:0.5.0', // shimmer
                 'de.hdodenhof:circleimageview:3.1.0', // circle image view
-                'com.vmadalin:easypermissions-ktx:0.1.0', // easy permission
+                'pub.devrel:easypermissions:3.0.0', // easy permission
                 'com.github.aabhasr1:OtpView:v1.1.2-ktx' // otp view
         ]
 

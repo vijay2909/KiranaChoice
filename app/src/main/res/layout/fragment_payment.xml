@@ -189,10 +189,11 @@
                                     android:layout_below="@id/productLayout"
                                     android:layout_alignParentEnd="true"
                                     android:layout_marginTop="8dp"
+                                    android:text="@{ConstantsKt.DELIVERY_FREE == paymentViewModel.deliveryCharge ? paymentViewModel.deliveryCharge : @string/rupees_string_format(paymentViewModel.deliveryCharge) }"
+                                    android:textColor="@{ConstantsKt.DELIVERY_FREE == paymentViewModel.deliveryCharge ? @color/colorPrimaryDark : @color/black}"
                                     tools:text="₹40" />
 
-                                <!--android:text="@{ConstantsKt.DELIVERY_FREE == paymentViewModel.deliveryCharge ? paymentViewModel.deliveryCharge : @string/rupees_string_format(paymentViewModel.deliveryCharge) }"
-                                android:textColor="@{ConstantsKt.DELIVERY_FREE == paymentViewModel.deliveryCharge ? @color/colorPrimaryDark : @color/black}"-->
+
 
                                 <TextView
                                     android:id="@+id/textCouponApplied"
