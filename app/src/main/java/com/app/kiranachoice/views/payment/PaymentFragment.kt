@@ -1,7 +1,7 @@
+
 package com.app.kiranachoice.views.payment
 
 import android.app.NotificationManager
-import android.content.Context.NOTIFICATION_SERVICE
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
@@ -44,7 +44,8 @@ class PaymentFragment : Fragment() {
     @Inject
     lateinit var dataRepository: DataRepository
 
-    private lateinit var notificationManager: NotificationManager
+    @Inject
+    lateinit var notificationManager: NotificationManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,7 +53,6 @@ class PaymentFragment : Fragment() {
     ): View {
         bindingPayment = FragmentPaymentBinding.inflate(inflater, container, false)
 
-        notificationManager = requireActivity().getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         binding.lifecycleOwner = this
         binding.paymentViewModel = viewModel
 
@@ -64,6 +64,7 @@ class PaymentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.couponCode = args.couponCode
         binding.totalAmount = args.totalAmount
         binding.couponDescription = args.couponDescription
 

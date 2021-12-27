@@ -1,6 +1,7 @@
 package com.app.kiranachoice.utils
 
 import android.graphics.Paint
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
@@ -155,4 +156,10 @@ fun setListImage(view: ImageView, url: String?) {
             Glide.with(view.context).load(it).into(view)
         }
     }
+}
+
+@BindingAdapter("isGone")
+fun setVisibility(view: View, isGone: Boolean) {
+    if (isGone) view.visibility = View.GONE
+    else view.visibility = View.VISIBLE
 }

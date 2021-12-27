@@ -226,4 +226,5 @@
     <string name="category_detail_transition_name">category_detail</string>
     <string name="category_product_transition_name">category_product</string>
     <string name="location_rational">To get your current location you have to give location permission.</string>
+    <string name="login_first_msg">Please Login First</string>
 </resources>

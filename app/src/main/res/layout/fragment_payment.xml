@@ -8,6 +8,10 @@
         <import type="com.app.kiranachoice.utils.ConstantsKt" />
 
         <variable
+            name="couponCode"
+            type="String" />
+
+        <variable
             name="totalAmount"
             type="String" />
 
@@ -194,31 +198,32 @@
                                     tools:text="₹40" />
 
 
-
                                 <TextView
                                     android:id="@+id/textCouponApplied"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
                                     android:layout_below="@id/text_delivery_charge_price"
+                                    android:layout_marginTop="8dp"
                                     android:layout_toStartOf="@id/textCoupon"
                                     android:text="@string/coupon_applied"
                                     android:textAppearance="?android:attr/textAppearanceSmall"
                                     android:textColor="@android:color/holo_red_dark"
-                                    android:textStyle="bold" />
+                                    android:textStyle="bold"
+                                    app:isGone="@{couponCode == null}" />
 
                                 <TextView
                                     android:id="@+id/textCoupon"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_below="@id/text_delivery_charge_price"
                                     android:layout_alignParentEnd="true"
                                     android:layout_marginStart="16dp"
-                                    android:layout_below="@id/text_delivery_charge_price"
                                     android:layout_marginTop="8dp"
                                     android:text="@{couponDescription}"
                                     android:textAppearance="?android:attr/textAppearanceSmall"
                                     android:textColor="@android:color/holo_red_dark"
                                     android:textStyle="bold"
+                                    app:isGone="@{couponCode == null}"
                                     tools:text="1 kg. sugar free" />
 
 

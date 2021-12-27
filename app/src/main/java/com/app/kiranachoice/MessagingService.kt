@@ -5,27 +5,23 @@ import android.content.Context
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import com.app.kiranachoice.utils.DEVICE_TOKEN
-import com.app.kiranachoice.utils.USER_REFERENCE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import javax.inject.Inject
 
 class MessagingService : FirebaseMessagingService() {
 
-    private lateinit var dbFire: CollectionReference
-    private lateinit var mAuth: FirebaseAuth
+    @Inject
+    lateinit var dbFire: CollectionReference
 
-    private lateinit var notificationManager : NotificationManager
+    @Inject
+    lateinit var mAuth: FirebaseAuth
 
-    override fun onCreate() {
-        super.onCreate()
+    @Inject
+    lateinit var notificationManager : NotificationManager
 
-        dbFire = FirebaseFirestore.getInstance().collection(USER_REFERENCE)
-        mAuth = FirebaseAuth.getInstance()
-        notificationManager  = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-    }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)

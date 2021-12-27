@@ -1,6 +1,8 @@
 package com.app.kiranachoice.di
 
+import android.app.NotificationManager
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import androidx.room.Room
 import com.app.kiranachoice.db.AppDatabase
 import com.app.kiranachoice.network.DateTimeApi
@@ -27,6 +29,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    @Singleton
+    @Provides
+    fun provideNotificationManager(
+        @ApplicationContext context: Context
+    ): NotificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
     @Qualifier  // define qualifier for DateTimeHttpClient
     @Retention(AnnotationRetention.BINARY)
     annotation class DateTimeHttpClient
@@ -41,7 +49,7 @@ object AppModule {
     fun provideNotificationRetrofitClient(
         okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory
-    ) : Retrofit{
+    ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(SendNotificationAPI.BASE_URL)
             .client(okHttpClient)
@@ -67,7 +75,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideGsonConverterFactory() : GsonConverterFactory {
+    fun provideGsonConverterFactory(): GsonConverterFactory {
         return GsonConverterFactory.create()
     }
 
@@ -78,7 +86,7 @@ object AppModule {
     fun provideRetrofitClient(
         okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory
-    ) : Retrofit{
+    ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(DateTimeApi.BASE_URL)
             .client(okHttpClient)
@@ -119,7 +127,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideUserFireStoreCollectionReference(firebaseReference: FirebaseFirestore) : CollectionReference {
+    fun provideUserFireStoreCollectionReference(firebaseReference: FirebaseFirestore): CollectionReference {
         return firebaseReference.collection(USER_REFERENCE)
     }
 }

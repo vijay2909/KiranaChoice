@@ -26,7 +26,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.collections.ArrayList
@@ -34,7 +33,8 @@ import kotlin.collections.ArrayList
 @Singleton
 class DataRepository @Inject constructor(
     private val databaseDao: DatabaseDao,
-    private val apiService: DateTimeApi
+    private val apiService: DateTimeApi,
+    private val singletonData: SingletonData
 ) {
 
     @Inject
@@ -44,7 +44,7 @@ class DataRepository @Inject constructor(
     lateinit var mAuth: FirebaseAuth
 
     @Inject
-    lateinit var dbFire : CollectionReference
+    lateinit var dbFire: CollectionReference
 
 
     private var _user = MutableLiveData<User>()
@@ -111,6 +111,9 @@ class DataRepository @Inject constructor(
     private var _toastForAlreadyAppliedCoupon = MutableLiveData<Boolean>()
     val toastForAlreadyAppliedCoupon: LiveData<Boolean> get() = _toastForAlreadyAppliedCoupon
 
+    fun eventShowAppliedCouponToastComplete(){
+        _toastForAlreadyAppliedCoupon.value = false
+    }
 
     private var _couponDiscount = MutableLiveData<CouponModel>()
     val couponDiscount: LiveData<CouponModel> get() = _couponDiscount
@@ -131,7 +134,8 @@ class DataRepository @Inject constructor(
                         // user use coupon first time
                         _couponDiscount.postValue(couponModel)
 
-                        // save coupon in database because user can use coupon once in a month
+                        singletonData.couponModel = couponModel
+                        /*// save coupon in database because user can use coupon once in a month
                         val couponKey = UUID.randomUUID().toString()
                         val appliedCouponModel = AppliedCouponModel(
                             couponKey,
@@ -141,14 +145,17 @@ class DataRepository @Inject constructor(
 
                         dbFire.document(mAuth.currentUser!!.uid)
                             .collection(APPLIED_COUPON).document(couponKey)
-                            .set(appliedCouponModel)
+                            .set(appliedCouponModel)*/
                     }
                 }
         }
     }
 
 
-    suspend fun removeCoupon() {
+    fun removeCoupon() {
+        singletonData.couponModel = null
+    }
+    /*suspend fun removeCoupon() {
         withContext(Dispatchers.IO) {
             couponDiscount.value?.let {
                 dbFire.document(mAuth.currentUser!!.uid)
@@ -156,7 +163,7 @@ class DataRepository @Inject constructor(
                     .delete()
             }
         }
-    }
+    }*/
 
 
     val banners: LiveData<List<Banner>> = Transformations.map(databaseDao.getBanners()) {

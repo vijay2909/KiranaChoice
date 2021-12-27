@@ -22,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorPrimaryLight"
+            android:orientation="vertical"
             android:visibility="@{isOrderAvailable ? View.VISIBLE : View.INVISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="4"
@@ -35,12 +36,13 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:src="@drawable/empty_order"
-            android:visibility="@{isOrderAvailable ? View.INVISIBLE : View.VISIBLE}"
+            android:visibility="invisible"
             tools:ignore="ContentDescription"
             tools:visibility="invisible" />
 
         <include
             android:id="@+id/progressBar"
+            android:visibility="invisible"
             layout="@layout/progress_bar_with_text" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

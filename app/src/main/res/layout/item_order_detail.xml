@@ -50,7 +50,7 @@
             android:layout_marginTop="16dp"
             android:background="@drawable/border_box_color"
             android:padding="8dp"
-            android:text="@{product.productQuantity}"
+            android:text="@{String.valueOf(product.productQuantity)}"
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/productName"

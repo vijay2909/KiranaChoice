@@ -18,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CartViewModel @Inject constructor(val dataRepository: DataRepository) : ViewModel() {
 
+    private var discount : Double = 0.0
 
     suspend fun getCartItems() = withContext(Dispatchers.IO) { dataRepository.getCartItems() }
 
@@ -84,6 +85,8 @@ class CartViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
 
     val toastForAlreadyAppliedCoupon: LiveData<Boolean> get() = dataRepository.toastForAlreadyAppliedCoupon
 
+    fun eventShowAppliedCouponToastComplete() = dataRepository.eventShowAppliedCouponToastComplete()
+
     /**
      * on applied coupon button click check first that this coupon could be apply or not
      * if this coupon already applied then [[toastForAlreadyAppliedCoupon]] liveData get value from repo and
@@ -114,13 +117,20 @@ class CartViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
 
 
     private fun updateAmount(discount: Double) {
+        this.discount = discount
         _totalAmount.value = totalAmount.value.toString().toDouble().minus(discount).toString()
     }
 
 
     fun removeCoupon() {
         _showCoupon.value = false
-        viewModelScope.launch { dataRepository.removeCoupon() }
+        _totalAmount.value = totalAmount.value.toString().toDouble().plus(discount).toString()
+        dataRepository.removeCoupon()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        _showCoupon.value = false
     }
 
 }

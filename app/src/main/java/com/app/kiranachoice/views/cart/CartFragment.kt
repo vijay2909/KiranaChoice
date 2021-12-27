@@ -18,10 +18,12 @@ import com.app.kiranachoice.databinding.FragmentCartBinding
 import com.app.kiranachoice.listeners.CartListener
 import com.app.kiranachoice.recyclerView_adapters.CartItemAdapter
 import com.app.kiranachoice.recyclerView_adapters.CouponsAdapter
+import com.app.kiranachoice.utils.SingletonData
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListener {
@@ -37,7 +39,10 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
 
     private val viewModel: CartViewModel by viewModels()
 
-    private var couponCode : String? = null
+    private var couponCode: String? = null
+
+    @Inject
+    lateinit var singletonData: SingletonData
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,7 +67,8 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        binding.showCoupon = false
+        // showCoupon should be true when singletonData.couponModel has couponModel
+        binding.showCoupon = singletonData.couponModel != null // false
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet.couponBottomSheet)
 
@@ -77,10 +83,7 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
         binding.btnCouponApply.setOnClickListener {
             if (binding.btnCouponApply.text == getString(R.string.apply_now))
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            else {
-                viewModel.removeCoupon()
-                view.findNavController().navigate(R.id.action_cartFragment_self)
-            }
+            else viewModel.removeCoupon()
         }
 
         binding.bottomSheet.btnApply.setOnClickListener {
@@ -91,16 +94,22 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
-       runBlocking {
-           val cartItems = viewModel.getCartItems()
-           binding.isListEmpty = cartItems.isEmpty()
-           setupText(cartItems.count())
-           cartItemAdapter.submitList(cartItems)
-       }
+        runBlocking {
+            val cartItems = viewModel.getCartItems()
+            binding.isListEmpty = cartItems.isEmpty()
+            setupText(cartItems.count())
+            cartItemAdapter.submitList(cartItems)
+        }
 
 
         binding.btnPlaceOrder.setOnClickListener {
-            view.findNavController().navigate(CartFragmentDirections.actionCartFragmentToAddressFragment(viewModel.totalAmount.value.toString(), couponCode, viewModel.couponDescription.value))
+            view.findNavController().navigate(
+                CartFragmentDirections.actionCartFragmentToAddressFragment(
+                    viewModel.totalAmount.value.toString(),
+                    couponCode,
+                    viewModel.couponDescription.value
+                )
+            )
         }
 
         val couponsAdapter = CouponsAdapter(this)
@@ -111,19 +120,22 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
         })
 
 
-         viewModel.toastForAlreadyAppliedCoupon.observe(viewLifecycleOwner, {
-             if (it) {
-                 Toast.makeText(requireContext(), "Already applied! you can use the coupon once in a month.", Toast.LENGTH_LONG).show()
-             }
-         })
-
-
-        viewModel.showCoupon.observe(viewLifecycleOwner, {
+        viewModel.toastForAlreadyAppliedCoupon.observe(viewLifecycleOwner, {
             if (it) {
-                binding.showCoupon = true
+                Toast.makeText(
+                    requireContext(),
+                    "Already applied! you can use the coupon once in a month.",
+                    Toast.LENGTH_LONG
+                ).show()
+                viewModel.eventShowAppliedCouponToastComplete()
+            }
+        })
+
+
+        viewModel.showCoupon.observe(viewLifecycleOwner, { couponStatus ->
+            binding.showCoupon = couponStatus
+            if (couponStatus) {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            }else{
-                binding.showCoupon = false
             }
         })
     }
@@ -168,7 +180,8 @@ class CartFragment : Fragment(), CartListener, CouponsAdapter.CouponApplyListene
         couponPosition = position
         couponCode = couponModel.couponCode
         if (couponModel.isActive) {
-            if (couponModel.upToPrice.toString().toDouble() <= viewModel.totalAmount.value.toString().toDouble()
+            if (couponModel.upToPrice.toString()
+                    .toDouble() <= viewModel.totalAmount.value.toString().toDouble()
             ) {
                 viewModel.couponApplied(couponModel)
             } else {

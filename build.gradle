@@ -1,137 +1,26 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-        kotlin_version = '1.4.30'
-        camerax_version = '1.1.0-alpha01'
+        kotlin_version = '1.4.31'
+        camerax_version = '1.1.0-alpha03'
         room_version = '2.2.6'
         retrofit_version = '2.9.0'
-        navigation_version = '2.3.3'
+        navigation_version = '2.3.4'
         coroutines_version = '1.4.2'
         glide_version = '4.12.0'
-        dagger_hilt_version = '2.31.2-alpha'
-        hilt_version = '1.0.0-alpha03'
-
-        base = [
-                "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
-                'androidx.core:core-ktx:1.3.2',
-                'androidx.appcompat:appcompat:1.2.0',
-                'androidx.legacy:legacy-support-v4:1.0.0',
-                'androidx.constraintlayout:constraintlayout:2.0.4',
-                'com.google.android.material:material:1.3.0', // material design
-                'com.google.android.play:core-ktx:1.8.1',
-
-        ]
-
-        dagger_hilt = [
-                "com.google.dagger:hilt-android:$dagger_hilt_version",
-                "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_version"
-        ]
-
-        firebase_libraries = [
-                /*platform('com.google.firebase:firebase-bom:26.3.0'),*/
-                'com.google.firebase:firebase-analytics-ktx:18.0.2',
-                'com.google.firebase:firebase-auth-ktx:20.0.2',
-                'com.google.firebase:firebase-firestore-ktx:22.0.2',
-                'com.google.firebase:firebase-messaging-ktx:21.0.1',
-                'com.google.firebase:firebase-storage-ktx:19.2.1',
-                'com.google.firebase:firebase-database-ktx:19.6.0',
-                'com.google.firebase:firebase-config-ktx:20.0.3', // remote config
-                'com.google.firebase:firebase-crashlytics-ktx:17.3.1',
-                'com.google.firebase:firebase-dynamic-links-ktx:19.1.1',
-                'com.google.firebase:firebase-perf-ktx:19.1.0', // performance monitoring
-                'com.firebaseui:firebase-ui-database:7.1.1',
-                'com.google.android.gms:play-services-auth:19.0.0'
-        ]
-
-        room = [
-                "androidx.room:room-runtime:$room_version",
-                "androidx.room:room-ktx:$room_version"
-        ]
-
-        lifecycles = [
-                'androidx.lifecycle:lifecycle-extensions:2.2.0',
-        ]
-
-        retrofit = [
-                "com.squareup.retrofit2:retrofit:$retrofit_version",
-                "com.squareup.retrofit2:converter-gson:$retrofit_version",
-                'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
-        ]
-
-        rxJava = [
-                'io.reactivex.rxjava3:rxandroid:3.0.0',
-                'io.reactivex.rxjava3:rxjava:3.0.7'
-        ]
-
-
-        kapts = [
-                "androidx.room:room-compiler:$room_version",
-                "com.github.bumptech.glide:compiler:$glide_version",
-                // dagger hilt
-                "com.google.dagger:hilt-android-compiler:$dagger_hilt_version",
-                "androidx.hilt:hilt-compiler:$hilt_version"
-        ]
-
-        navigation = [
-                "androidx.navigation:navigation-fragment-ktx:$navigation_version",
-                "androidx.navigation:navigation-ui-ktx:$navigation_version"
-        ]
-
-        utils = [
-                "com.github.bumptech.glide:glide:$glide_version",
-                'com.jakewharton.timber:timber:4.7.1',
-                'id.zelory:compressor:3.0.0', // compress image
-                'com.facebook.shimmer:shimmer:0.5.0', // shimmer
-                'de.hdodenhof:circleimageview:3.1.0', // circle image view
-                'pub.devrel:easypermissions:3.0.0', // easy permission
-                'com.github.aabhasr1:OtpView:v1.1.2-ktx' // otp view
-        ]
-
-
-        map = [
-                'com.google.android.gms:play-services-location:17.1.0',
-                'com.google.android.gms:play-services-maps:17.0.0'
-        ]
-
-        crop_image = [
-                'com.theartofdev.edmodo:android-image-cropper:2.8.0'
-        ]
-
-        coroutines = [
-                "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version",
-                "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version",
-                /* coroutines support for firebase operations */
-                'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1'
-        ]
-
-        cameraX = [
-                "androidx.camera:camera-camera2:$camerax_version",
-                "androidx.camera:camera-lifecycle:$camerax_version",
-                'androidx.camera:camera-view:1.0.0-alpha21'
-        ]
-
-        testing = [
-                'androidx.test.ext:junit:1.1.2',
-                'androidx.test.espresso:espresso-core:3.3.0'
-        ]
-
-        jUnit = [
-                'junit:junit:4.13.1'
-        ]
-
     }
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.2'
+        classpath 'com.android.tools.build:gradle:4.1.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.3"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.4"
         classpath 'com.google.gms:google-services:4.3.5'  // Google Services plugin
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
-        classpath 'com.google.firebase:perf-plugin:1.3.4'
-        classpath "com.google.dagger:hilt-android-gradle-plugin:$dagger_hilt_version"
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.2'
+        classpath 'com.google.firebase:perf-plugin:1.3.5'
+        classpath "com.google.dagger:hilt-android-gradle-plugin:2.33-beta"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class com.app.kiranachoice.data.database_models.* { *; }
+-keep class com.app.kiranachoice.data.domain.* { *; }
+-keep class com.app.kiranachoice.data.network_models.* { *; }

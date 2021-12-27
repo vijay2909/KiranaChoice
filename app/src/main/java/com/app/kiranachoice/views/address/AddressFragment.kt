@@ -241,22 +241,6 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener, Eas
 //        AppSettingsDialog.Builder(this).build().show()
     }
 
-    /*private fun showPermissionDeniedDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.permission_denied))
-            .setMessage(getString(R.string.permission_denied_msg))
-            .setPositiveButton(getString(R.string.app_setting)) { _, _ ->
-                // send to app settings if permission is denied permanently
-                val intent = Intent()
-                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                val uri = Uri.fromParts("package", requireActivity().packageName, null)
-                intent.data = uri
-                startActivity(intent)
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .show()
-    }*/
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -264,26 +248,6 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener, Eas
     ) {
         // Forward results to EasyPermissions
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
-        /*when (requestCode) {
-            REQUEST_PERMISSION_CODE -> {
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    showPermissionDeniedDialog()
-                } else if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-                ) {
-                    getLocation()
-                } else {
-                    // permission is denied, you can ask for permission again, if you want
-                    requestPermissions(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        ),
-                        REQUEST_PERMISSION_CODE
-                    )
-                }
-            }
-        }*/
     }
 
 
@@ -310,33 +274,6 @@ class AddressFragment : Fragment(), AddressAdapter.AddressCardClickListener, Eas
         }
     }
 
-    /*private fun getLocation() {
-        when {
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED -> {
-                mFusedLocationClient.lastLocation.addOnSuccessListener {
-                    setLocation(it)
-                }
-            }
-
-            else -> {
-                requestPermissions(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ),
-                    REQUEST_PERMISSION_CODE
-                )
-            }
-        }
-
-    }*/
 
     override fun onDestroyView() {
         super.onDestroyView()

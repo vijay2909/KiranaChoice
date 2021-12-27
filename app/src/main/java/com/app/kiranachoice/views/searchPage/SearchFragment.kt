@@ -1,15 +1,16 @@
 package com.app.kiranachoice.views.searchPage
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.*
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.app.kiranachoice.R
 import com.app.kiranachoice.databinding.FragmentSearchBinding
@@ -107,9 +108,9 @@ class SearchFragment : Fragment() {
         )
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
 
-        if (intent.resolveActivity(requireActivity().packageManager) != null) {
-            startActivityForResult(intent, 10)
-        } else {
+        try {
+            resultLauncher.launch(intent)
+        } catch (ex: ActivityNotFoundException) {
             Toast.makeText(
                 requireContext(),
                 "Your Device Don't Support Speech Input",
@@ -118,18 +119,16 @@ class SearchFragment : Fragment() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-            10 -> {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                    searchView?.setQuery(
-                        result?.get(0).toString().toLowerCase(Locale.getDefault()),
-                        true
-                    )
-                }
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+            val data: Intent? = result.data
+            data?.let {
+                val results = it.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                searchView?.setQuery(
+                    results?.get(0).toString().toLowerCase(Locale.getDefault()),
+                    true
+                )
             }
         }
     }
